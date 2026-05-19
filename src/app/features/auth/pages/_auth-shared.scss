@@ -1,0 +1,177 @@
+// ── Auth pages — shared tokens & layout ───────────────────────────────────────
+
+// ── Page shell ──────────────────────────────────────────────────────────────
+
+.auth-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+  background: var(--color-surface-base);
+
+  &__card {
+    width: 100%;
+    max-width: 26rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  // ── Brand mark ────────────────────────────────────────────────────────────
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-1);
+  }
+
+  &__brand-dot {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--color-auth-accent);
+  }
+
+  &__brand-name {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+  }
+
+  // ── Headings ──────────────────────────────────────────────────────────────
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+  }
+
+  &__sub {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  // ── Footer link ───────────────────────────────────────────────────────────
+  &__footer-link {
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  &__link {
+    color: var(--color-auth-accent);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ── Form elements ─────────────────────────────────────────────────────────────
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  &__label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.65rem var(--space-3);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    background: var(--color-surface-subtle);
+    border: 1.5px solid var(--color-border-subtle);
+    border-radius: 0.625rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    &:focus {
+      border-color: var(--color-auth-accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-auth-accent) 15%, transparent);
+    }
+  }
+
+  &__hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  &__erro {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-on-danger-surface);
+    background: var(--color-danger-surface);
+    border: 1px solid var(--color-danger-border);
+    border-radius: 0.5rem;
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: 0.75rem var(--space-4);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-on-primary);
+    background: var(--color-auth-accent);
+    border: none;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    transition: background 0.15s ease, opacity 0.15s ease;
+    margin-top: var(--space-1);
+
+    &:hover:not(:disabled) {
+      background: var(--color-auth-accent-hover);
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  &__spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid color-mix(in srgb, var(--color-on-primary) 35%, transparent);
+    border-top-color: var(--color-on-primary);
+    border-radius: 50%;
+    animation: auth-spin 0.7s linear infinite;
+  }
+}
+
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

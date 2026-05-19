@@ -1,0 +1,98 @@
+<div class="merchant-shell">
+  <header class="mx-header">
+    <div class="mx-header__bar container">
+      <a routerLink="/merchant" class="mx-header__brand" aria-label="Início do painel">
+        <span class="mx-header__brand-mark" aria-hidden="true"></span>
+        <span class="mx-header__brand-text">
+          <span class="mx-header__brand-name">{{ ctx.shopLabel() }}</span>
+          <span class="mx-header__brand-tag">Painel</span>
+        </span>
+      </a>
+
+      <nav class="mx-header__main" aria-label="Áreas principais">
+        <div class="mx-seg">
+          <a
+            routerLink="/merchant/loja/vitrine"
+            class="mx-seg__btn"
+            [class.mx-seg__btn--active]="isTab('loja')"
+          >
+            <span class="mx-seg__ico" aria-hidden="true">
+              <app-icon name="home" [size]="20"></app-icon>
+            </span>
+            <span class="mx-seg__label">Loja</span>
+          </a>
+          <a
+            routerLink="/merchant/orders"
+            class="mx-seg__btn"
+            [class.mx-seg__btn--active]="isTab('pedidos')"
+          >
+            <span class="mx-seg__ico" aria-hidden="true">
+              <app-icon name="file-text" [size]="20"></app-icon>
+            </span>
+            <span class="mx-seg__label">Pedido</span>
+          </a>
+          <a
+            routerLink="/merchant/contas"
+            class="mx-seg__btn"
+            [class.mx-seg__btn--active]="isTab('contas')"
+          >
+            <span class="mx-seg__ico" aria-hidden="true">
+              <app-icon name="user" [size]="20"></app-icon>
+            </span>
+            <span class="mx-seg__label">Contas</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="mx-header__actions">
+        <app-notification-bell />
+        <a routerLink="/" class="mx-header__store">
+          <span>Ver loja</span>
+          <app-icon name="external-link" [size]="16"></app-icon>
+        </a>
+      </div>
+    </div>
+
+    @if (showLojaSubPrimary()) {
+      <div class="mx-rail">
+        <div class="container mx-rail__inner">
+          <p class="mx-rail__hint">
+            <span class="mx-rail__pulse" aria-hidden="true"></span>
+            O que você quer fazer na loja?
+          </p>
+          <div class="mx-rail__scroll" role="tablist" aria-label="Módulos da loja">
+            @for (item of lojaSubNavPrimary(); track item.path) {
+              <a
+                [routerLink]="item.path"
+                role="tab"
+                class="mx-pill"
+                [class.mx-pill--active]="lojaPrimaryActive(item.path)"
+                >{{ item.label }}</a
+              >
+            }
+          </div>
+
+          @if (showLojaSubSecondary()) {
+            <div class="mx-rail__nest">
+              <span class="mx-rail__nest-label">{{ lojaDetailSectionTitle() }}</span>
+              <div class="mx-rail__scroll mx-rail__scroll--nest">
+                @for (item of lojaSubNavSecondary(); track item.path) {
+                  <a
+                    [routerLink]="item.path"
+                    class="mx-pill mx-pill--compact"
+                    [class.mx-pill--active]="lojaSecondaryActive(item)"
+                    >{{ item.label }}</a
+                  >
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </header>
+
+  <main class="merchant-shell__body">
+    <router-outlet />
+  </main>
+</div>

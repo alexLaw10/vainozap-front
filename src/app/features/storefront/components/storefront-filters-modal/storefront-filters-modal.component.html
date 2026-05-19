@@ -1,0 +1,101 @@
+@if (filters.panelOpen()) {
+  <div
+    class="storefront-filters"
+    role="presentation"
+    (click)="onBackdropClick($event)"
+  >
+    <div
+      class="storefront-filters__dialog"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="'storefront-filters-title'"
+      tabindex="-1"
+      data-storefront-filters-dialog
+      (click)="$event.stopPropagation()"
+    >
+      <h2 id="storefront-filters-title" class="storefront-filters__title">{{ filters.config().title }}</h2>
+
+      <div class="storefront-filters__list" role="list">
+        @for (g of filters.groups(); track g.id) {
+          <div class="storefront-filters__group" role="listitem">
+            <button
+              type="button"
+              class="storefront-filters__group-toggle"
+              [attr.aria-expanded]="filters.isGroupExpanded(g.id)"
+              [attr.aria-controls]="'storefront-filters-panel-' + g.id"
+              (click)="filters.toggleGroupExpanded(g.id)"
+            >
+              <span class="storefront-filters__group-label">{{ g.label }}</span>
+              <span class="storefront-filters__group-icon" aria-hidden="true">{{
+                filters.isGroupExpanded(g.id) ? '−' : '+'
+              }}</span>
+            </button>
+
+            @if (filters.isGroupExpanded(g.id)) {
+              <div
+                class="storefront-filters__group-panel"
+                [id]="'storefront-filters-panel-' + g.id"
+                role="region"
+                [attr.aria-label]="g.label"
+              >
+                @if (g.kind === 'choice' && g.options?.length) {
+                  <ul class="storefront-filters__options" role="list">
+                    @for (opt of g.options; track opt.id) {
+                      <li class="storefront-filters__option">
+                        <label class="storefront-filters__check-label">
+                          <input
+                            type="checkbox"
+                            class="storefront-filters__checkbox"
+                            [checked]="filters.isChoiceSelected(g.id, opt.id)"
+                            (change)="onChoiceChange(g.id, opt.id, $event)"
+                          />
+                          <span>{{ opt.label }}</span>
+                        </label>
+                      </li>
+                    }
+                  </ul>
+                } @else if (g.kind === 'range' && g.range) {
+                  <div class="storefront-filters__range">
+                    <label class="storefront-filters__range-field">
+                      <span class="storefront-filters__range-caption">{{ g.range.minLabel ?? 'Mínimo' }}</span>
+                      <input
+                        type="number"
+                        class="storefront-filters__range-input"
+                        [attr.min]="g.range.min"
+                        [attr.max]="g.range.max"
+                        [attr.step]="g.range.step"
+                        [value]="priceMinInputValue()"
+                        (input)="onPriceMinInput($event)"
+                      />
+                    </label>
+                    <label class="storefront-filters__range-field">
+                      <span class="storefront-filters__range-caption">{{ g.range.maxLabel ?? 'Máximo' }}</span>
+                      <input
+                        type="number"
+                        class="storefront-filters__range-input"
+                        [attr.min]="g.range.min"
+                        [attr.max]="g.range.max"
+                        [attr.step]="g.range.step"
+                        [value]="priceMaxInputValue()"
+                        (input)="onPriceMaxInput($event)"
+                      />
+                    </label>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="storefront-filters__actions">
+        <button type="button" class="storefront-filters__btn storefront-filters__btn--primary" (click)="filters.apply()">
+          Aplicar
+        </button>
+        <button type="button" class="storefront-filters__btn storefront-filters__btn--secondary" (click)="filters.cancel()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+}

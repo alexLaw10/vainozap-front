@@ -1,0 +1,118 @@
+// Global color tokens — CSS custom properties (tenant can override --color-primary* at runtime)
+:root {
+  /* Neutrals (slate) */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+
+  /* Brand (overridden at runtime by ShellComponent from tenant API) */
+  --color-primary: #6366f1;
+  --color-primary-hover: color-mix(in srgb, var(--color-primary) 85%, black);
+  --color-primary-active: color-mix(in srgb, var(--color-primary) 72%, black);
+  --color-primary-muted: color-mix(in srgb, var(--color-primary) 14%, white);
+  --color-on-primary: #ffffff;
+
+  --color-secondary: #0ea5e9;
+  --color-secondary-hover: color-mix(in srgb, var(--color-secondary) 85%, black);
+  --color-on-secondary: #ffffff;
+
+  /* Cor do botão Comprar — pode ser diferente da primária (tenant.corDestaqueCatalogo) */
+  --color-destaque-catalogo: var(--color-primary);
+
+  /* Surfaces & borders */
+  --color-surface-base: var(--color-neutral-0);
+  --color-surface-subtle: var(--color-neutral-50);
+  --color-surface-raised: var(--color-neutral-0);
+  --color-border-subtle: var(--color-neutral-200);
+  --color-border-strong: var(--color-neutral-300);
+
+  /* Text */
+  --color-text-primary: var(--color-neutral-900);
+  --color-text-secondary: var(--color-neutral-600);
+  --color-text-muted: var(--color-neutral-500);
+  --color-text-disabled: var(--color-neutral-400);
+  --color-text-on-primary: var(--color-on-primary);
+
+  /* Feedback */
+  --color-danger: #dc2626;
+  --color-danger-muted: #fee2e2;
+  --color-success: #16a34a;
+  --color-success-muted: #dcfce7;
+  --color-warning: #ca8a04;
+  --color-warning-muted: #fef9c3;
+  --color-info: var(--color-secondary);
+  --color-info-muted: #e0f2fe;
+  /* Texto forte sobre fundo info/sky claro (chips, detalhes) */
+  --color-info-emphasis: #075985;
+
+  /* Auth / links violeta (telas de login, botão primário da lib UI onde aplicável) */
+  --color-auth-accent: #7c3aed;
+  --color-auth-accent-hover: #6d28d9;
+
+  /* Texto sobre fundos “muted” de feedback (badges, estoque) */
+  --color-on-success-muted: #166534;
+  --color-on-warning-muted: #854d0e;
+  --color-on-danger-muted: #991b1b;
+
+  /* Superfície de erro em formulário / alerta inline */
+  --color-danger-surface: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-on-danger-surface: #b91c1c;
+
+  /* Destaque âmbar (CEP / endereço no carrinho) */
+  --color-amber-address: #e5b008;
+
+  /* Chip âmbar (ex.: pedido aguardando) */
+  --color-amber-muted: #fef3c7;
+  --color-on-amber-muted: #92400e;
+
+  /* Chips azul / violeta (status de pedido) */
+  --color-blue-muted: #dbeafe;
+  --color-on-blue-muted: #1e40af;
+  --color-violet-muted: #ede9fe;
+  --color-on-violet-muted: #5b21b6;
+
+  /* Chip neutro (cancelado, desativado) */
+  --color-chip-neutral-bg: #f3f4f6;
+  --color-chip-neutral-fg: #4b5563;
+
+  /* Destaques de UI (contas, outline) */
+  --color-sky-400: #38bdf8;
+  --color-violet-800: #5b21b6;
+  --color-violet-500: #8b5cf6;
+
+  /* Redes / ações fixas de marca */
+  --color-brand-whatsapp: #25d366;
+  --color-brand-facebook: #1877f2;
+  --color-brand-telegram: #2aabee;
+  --color-brand-telegram-soft: #7ec8ea;
+  --color-brand-telegram-soft-hover: #6ab8de;
+  --gradient-brand-instagram: linear-gradient(
+    45deg,
+    #f09433 0%,
+    #e6683c 25%,
+    #dc2743 50%,
+    #cc2366 75%,
+    #bc1888 100%
+  );
+
+  /* Teal (confirmação estilo “WhatsApp escuro”) */
+  --color-teal-700: #0f766e;
+  --color-teal-600: #0d9488;
+
+  /* Tom roxo bem claro (lista não lida, etc.) */
+  --color-purple-tint: #faf5ff;
+
+  /* Focus ring */
+  --color-focus-ring: var(--color-primary);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+}

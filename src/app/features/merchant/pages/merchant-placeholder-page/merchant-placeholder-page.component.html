@@ -1,0 +1,11 @@
+<main class="merchant-placeholder container">
+  @if (voltarPara(); as back) {
+    <p class="merchant-placeholder__back">
+      <a [routerLink]="back" class="merchant-placeholder__back-link">{{ voltarLabel() }}</a>
+    </p>
+  }
+  <h1 class="merchant-placeholder__title">{{ titulo() }}</h1>
+  @if (texto()) {
+    <p class="merchant-placeholder__lead">{{ texto() }}</p>
+  }
+</main>

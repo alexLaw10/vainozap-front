@@ -1,0 +1,23 @@
+@use '../tokens/grid' as grid;
+
+.u-container,
+.container {
+  width: 100%;
+  max-width: var(--layout-container-max-width);
+  margin-inline: auto;
+  padding-inline: var(--layout-container-padding-x);
+}
+
+.u-grid-12,
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(var(--layout-grid-columns), minmax(0, 1fr));
+  gap: var(--layout-grid-gap);
+}
+
+@include grid.media-down(md) {
+  .u-grid-12,
+  .grid-12 {
+    gap: var(--layout-grid-gap-sm);
+  }
+}

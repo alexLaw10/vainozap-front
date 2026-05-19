@@ -1,0 +1,36 @@
+{
+  "id": "2",
+  "slug": "docemanha",
+  "nomeLoja": "Doce Manhã Padaria",
+  "tituloDocumento": "Doce Manhã — Padaria artesanal",
+  "logoUrl": null,
+  "faviconUrl": null,
+  "corPrimaria": "#3d2914",
+  "corSecundaria": "#c9a227",
+  "corDestaqueCatalogo": "#b45309",
+  "whatsapp": "5521987654321",
+  "planoTipo": "essencial",
+  "telefoneContato": "(21) 98765-4321",
+  "horarioAtendimentoLinha": "Terça a domingo 06:00 às 20:00",
+  "horarioAtendimentoDetalhes": "Terça a sábado: 06:00–20:00\nDomingo: 07:00–14:00\nSegunda: encerrado",
+  "cnpj": "98.765.432/0001-10",
+  "ativo": true,
+  "slogan": "FORNO DE CASA, SABOR DE VERDADE",
+  "emailContato": "contato@docemanha.com.br",
+  "nomeProprietario": "Mariana Costa",
+  "enderecoLinha": "Av. das Américas, 4500, Barra da Tijuca, Rio de Janeiro, RJ",
+  "rodape": {
+    "textoLinkWhatsapp": "PEDIR NO ZAP",
+    "seloTitulo": "COMPRA SEGURA",
+    "seloSubtitulo": "DADOS CRIPTOGRAFADOS",
+    "reclamacoesTexto": "Consumidor.gov.br",
+    "reclamacoesUrl": "https://www.gov.br/consumidor/pt-br",
+    "formasPagamento": ["Pix", "Visa", "Mastercard", "Dinheiro na retirada"],
+    "redesSociais": [
+      { "rotulo": "Instagram", "url": "https://instagram.com/docemanhapadaria" },
+      { "rotulo": "Facebook", "url": "https://facebook.com/docemanhapadaria" }
+    ],
+    "redesPlaceholder": "Em breve",
+    "faixaInferior": "Padaria artesanal · entregas e retirada"
+  }
+}

@@ -1,0 +1,109 @@
+<main id="storefront-main" class="vitrine-main container" tabindex="-1">
+  <h1 class="visually-hidden">Catálogo — {{ context.tenant().nomeLoja }}</h1>
+
+  <section id="categorias" class="vitrine-section" aria-labelledby="categorias-heading">
+    <h2 id="categorias-heading" class="vitrine-section__title">Categorias</h2>
+    <div class="category-strip" role="group" aria-label="Filtrar por categoria">
+      <button
+        type="button"
+        class="category-pill"
+        [class.category-pill--active]="isAllCategoriesSelected()"
+        [attr.aria-pressed]="isAllCategoriesSelected()"
+        (click)="selectCategory(null)"
+      >
+        <span class="category-pill__thumb category-pill__thumb--all" aria-hidden="true">Todos</span>
+        <span class="category-pill__label">Todos</span>
+      </button>
+      @for (c of catalog.listCategories(); track c.id) {
+        <button
+          type="button"
+          class="category-pill"
+          [class.category-pill--active]="isCategorySelected(c.id)"
+          [attr.aria-pressed]="isCategorySelected(c.id)"
+          (click)="selectCategory(c.id)"
+        >
+          @if (c.imagemUrl) {
+            <span class="category-pill__thumb-wrap" aria-hidden="true">
+              <img class="category-pill__img" [src]="c.imagemUrl" alt="" width="72" height="72" />
+            </span>
+          } @else {
+            <span class="category-pill__thumb category-pill__thumb--fallback" aria-hidden="true">{{
+              c.nome.charAt(0)
+            }}</span>
+          }
+          <span class="category-pill__label">{{ c.nome }}</span>
+        </button>
+      } @empty {
+        @if (!catalog.loading()) {
+          <p class="catalog-empty-strip">Nenhuma categoria cadastrada ainda.</p>
+        }
+      }
+    </div>
+  </section>
+
+  <div class="catalog-search" role="search" aria-label="Busca na loja">
+    <label class="visually-hidden" for="catalog-search-input">Buscar produtos</label>
+    <span class="catalog-search__icon" aria-hidden="true">
+      <app-icon name="search" [size]="18"></app-icon>
+    </span>
+    <input
+      id="catalog-search-input"
+      type="search"
+      class="catalog-search__input"
+      placeholder="Faça sua busca"
+      autocomplete="off"
+    />
+    <button
+      type="button"
+      class="catalog-search__filter"
+      aria-label="Abrir filtros"
+      [attr.aria-expanded]="filters.panelOpen()"
+      (click)="filters.openPanel()"
+    >
+      <app-icon name="filter" [size]="18"></app-icon>
+    </button>
+  </div>
+
+  <section id="produtos" class="vitrine-section vitrine-section--products" aria-labelledby="produtos-heading">
+    <div class="vitrine-section__row vitrine-section__row--products">
+      <h2 id="produtos-heading" class="vitrine-section__title vitrine-section__title--inline">Produtos</h2>
+      <div class="catalog-product-tools">
+        <span class="catalog-product-tools__grid" aria-hidden="true" title="Vista em grelha">
+          <app-icon name="grid" [size]="18"></app-icon>
+        </span>
+        <div class="vitrine-sort">
+          <label class="vitrine-sort__label" for="sort-select">Ordenar</label>
+          <select
+            id="sort-select"
+            class="vitrine-sort__select"
+            (change)="setSortFromSelect($event)"
+            [attr.title]="'Ordenar'"
+          >
+            <option value="name">Nome</option>
+            <option value="price-asc">Menor preço</option>
+            <option value="price-desc">Maior preço</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    @if (catalog.loading()) {
+      <p class="catalog-empty-grid" aria-live="polite">Carregando produtos…</p>
+    } @else if (emptyProductsMsg()) {
+      <div class="catalog-empty-grid" aria-live="polite">
+        <span class="catalog-empty-grid__icon" aria-hidden="true">
+          <app-icon name="package" [size]="40" [strokeWidth]="1.5"></app-icon>
+        </span>
+        <p class="catalog-empty-grid__text">{{ emptyProductsMsg() }}</p>
+      </div>
+    } @else {
+      <ul class="product-grid" role="list">
+        @for (p of filteredProducts(); track p.id) {
+          <li class="product-grid__cell" role="listitem">
+            <app-product-card [product]="p" />
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</main>

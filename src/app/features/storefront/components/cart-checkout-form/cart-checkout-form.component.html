@@ -1,0 +1,132 @@
+<div class="cart-checkout-form">
+  <h2 id="cart-dialog-title" class="cart-modal__form-title">Suas Informações</h2>
+  <p id="cart-dialog-desc" class="visually-hidden">Formulário para concluir o pedido com dados e pagamento.</p>
+
+  <div class="cart-modal__field">
+    <label class="cart-modal__label" for="cart-nome">Nome completo <span aria-hidden="true">*</span></label>
+    <input
+      id="cart-nome"
+      class="cart-modal__input"
+      type="text"
+      autocomplete="name"
+      placeholder="Nome Completo"
+      [value]="nome()"
+      (input)="nomeChange.emit($any($event.target).value)"
+    />
+  </div>
+
+  <div class="cart-modal__field">
+    <label class="cart-modal__label" for="cart-doc">CPF/CNPJ <span aria-hidden="true">*</span></label>
+    <input
+      id="cart-doc"
+      class="cart-modal__input"
+      type="text"
+      inputmode="numeric"
+      autocomplete="off"
+      placeholder="Informe seu CPF/CNPJ"
+      [value]="cpfCnpj()"
+      (input)="cpfChange.emit($any($event.target).value)"
+    />
+  </div>
+
+  <div class="cart-modal__field">
+    <label class="cart-modal__label" for="cart-tel">Telefone <span aria-hidden="true">*</span></label>
+    <input
+      id="cart-tel"
+      class="cart-modal__input"
+      type="tel"
+      autocomplete="tel"
+      placeholder="DDD e número"
+      [value]="telefone()"
+      (input)="telChange.emit($any($event.target).value)"
+    />
+  </div>
+
+  <h3 class="cart-modal__form-subtitle" [style.color]="corSecundaria()">Pagamento</h3>
+
+  <div class="cart-modal__field cart-modal__field--pay-pill">
+    <label class="cart-modal__label" for="cart-pay">Forma de pagamento <span aria-hidden="true">*</span></label>
+    <div class="sf-select-wrap">
+      <select
+        id="cart-pay"
+        class="sf-pill-select"
+        [value]="formaPagamento()"
+        (change)="pagamentoChange.emit($event)"
+      >
+        @for (opt of pagamentoOpcoes; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (formaPagamento() === 'dinheiro') {
+    <div class="cart-modal__field cart-modal__field--pay-pill">
+      <label class="cart-modal__label" for="cart-troco">Troco para</label>
+      <input
+        id="cart-troco"
+        class="sf-pill-input"
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        placeholder="R$ 0,00"
+        [value]="cartTrocoPara()"
+        (input)="trocoChange.emit($any($event.target).value)"
+      />
+    </div>
+  }
+
+  @if (isCartaoForma()) {
+    <div class="cart-modal__field cart-modal__field--pay-pill">
+      <label class="cart-modal__label" for="cart-modo-cartao">Modalidade</label>
+      <div class="sf-select-wrap">
+        <select
+          id="cart-modo-cartao"
+          class="sf-pill-select"
+          [value]="cartModoCartao()"
+          (change)="modoCartaoChange.emit($event)"
+        >
+          @for (opt of cartModoOpcoes; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  }
+
+  @if (formaPagamento() === 'cartao_credito') {
+    <div class="cart-modal__field cart-modal__field--pay-pill">
+      <label class="cart-modal__label" for="cart-parcelas">Parcelamento</label>
+      <div class="sf-select-wrap">
+        <select
+          id="cart-parcelas"
+          class="sf-pill-select"
+          [value]="cartParcelas()"
+          (change)="parcelasChange.emit($event)"
+        >
+          @for (opt of parcelasOpcoes; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  }
+
+  @if (isCartaoForma()) {
+    <div class="cart-modal__field cart-modal__field--pay-pill">
+      <label class="cart-modal__label" for="cart-bandeira">Bandeira do cartão</label>
+      <div class="sf-select-wrap">
+        <select
+          id="cart-bandeira"
+          class="sf-pill-select"
+          [value]="cartBandeira()"
+          (change)="bandeiraChange.emit($event)"
+        >
+          @for (opt of bandeiraOpcoes; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  }
+</div>

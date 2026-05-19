@@ -1,0 +1,21 @@
+.ui-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ui-form-field__label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.ui-form-field__hint {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted);
+}
+
+.ui-form-field__error {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-danger);
+}

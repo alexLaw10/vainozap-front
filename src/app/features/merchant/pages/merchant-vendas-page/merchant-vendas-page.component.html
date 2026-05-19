@@ -1,0 +1,115 @@
+<main class="vnd-page container">
+
+  <div class="vnd-page__head">
+    <div>
+      <h1 class="vnd-page__title">Vendas</h1>
+      <p class="vnd-page__sub">Resumo de vendas concluídas (status Entregue)</p>
+    </div>
+    <div class="vnd-periodos">
+      @for (p of PERIODOS; track p.value) {
+        <button type="button" class="vnd-periodo-btn" [class.vnd-periodo-btn--active]="periodo() === p.value" (click)="setPeriodo(p.value)">
+          {{ p.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p class="vnd-empty">Carregando…</p>
+  } @else if (error()) {
+    <p class="vnd-error">{{ error() }}</p>
+  } @else if (resumo(); as r) {
+
+    <!-- KPI Cards -->
+    <div class="vnd-kpis">
+      <div class="vnd-kpi">
+        <span class="vnd-kpi__label">Receita total</span>
+        <span class="vnd-kpi__value">{{ currency(r.totalReceita) }}</span>
+      </div>
+      <div class="vnd-kpi">
+        <span class="vnd-kpi__label">Pedidos entregues</span>
+        <span class="vnd-kpi__value">{{ r.totalPedidos }}</span>
+      </div>
+      <div class="vnd-kpi">
+        <span class="vnd-kpi__label">Ticket médio</span>
+        <span class="vnd-kpi__value">{{ currency(r.ticketMedio) }}</span>
+      </div>
+      <div class="vnd-kpi vnd-kpi--pending">
+        <span class="vnd-kpi__label">Receita pendente</span>
+        <span class="vnd-kpi__value">{{ currency(r.receitaPendente) }}</span>
+        <span class="vnd-kpi__sub">{{ r.pedidosPendentes }} pedidos em aberto</span>
+      </div>
+    </div>
+
+    <!-- Gráfico de receita -->
+    <section class="vnd-section">
+      <h2 class="vnd-section__title">Receita por {{ r.granularidade === 'MES' ? 'mês' : 'dia' }}</h2>
+
+      @if (r.porPeriodo.length === 0) {
+        <p class="vnd-empty-inline">Sem vendas nesse período.</p>
+      } @else {
+        <div class="vnd-chart">
+          @for (item of r.porPeriodo; track item.data) {
+            <div class="vnd-bar-wrap" [title]="formatTooltip(item)">
+              <div class="vnd-bar" [style.height.%]="barHeight(item.receita)"></div>
+              <span class="vnd-bar__label">{{ formatLabel(item.data, r.granularidade) }}</span>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Tabelas side-by-side -->
+    <div class="vnd-tables">
+
+      <!-- Top produtos -->
+      <section class="vnd-section vnd-section--card">
+        <h2 class="vnd-section__title">Top produtos</h2>
+        @if (r.topProdutos.length === 0) {
+          <p class="vnd-empty-inline">Sem dados.</p>
+        } @else {
+          <ul class="vnd-ranking">
+            @for (p of r.topProdutos; track p.titulo; let i = $index) {
+              <li class="vnd-ranking__item">
+                <span class="vnd-ranking__pos">{{ i + 1 }}</span>
+                <div class="vnd-ranking__info">
+                  <span class="vnd-ranking__nome">{{ p.titulo }}</span>
+                  <div class="vnd-bar-h-wrap">
+                    <div class="vnd-bar-h" [style.width.%]="barWidth(p.receita)"></div>
+                  </div>
+                </div>
+                <div class="vnd-ranking__nums">
+                  <span class="vnd-ranking__receita">{{ currency(p.receita) }}</span>
+                  <span class="vnd-ranking__qty">{{ p.quantidade }} un.</span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- Por forma de pagamento -->
+      <section class="vnd-section vnd-section--card">
+        <h2 class="vnd-section__title">Por forma de pagamento</h2>
+        @if (r.porFormaPagamento.length === 0) {
+          <p class="vnd-empty-inline">Sem dados.</p>
+        } @else {
+          <ul class="vnd-pagamento">
+            @for (fp of r.porFormaPagamento; track fp.forma) {
+              <li class="vnd-pagamento__item">
+                <span class="vnd-pagamento__forma">{{ fp.forma }}</span>
+                <span class="vnd-pagamento__qty">{{ fp.quantidade }} ped.</span>
+                <span class="vnd-pagamento__total">{{ currency(fp.total) }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+    </div>
+
+  } @else {
+    <p class="vnd-empty">Nenhum dado disponível.</p>
+  }
+
+</main>

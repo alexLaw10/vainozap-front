@@ -1,0 +1,231 @@
+<main id="storefront-main" class="product-page container" tabindex="-1">
+  <article class="product" [attr.aria-labelledby]="product() ? 'product-title' : 'product-missing-title'">
+
+    @if (state()?.status === 'loading' || !state()) {
+      <div class="product__skeleton" aria-busy="true" aria-label="Carregando produto">
+        <div class="product__skeleton-gallery">
+          <div class="product__skeleton-hero skeleton-pulse"></div>
+        </div>
+        <div class="product__skeleton-aside">
+          <div class="product__skeleton-line skeleton-pulse" style="width:70%;height:2rem"></div>
+          <div class="product__skeleton-line skeleton-pulse" style="width:40%;height:1.5rem;margin-top:.5rem"></div>
+          <div class="product__skeleton-line skeleton-pulse" style="height:6rem;margin-top:1rem"></div>
+          <div class="product__skeleton-line skeleton-pulse" style="height:3rem;margin-top:1rem"></div>
+        </div>
+      </div>
+    }
+
+    @if (product(); as p) {
+      <div class="product__layout">
+        <div class="product__gallery" aria-label="Galeria de imagens">
+          @if (p.fotos.length > 1) {
+            <div class="product__thumbs" role="tablist" aria-label="Miniaturas">
+              @for (src of p.fotos; track $index) {
+                <button
+                  type="button"
+                  class="product__thumb"
+                  [class.product__thumb--active]="isThumbActive($index)"
+                  role="tab"
+                  [attr.aria-selected]="isThumbActive($index)"
+                  [attr.aria-label]="'Foto ' + ($index + 1)"
+                  (click)="selectThumb($index)"
+                >
+                  <img [src]="src" alt="" width="72" height="90" decoding="async" />
+                </button>
+              }
+            </div>
+          }
+
+          <div class="product__hero-wrap">
+            <div class="product__hero">
+              <img
+                class="product__hero-img"
+                [src]="mainImageSrc()"
+                [alt]="'Foto principal de ' + p.nome"
+                width="800"
+                height="1000"
+                decoding="async"
+              />
+            </div>
+            <button type="button" class="product__share" aria-label="Partilhar produto" (click)="share()">
+              <app-icon name="share" [size]="20"></app-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="product__aside">
+          <header class="product__header">
+            <h1 id="product-title" class="product__title">{{ p.nome }}</h1>
+          </header>
+
+          @if (!p.semEstoque) {
+            <div class="product__buy-row">
+              <label class="product__qty">
+                <span class="visually-hidden">Quantidade</span>
+                <input
+                  class="product__qty-input"
+                  type="number"
+                  min="1"
+                  [max]="selectedStock() ?? 999"
+                  [value]="quantity()"
+                  (input)="onQuantityInput($event)"
+                />
+                <span class="product__qty-suffix" aria-hidden="true">un</span>
+              </label>
+              @if (selectedStock() !== null) {
+                <small class="product__stock-info">{{ selectedStock() }} em estoque</small>
+              }
+              <p class="product__price">{{ lineTotal() | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
+            </div>
+          } @else {
+            <p class="product__price">{{ p.preco | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
+          }
+
+          @if (!p.informacoesFicha?.length) {
+            <p class="product__description">{{ p.descricao }}</p>
+          }
+
+          @if (p.informacoesFicha?.length) {
+            <section class="product__ficha" aria-labelledby="product-info-heading">
+              <h2 id="product-info-heading" class="product__ficha-title">Informações</h2>
+              @for (line of p.informacoesFicha; track $index) {
+                <p class="product__ficha-para">{{ line }}</p>
+              }
+            </section>
+          }
+
+          @if (p.caracteristicasFicha?.length) {
+            <section class="product__ficha" aria-labelledby="product-features-heading">
+              <h2 id="product-features-heading" class="product__ficha-title">Características principais</h2>
+              <ul class="product__ficha-list product__ficha-list--caps">
+                @for (line of p.caracteristicasFicha; track $index) {
+                  <li>{{ line }}</li>
+                }
+              </ul>
+            </section>
+          }
+
+          @if (p.recomendacaoLavagem) {
+            <section class="product__ficha" aria-labelledby="product-wash-heading">
+              <h2 id="product-wash-heading" class="product__ficha-title">Recomendação de lavagem</h2>
+              <p class="product__ficha-lavagem">{{ p.recomendacaoLavagem }}</p>
+            </section>
+          }
+
+          @if (!p.semEstoque) {
+            @for (v of sortVariacoes(p); track v.id) {
+              <section
+                class="product__variacao"
+                [class.product__variacao--sizes]="tipoVariacao(v) === 'tamanho'"
+                [attr.aria-labelledby]="'var-' + v.id"
+              >
+                <h2 [id]="'var-' + v.id" class="product__variacao-title">
+                  <span class="product__variacao-title-text">{{ v.nome }}:</span>
+                  <span class="product__variacao-title-rule" aria-hidden="true"></span>
+                </h2>
+                <ul class="product__variacao-list" role="list">
+                  @for (op of v.opcoes; track op.id) {
+                    <li class="product__variacao-row" [class.product__variacao-row--disabled]="op.estoque <= 0">
+                      <label class="product__variacao-label">
+                        <input
+                          type="radio"
+                          class="product__radio"
+                          [name]="'pv-' + p.id + '-' + v.id"
+                          [checked]="isOpcaoSelected(v, op.id)"
+                          [disabled]="op.estoque <= 0"
+                          (change)="selectOpcao(p, v.id, op.id)"
+                        />
+                        @if (tipoVariacao(v) === 'cor') {
+                          @if (op.swatch) {
+                            <span class="product__swatch" [style.background]="op.swatch" aria-hidden="true"></span>
+                          } @else {
+                            <span class="product__swatch product__swatch--neutral" aria-hidden="true"></span>
+                          }
+                        }
+                        <span class="product__variacao-nome">{{ op.valor }}</span>
+                      </label>
+                      @if (op.estoque <= 0) {
+                        <span class="product__stock-badge">Esgotado</span>
+                      }
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+
+            <label class="product__obs">
+              <span class="visually-hidden">Detalhe opcional para o pedido</span>
+              <textarea
+                class="product__obs-input"
+                rows="3"
+                maxlength="500"
+                placeholder="Inclua algum detalhe para este produto (opcional)"
+                [value]="observacao()"
+                (input)="onObsInput($event)"
+              ></textarea>
+            </label>
+          }
+
+          <div class="product__actions">
+            @if (p.semEstoque) {
+              <!-- Serviço / consultoria: sem carrinho, botão WhatsApp principal -->
+              @if (whatsappUrl(); as url) {
+                <a
+                  [href]="url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="product__cta product__cta--whatsapp"
+                >
+                  Fale conosco pelo WhatsApp
+                </a>
+              } @else {
+                <p class="product__help-text">Entre em contato para mais informações.</p>
+              }
+            } @else {
+              <!-- Produto normal: adicionar ao carrinho -->
+              <button
+                type="button"
+                class="product__cta"
+                [disabled]="!selectionHasStock()"
+                (click)="addToCart()"
+              >
+                @if (selectionHasStock()) {
+                  Adicionar ao carrinho
+                } @else {
+                  Produto esgotado
+                }
+              </button>
+            }
+            <a routerLink="/" class="product__btn-outline"> Voltar para a loja </a>
+            <div class="product__help">
+              <p class="product__help-text">Ficou com alguma dúvida?</p>
+              @if (whatsappSellerUrl(); as sellerUrl) {
+                <a
+                  [href]="sellerUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="product__btn-ghost"
+                >Falar com o vendedor</a>
+              } @else {
+                <button type="button" class="product__btn-ghost" (click)="contactSeller()">Falar com o vendedor</button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (state()?.status === 'not-found') {
+      <nav class="breadcrumb" aria-label="Navegação secundária">
+        <a routerLink="/" class="breadcrumb__link">Voltar ao catálogo</a>
+      </nav>
+      <header class="product__header">
+        <h1 id="product-missing-title" class="product__title">Produto não encontrado</h1>
+      </header>
+      <p class="product__status" role="status">Não encontramos um produto com o identificador informado.</p>
+      <p>
+        <a routerLink="/" class="product__fallback-link">Retornar ao catálogo</a>
+      </p>
+    }
+  </article>
+</main>

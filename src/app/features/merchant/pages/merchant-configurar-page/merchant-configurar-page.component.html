@@ -1,0 +1,258 @@
+<main class="cfg-page container" [formGroup]="form">
+
+  <div class="cfg-page__head">
+    <div>
+      <h1 class="cfg-page__title">Configurar loja</h1>
+      <p class="cfg-page__sub">Personalize as informações da sua loja</p>
+    </div>
+    <div class="cfg-page__actions">
+      @if (success()) {
+        <span class="cfg-success">✓ Salvo com sucesso</span>
+      }
+      <button type="button" class="mcat-btn mcat-btn--primary" [disabled]="saving() || form.invalid" (click)="save()">
+        {{ saving() ? 'Salvando…' : 'Salvar alterações' }}
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p class="cfg-loading">Carregando…</p>
+  } @else {
+
+    @if (error()) {
+      <p class="cfg-error" role="alert">{{ error() }}</p>
+    }
+
+    <div class="cfg-sections">
+
+      <!-- Identidade -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Identidade</h2>
+        <div class="cfg-grid">
+          <div class="mcat-field cfg-field--full">
+            <label class="mcat-field__label">Nome da loja <span class="cfg-required">*</span></label>
+            <input class="mcat-field__input"
+                   [class.mcat-field__input--error]="form.controls.nomeLoja.invalid && form.controls.nomeLoja.touched"
+                   formControlName="nomeLoja" placeholder="Ex: Loja da Maria" />
+            @if (form.controls.nomeLoja.touched && form.controls.nomeLoja.errors?.['required']) {
+              <span class="mcat-field__error">Nome da loja é obrigatório.</span>
+            }
+            @if (form.controls.nomeLoja.touched && form.controls.nomeLoja.errors?.['maxlength']) {
+              <span class="mcat-field__error">Máximo de 100 caracteres.</span>
+            }
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Slug (URL pública) <span class="cfg-required">*</span></label>
+            <div class="cfg-slug-wrap">
+              <input class="mcat-field__input"
+                     [class.mcat-field__input--error]="form.controls.slug.invalid && form.controls.slug.touched"
+                     formControlName="slug" placeholder="minha-loja" />
+              <span class="cfg-slug-suffix">.minhaapp.com.br</span>
+            </div>
+            @if (form.controls.slug.touched && form.controls.slug.errors?.['required']) {
+              <span class="mcat-field__error">Slug é obrigatório.</span>
+            }
+            @if (form.controls.slug.touched && form.controls.slug.errors?.['pattern']) {
+              <span class="mcat-field__error">Apenas letras minúsculas, números e hífen (ex: minha-loja).</span>
+            }
+            @if (!form.controls.slug.errors) {
+              <span class="mcat-field__hint">Apenas letras minúsculas, números e hífen</span>
+            }
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Slogan</label>
+            <input class="mcat-field__input" formControlName="slogan" placeholder="Ex: Os melhores preços da cidade" />
+          </div>
+          <div class="mcat-field cfg-field--full">
+            <label class="mcat-field__label">Título do documento (SEO)</label>
+            <input class="mcat-field__input" formControlName="tituloDocumento" placeholder="Ex: Loja da Maria — Moda feminina" />
+          </div>
+        </div>
+
+        <!-- Logo e Favicon -->
+        <div class="cfg-images">
+          <div class="cfg-image-field">
+            <span class="mcat-field__label">Logo</span>
+            <div class="cfg-image-wrap" (click)="pickLogo()">
+              @if (logoPreview()) {
+                <img class="cfg-image-preview" [src]="logoPreview()!" alt="Logo" />
+              } @else {
+                <span class="cfg-image-placeholder">+ Adicionar logo</span>
+              }
+            </div>
+            <span class="mcat-field__hint">PNG, JPG, WebP</span>
+          </div>
+          <div class="cfg-image-field">
+            <span class="mcat-field__label">Favicon</span>
+            <div class="cfg-image-wrap cfg-image-wrap--small" (click)="pickFavicon()">
+              @if (faviconPreview()) {
+                <img class="cfg-image-preview" [src]="faviconPreview()!" alt="Favicon" />
+              } @else {
+                <span class="cfg-image-placeholder">+ Favicon</span>
+              }
+            </div>
+            <span class="mcat-field__hint">PNG, ICO 32×32</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cores -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Cores</h2>
+        <div class="cfg-grid">
+          <div class="mcat-field">
+            <label class="mcat-field__label">Cor primária</label>
+            <div class="cfg-color-row">
+              <input type="color" class="cfg-color-input" formControlName="corPrimaria" />
+              <input class="mcat-field__input cfg-color-text" formControlName="corPrimaria" placeholder="#000000" />
+            </div>
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Cor secundária</label>
+            <div class="cfg-color-row">
+              <input type="color" class="cfg-color-input" formControlName="corSecundaria" />
+              <input class="mcat-field__input cfg-color-text" formControlName="corSecundaria" placeholder="#000000" />
+            </div>
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Destaque do catálogo</label>
+            <div class="cfg-color-row">
+              <input type="color" class="cfg-color-input" formControlName="corDestaqueCatalogo" />
+              <input class="mcat-field__input cfg-color-text" formControlName="corDestaqueCatalogo" placeholder="#000000" />
+            </div>
+          </div>
+          <div class="cfg-color-preview">
+            <button type="button" class="cfg-preview-btn"
+              [style.background]="form.controls.corPrimaria.value"
+              [style.color]="form.controls.corSecundaria.value">
+              Preview do botão
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contato -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Contato e localização</h2>
+        <div class="cfg-grid">
+          <div class="mcat-field">
+            <label class="mcat-field__label">WhatsApp</label>
+            <input class="mcat-field__input" formControlName="whatsapp" placeholder="5511999998888" />
+            <span class="mcat-field__hint">DDI + DDD + número, sem espaços</span>
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Telefone de contato</label>
+            <input class="mcat-field__input" formControlName="telefoneContato" placeholder="(11) 9 9999-8888" />
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">E-mail de contato</label>
+            <input class="mcat-field__input" type="email" formControlName="emailContato" placeholder="contato@minhaloja.com" />
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">CNPJ</label>
+            <input class="mcat-field__input" formControlName="cnpj" placeholder="00.000.000/0001-00" />
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Nome do proprietário</label>
+            <input class="mcat-field__input" formControlName="nomeProprietario" placeholder="Maria Silva" />
+          </div>
+          <div class="mcat-field cfg-field--full">
+            <label class="mcat-field__label">Endereço</label>
+            <input class="mcat-field__input" formControlName="enderecoLinha" placeholder="Rua das Flores, 123 — Centro, São Paulo/SP" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Atendimento -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Atendimento</h2>
+        <div class="cfg-grid">
+          <div class="mcat-field cfg-field--full">
+            <label class="mcat-field__label">Horário (resumo)</label>
+            <input class="mcat-field__input" formControlName="horarioAtendimentoLinha" placeholder="Seg-Sex 9h–18h · Sáb 9h–13h" />
+          </div>
+          <div class="mcat-field cfg-field--full">
+            <label class="mcat-field__label">Horário (detalhes)</label>
+            <textarea class="mcat-field__textarea" rows="3" formControlName="horarioAtendimentoDetalhes"
+              placeholder="Segunda a Sexta das 9h às 18h.&#10;Sábado das 9h às 13h.&#10;Domingo e feriados: fechado."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Rodapé da vitrine -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Rodapé da vitrine</h2>
+        <div class="cfg-grid">
+          <div class="mcat-field">
+            <label class="mcat-field__label">Texto do link WhatsApp</label>
+            <input class="mcat-field__input" formControlName="textoLinkWhatsapp" placeholder="Falar no WhatsApp" />
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Faixa inferior</label>
+            <input class="mcat-field__input" formControlName="faixaInferior" placeholder="© 2026 Loja da Maria. Todos os direitos reservados." />
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Selo — título</label>
+            <input class="mcat-field__input" formControlName="seloTitulo" placeholder="Compra segura" />
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Selo — subtítulo</label>
+            <input class="mcat-field__input" formControlName="seloSubtitulo" placeholder="Seus dados protegidos" />
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Reclamações — texto</label>
+            <input class="mcat-field__input" formControlName="reclamacoesTexto" placeholder="Reclamações" />
+          </div>
+          <div class="mcat-field">
+            <label class="mcat-field__label">Reclamações — URL</label>
+            <input class="mcat-field__input" formControlName="reclamacoesUrl" placeholder="https://reclameaqui.com.br/..." />
+          </div>
+        </div>
+
+        <!-- Formas de pagamento -->
+        <div class="mcat-field">
+          <label class="mcat-field__label">Formas de pagamento aceitas</label>
+          <div class="cfg-chips">
+            @for (forma of FORMAS_PAGAMENTO; track forma) {
+              <button type="button" class="cfg-chip" [class.cfg-chip--active]="hasForma(forma)" (click)="toggleForma(forma)">
+                {{ forma }}
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Redes sociais -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Redes sociais</h2>
+        <div class="cfg-redes">
+          @for (rede of redesArr.controls; track $index) {
+            <div class="cfg-rede-row" [formGroup]="redeAt($index)">
+              <input class="mcat-field__input" formControlName="rotulo" placeholder="Instagram" />
+              <input class="mcat-field__input cfg-rede-url" formControlName="url" placeholder="https://instagram.com/minhaloja" />
+              <button type="button" class="cfg-rede-remove" (click)="removeRede($index)" aria-label="Remover">✕</button>
+            </div>
+          }
+          @if (redesLength === 0) {
+            <p class="cfg-empty-redes">Nenhuma rede adicionada.</p>
+          }
+          <button type="button" class="mcat-add-btn" (click)="addRede()">+ Adicionar rede social</button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Botão salvar inferior -->
+    <div class="cfg-footer">
+      @if (error()) { <p class="cfg-error">{{ error() }}</p> }
+      @if (form.invalid && form.touched) {
+        <p class="cfg-error" role="alert">Corrija os campos obrigatórios antes de salvar.</p>
+      }
+      <button type="button" class="mcat-btn mcat-btn--primary" [disabled]="saving() || form.invalid" (click)="save()">
+        {{ saving() ? 'Salvando…' : 'Salvar alterações' }}
+      </button>
+    </div>
+
+  }
+
+</main>

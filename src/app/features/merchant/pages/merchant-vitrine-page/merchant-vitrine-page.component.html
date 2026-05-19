@@ -1,0 +1,52 @@
+<div class="vit-page">
+
+  <!-- ── Topbar do merchant ─────────────────────────────────────────────── -->
+  <div class="vit-topbar container">
+    <div>
+      <h1 class="vit-topbar__title">Vitrine</h1>
+      <p class="vit-topbar__sub">Prévia exata de como sua loja aparece para os clientes</p>
+    </div>
+    <a href="/" target="_blank" rel="noopener" class="mcat-btn mcat-btn--ghost vit-topbar__ext">
+      <app-icon name="external-link" [size]="15"></app-icon>
+      Ver loja pública
+    </a>
+  </div>
+
+  @if (loading()) {
+    <p class="vit-loading container">Carregando prévia…</p>
+  } @else {
+
+    <!-- ── Preview: moldura + componentes reais ───────────────────────────── -->
+    <div class="vit-frame container">
+
+      <!-- Botões de edição — acima do preview, sempre visíveis -->
+      <div class="vit-edit-bar">
+        <a routerLink="/merchant/loja/configurar" class="vit-edit-btn">
+          <app-icon name="edit" [size]="13"></app-icon>
+          Identidade e cores
+        </a>
+        <a routerLink="/merchant/loja/cadastrar/categorias" class="vit-edit-btn">
+          <app-icon name="edit" [size]="13"></app-icon>
+          Categorias
+        </a>
+        <a routerLink="/merchant/loja/gerenciar/produtos" class="vit-edit-btn">
+          <app-icon name="edit" [size]="13"></app-icon>
+          Produtos
+        </a>
+        <a routerLink="/merchant/loja/configurar" class="vit-edit-btn" fragment="rodape">
+          <app-icon name="edit" [size]="13"></app-icon>
+          Rodapé
+        </a>
+      </div>
+
+      <!-- O preview real — pointer-events bloqueado para não navegar -->
+      <div class="vit-preview">
+        <app-vitrine-header />
+        <app-catalog-page />
+        <app-vitrine-footer />
+      </div>
+
+    </div>
+  }
+
+</div>

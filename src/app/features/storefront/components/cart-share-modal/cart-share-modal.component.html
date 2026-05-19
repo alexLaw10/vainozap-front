@@ -1,0 +1,34 @@
+@if (open()) {
+  <div class="cart-share" role="dialog" aria-modal="true" aria-labelledby="cart-share-title">
+    <div class="cart-share__backdrop" tabindex="-1" (click)="fechar()"></div>
+    <div class="cart-share__panel" (click)="$event.stopPropagation()">
+      <h2 id="cart-share-title" class="cart-share__title">Compartilhar carrinho de compras</h2>
+      <div class="cart-share__row" role="group" aria-label="Opções de compartilhamento">
+        <button type="button" class="cart-share__opt" (click)="shareWhatsApp.emit()">
+          <span class="cart-share__circle cart-share__circle--wa" aria-hidden="true">
+            <app-icon name="brand-whatsapp" [size]="26"></app-icon>
+          </span>
+          <span class="cart-share__label">Whatsapp</span>
+        </button>
+        <button type="button" class="cart-share__opt" (click)="shareFacebook.emit()">
+          <span class="cart-share__circle cart-share__circle--fb" aria-hidden="true">
+            <app-icon name="brand-facebook" [size]="22"></app-icon>
+          </span>
+          <span class="cart-share__label">Facebook</span>
+        </button>
+        <button type="button" class="cart-share__opt" (click)="shareTelegram.emit()">
+          <span class="cart-share__circle cart-share__circle--tg" aria-hidden="true">
+            <app-icon name="brand-telegram" [size]="24"></app-icon>
+          </span>
+          <span class="cart-share__label">Telegram</span>
+        </button>
+        <button type="button" class="cart-share__opt" (click)="copyLink.emit()">
+          <span class="cart-share__circle cart-share__circle--copy" aria-hidden="true">
+            <app-icon name="copy" [size]="22"></app-icon>
+          </span>
+          <span class="cart-share__label">Copiar link</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}

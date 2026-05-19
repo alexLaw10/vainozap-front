@@ -1,0 +1,109 @@
+.cart-share {
+  position: fixed;
+  inset: 0;
+  z-index: 1155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(var(--space-4), env(safe-area-inset-top))
+    max(var(--space-4), env(safe-area-inset-right))
+    max(var(--space-4), env(safe-area-inset-bottom))
+    max(var(--space-4), env(safe-area-inset-left));
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.cart-share__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(15 23 42 / 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.cart-share__panel {
+  position: relative;
+  z-index: 1;
+  width: min(26rem, calc(100vw - 1.5rem));
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-radius: 1.35rem;
+  background: var(--color-surface-base);
+  box-shadow: 0 1rem 2.5rem rgb(15 23 42 / 0.14);
+  color: var(--color-text-primary);
+}
+
+.cart-share__title {
+  margin: 0 0 var(--space-5);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  line-height: var(--line-height-tight);
+}
+
+.cart-share__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.cart-share__opt {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  touch-action: manipulation;
+
+  &:hover {
+    background: var(--color-neutral-100);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.cart-share__circle {
+  display: flex;
+  width: 3.35rem;
+  height: 3.35rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  color: var(--color-neutral-0);
+
+  &--wa {
+    background: var(--color-brand-whatsapp);
+  }
+
+  &--fb {
+    background: var(--color-brand-facebook);
+  }
+
+  &--tg {
+    background: var(--color-brand-telegram);
+  }
+
+  &--copy {
+    background: var(--color-brand-telegram-soft);
+    color: var(--color-neutral-0);
+  }
+}
+
+.cart-share__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-align: center;
+  line-height: 1.2;
+}

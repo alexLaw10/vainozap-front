@@ -1,0 +1,14 @@
+/* Jest + jest-preset-angular */
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["jest"],
+    "isolatedModules": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts", "setup-jest.ts"],
+  "exclude": []
+}

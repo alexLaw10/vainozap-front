@@ -1,0 +1,329 @@
+@use '../merchant-crud' as *;
+
+.vnd-page {
+  padding-block: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    margin: 0 0 var(--space-1);
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__sub {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+}
+
+// ── Seletor de período ────────────────────────────────────────────────────────
+
+.vnd-periodos {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.vnd-periodo-btn {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: background .15s, color .15s;
+
+  &:hover { background: var(--color-neutral-100); }
+
+  &--active {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border-color: var(--color-primary);
+  }
+}
+
+// ── KPIs ─────────────────────────────────────────────────────────────────────
+
+.vnd-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--space-4);
+}
+
+.vnd-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-base);
+
+  &--pending {
+    background: var(--color-surface-subtle);
+  }
+
+  &__label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  &__value {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+  }
+
+  &__sub {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+}
+
+// ── Seção ─────────────────────────────────────────────────────────────────────
+
+.vnd-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  &--card {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-secondary);
+  }
+}
+
+// ── Gráfico de barras (vertical) ──────────────────────────────────────────────
+
+.vnd-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 160px;
+  overflow-x: auto;
+  padding-bottom: var(--space-5);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: var(--space-5);
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--color-border-subtle);
+  }
+}
+
+.vnd-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 24px;
+  max-width: 48px;
+  height: 100%;
+  justify-content: flex-end;
+  cursor: default;
+
+  &:hover .vnd-bar {
+    background: var(--color-primary-hover);
+  }
+}
+
+.vnd-bar {
+  width: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: background .15s;
+  min-height: 2px;
+}
+
+.vnd-bar__label {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+// ── Tabelas ───────────────────────────────────────────────────────────────────
+
+.vnd-tables {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+
+  > * { flex: 1; min-width: min(100%, 280px); }
+}
+
+// ── Ranking de produtos ───────────────────────────────────────────────────────
+
+.vnd-ranking {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.vnd-ranking__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.vnd-ranking__pos {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-neutral-200);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vnd-ranking__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vnd-ranking__nome {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vnd-bar-h-wrap {
+  height: 6px;
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.vnd-bar-h {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+
+.vnd-ranking__nums {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.vnd-ranking__receita {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.vnd-ranking__qty {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+// ── Formas de pagamento ───────────────────────────────────────────────────────
+
+.vnd-pagamento {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.vnd-pagamento__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  &:last-child { border-bottom: none; }
+}
+
+.vnd-pagamento__forma {
+  flex: 1;
+  font-weight: 500;
+}
+
+.vnd-pagamento__qty {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.vnd-pagamento__total {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// ── Estados ───────────────────────────────────────────────────────────────────
+
+.vnd-empty {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--space-12) 0;
+}
+
+.vnd-empty-inline {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.vnd-error {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-danger-muted);
+  border-radius: var(--radius-md);
+}

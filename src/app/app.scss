@@ -1,0 +1,138 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.app-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  background: linear-gradient(
+    165deg,
+    var(--color-surface-subtle) 0%,
+    var(--color-neutral-100) 45%,
+    var(--color-surface-base) 100%
+  );
+  color: var(--color-text-secondary);
+  opacity: 1;
+  transition: opacity 0.42s ease, visibility 0s linear 0s;
+  visibility: visible;
+
+  &--fade {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.42s ease, visibility 0s linear 0.42s;
+    pointer-events: none;
+  }
+}
+
+.app-boot__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.app-boot__cart-wrap {
+  width: min(9rem, 42vw);
+  aspect-ratio: 1.15;
+  color: var(--color-neutral-700);
+}
+
+.app-boot__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.app-boot__stroke {
+  color: var(--color-neutral-700);
+}
+
+/* Nível sobe de baixo para cima (carrinho a encher) */
+.app-boot__liquid {
+  transform-origin: 60px 86px;
+  transform: scaleY(0);
+  animation: app-boot-fill-up 1.05s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-delay: 0.12s;
+}
+
+@keyframes app-boot-fill-up {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Bolinhas (itens) a cair para o cesto */
+.app-boot__dot {
+  opacity: 0;
+  animation: app-boot-drop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.app-boot__dot--1 {
+  animation-delay: 0.35s;
+}
+
+.app-boot__dot--2 {
+  animation-delay: 0.52s;
+}
+
+.app-boot__dot--3 {
+  animation-delay: 0.69s;
+}
+
+@keyframes app-boot-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(38px) scale(0.35);
+  }
+}
+
+.app-boot__text {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-boot__liquid {
+    animation-duration: 0.01ms;
+    animation-delay: 0s;
+    transform: scaleY(1);
+  }
+
+  .app-boot__dot {
+    animation: none;
+    opacity: 0;
+  }
+
+  .app-boot {
+    transition-duration: 0.15s;
+  }
+
+  .app-boot--fade {
+    transition-duration: 0.15s;
+  }
+}

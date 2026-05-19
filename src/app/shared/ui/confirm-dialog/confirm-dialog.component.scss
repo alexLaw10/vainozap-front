@@ -1,0 +1,61 @@
+.ui-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.45);
+  z-index: 100;
+}
+
+.ui-confirm {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  background: var(--color-surface-base);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.2);
+  padding: var(--space-6);
+  width: min(90vw, 360px);
+  text-align: center;
+
+  &__title {
+    margin: 0 0 var(--space-2);
+    font-size: var(--font-size-base);
+  }
+
+  &__text {
+    margin: 0 0 var(--space-5);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-relaxed, 1.6);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    border: 1px solid transparent;
+    cursor: pointer;
+
+    &--ghost {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border-color: var(--color-border-strong);
+    }
+
+    &--danger {
+      background: var(--color-danger);
+      color: var(--color-on-primary);
+    }
+  }
+}

@@ -1,0 +1,274 @@
+@use '../auth-shared' as auth;
+
+// ── Wide card (step 2 — planos) ───────────────────────────────────────────────
+
+.auth-page__card--wide {
+  max-width: 34rem;
+}
+
+// ── Step indicator ────────────────────────────────────────────────────────────
+
+.cad-steps {
+  display: flex;
+  align-items: center;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+
+    &--active,
+    &--done {
+      color: var(--color-text-primary);
+
+      .cad-steps__num {
+        background: var(--color-auth-accent);
+        color: var(--color-on-primary);
+        border-color: var(--color-auth-accent);
+      }
+    }
+  }
+
+  &__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-border-subtle);
+    background: var(--color-surface-subtle);
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+
+  &__label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  &__line {
+    flex: 1;
+    height: 1px;
+    min-width: var(--space-4);
+    background: var(--color-border-subtle);
+    margin: 0 var(--space-3);
+  }
+}
+
+// ── Heading block (título + subtítulo juntos) ─────────────────────────────────
+
+.cad-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+// ── Step 1 — two-column rows ──────────────────────────────────────────────────
+
+.auth-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+
+  @media (max-width: 30rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auth-form__separator {
+  height: 1px;
+  background: var(--color-border-subtle);
+  margin-block: var(--space-1);
+}
+
+// ── Slug field ────────────────────────────────────────────────────────────────
+
+.auth-form__slug-wrap {
+  display: flex;
+  align-items: stretch;
+}
+
+.auth-form__slug-prefix {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: var(--color-neutral-100);
+  border: 1.5px solid var(--color-border-subtle);
+  border-right: none;
+  border-radius: 0.625rem 0 0 0.625rem;
+  white-space: nowrap;
+}
+
+.auth-form__input--slug {
+  border-radius: 0 0.625rem 0.625rem 0;
+  flex: 1;
+}
+
+// ── Ghost btn variant ─────────────────────────────────────────────────────────
+
+.auth-form__btn--ghost {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-secondary);
+  border: 1.5px solid var(--color-border-subtle);
+  flex: 0 0 auto;
+  width: auto;
+  padding-inline: var(--space-4);
+
+  &:hover:not(:disabled) {
+    background: var(--color-neutral-100);
+  }
+}
+
+// ── Plans layout ──────────────────────────────────────────────────────────────
+
+.cad-plans {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+// ── Beta card ─────────────────────────────────────────────────────────────────
+
+.cad-plan-card {
+  --plan-color: var(--color-success);
+
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: color-mix(in srgb, var(--plan-color) 5%, white);
+  border: 2px solid var(--plan-color);
+  border-radius: 1rem;
+  text-align: left;
+  cursor: default;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--plan-color) 10%, transparent);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.2rem 0.65rem;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    border-radius: 2rem;
+    background: var(--plan-color);
+    color: var(--color-on-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--plan-color);
+    color: var(--color-on-primary);
+  }
+
+  &__nome {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__preco {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  &__preco-valor {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--plan-color);
+    line-height: 1;
+  }
+
+  &__preco-per {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  &__desc {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+}
+
+// ── Locked plans row ──────────────────────────────────────────────────────────
+
+.cad-plans-locked {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  &__label {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+}
+
+.cad-plan-locked {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface-subtle);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: 0.625rem;
+  opacity: 0.55;
+
+  &__icon {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+  }
+
+  &__nome {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+}
+
+// ── Plan footer actions ───────────────────────────────────────────────────────
+
+.cad-plan-actions {
+  display: flex;
+  gap: var(--space-3);
+
+  .auth-form__btn:last-child {
+    flex: 1;
+  }
+}

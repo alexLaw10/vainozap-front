@@ -1,0 +1,150 @@
+@use '../merchant-crud' as *;
+
+.ord-page {
+  padding-block: var(--space-8);
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    margin: 0 0 var(--space-1);
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__sub {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+}
+
+// ── Filtros ───────────────────────────────────────────────────────────────────
+
+.ord-filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.ord-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+
+  &:hover { background: var(--color-neutral-100); }
+
+  &--active {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border-color: var(--color-primary);
+
+    .ord-filter-count { background: rgb(255 255 255 / 0.25); color: inherit; }
+  }
+}
+
+.ord-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-neutral-200);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: 1;
+}
+
+// ── Busca ─────────────────────────────────────────────────────────────────────
+
+.ord-search-bar {
+  margin-bottom: var(--space-5);
+  max-width: 400px;
+}
+
+.ord-search-input {
+  width: 100%;
+}
+
+// ── Linha ─────────────────────────────────────────────────────────────────────
+
+.ord-row {
+  cursor: pointer;
+}
+
+// ── Cliente ───────────────────────────────────────────────────────────────────
+
+.ord-cliente {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &__nome { font-weight: 500; }
+
+  &__tel {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+}
+
+// ── Badges de status ──────────────────────────────────────────────────────────
+
+.ord-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  white-space: nowrap;
+
+  &--waiting   { background: var(--color-amber-muted); color: var(--color-on-amber-muted); }
+  &--not-paid  { background: var(--color-danger-muted); color: var(--color-on-danger-muted); }
+  &--new       { background: var(--color-blue-muted); color: var(--color-on-blue-muted); }
+  &--preparing { background: var(--color-violet-muted); color: var(--color-on-violet-muted); }
+  &--sent      { background: var(--color-info-muted); color: var(--color-info-emphasis); }
+  &--delivered { background: var(--color-success-muted); color: var(--color-on-success-muted); }
+  &--cancelled { background: var(--color-chip-neutral-bg); color: var(--color-chip-neutral-fg); }
+}
+
+// ── Estado vazio ──────────────────────────────────────────────────────────────
+
+.ord-empty {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.ord-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-16) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  p { margin: 0; }
+}

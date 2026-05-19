@@ -1,0 +1,137 @@
+@if (open()) {
+  <div
+    class="cart-endereco"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cart-endereco-title"
+    [style.--cart-endereco-primary]="corPrimaria()"
+  >
+    <div class="cart-endereco__backdrop" tabindex="-1" (click)="onBackdropOrVoltar()"></div>
+    <div class="cart-endereco__panel" (click)="$event.stopPropagation()">
+      <h2 id="cart-endereco-title" class="cart-endereco__title">Adicionar endereço</h2>
+
+      <div class="cart-endereco__field">
+        <div class="sf-pill-wrap">
+          <input
+            id="cart-end-cep"
+            class="sf-pill-input"
+            type="text"
+            inputmode="numeric"
+            autocomplete="postal-code"
+            placeholder="CEP"
+            maxlength="9"
+            [value]="formatCepMask(addrCepDigits())"
+            (input)="onAddrCep($event)"
+          />
+        </div>
+        <div class="cart-endereco__cep-help">
+          <span class="cart-endereco__cep-icon" aria-hidden="true">
+            <app-icon name="home" [size]="12"></app-icon>
+          </span>
+          <span class="cart-endereco__cep-help-text">Não sabe seu CEP?</span>
+          <button type="button" class="cart-endereco__consult-btn" (click)="abrirConsultaCep()">Consulte Aqui</button>
+        </div>
+      </div>
+
+      <div class="cart-endereco__field">
+        <div class="sf-pill-wrap">
+          <input
+            id="cart-end-rua"
+            class="sf-pill-input sf-pill-input--with-counter"
+            type="text"
+            autocomplete="street-address"
+            placeholder="Rua/Avenida"
+            maxlength="50"
+            [value]="addrLogradouro()"
+            (input)="onAddrLogradouro($event)"
+          />
+          <span class="sf-char-count">{{ addrLogradouro().length }}/50</span>
+        </div>
+      </div>
+
+      <div class="cart-endereco__grid2">
+        <div class="cart-endereco__field">
+          <div class="sf-pill-wrap">
+            <input
+              id="cart-end-num"
+              class="sf-pill-input sf-pill-input--with-counter"
+              type="text"
+              inputmode="numeric"
+              autocomplete="address-line2"
+              placeholder="Número"
+              maxlength="6"
+              [value]="addrNumero()"
+              (input)="onAddrNumero($event)"
+            />
+            <span class="sf-char-count">{{ addrNumero().length }}/6</span>
+          </div>
+        </div>
+        <div class="cart-endereco__field">
+          <div class="sf-pill-wrap">
+            <input
+              id="cart-end-bairro"
+              class="sf-pill-input sf-pill-input--with-counter"
+              type="text"
+              autocomplete="address-level2"
+              placeholder="Bairro"
+              maxlength="30"
+              [value]="addrBairro()"
+              (input)="onAddrBairro($event)"
+            />
+            <span class="sf-char-count">{{ addrBairro().length }}/30</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cart-endereco__grid2">
+        <div class="cart-endereco__field">
+          <div class="sf-select-wrap">
+            <select id="cart-end-uf" class="sf-pill-select" [value]="addrUf()" (change)="onAddrUf($event)">
+              <option value="">UF</option>
+              @for (uf of ufsBr; track uf) {
+                <option [value]="uf">{{ uf }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="cart-endereco__field">
+          <div class="sf-pill-wrap">
+            <input
+              id="cart-end-cidade"
+              class="sf-pill-input"
+              type="text"
+              autocomplete="address-level1"
+              placeholder="Cidade"
+              maxlength="60"
+              [value]="addrCidade()"
+              (input)="onAddrCidade($event)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="cart-endereco__field">
+        <div class="sf-pill-wrap">
+          <input
+            id="cart-end-comp"
+            class="sf-pill-input sf-pill-input--with-counter"
+            type="text"
+            autocomplete="off"
+            placeholder="Complemento"
+            maxlength="20"
+            [value]="addrComplemento()"
+            (input)="onAddrComplemento($event)"
+          />
+          <span class="sf-char-count">{{ addrComplemento().length }}/20</span>
+        </div>
+      </div>
+
+      @if (enderecoSalvarErro(); as err) {
+        <p class="cart-endereco__erro" role="alert">{{ err }}</p>
+      }
+
+      <button type="button" class="cart-endereco__submit" (click)="salvarEnderecoModal()">Salvar endereço</button>
+      <button type="button" class="cart-endereco__voltar" (click)="onBackdropOrVoltar()">Voltar</button>
+    </div>
+  </div>
+}

@@ -1,0 +1,135 @@
+<div class="vitrine-header container">
+  <div class="vitrine-header__brand-block">
+    <div class="vitrine-header__brand-row">
+      <a
+        routerLink="/"
+        class="vitrine-header__logo"
+        [attr.aria-label]="context.tenant().nomeLoja + ' — início'"
+      >
+        @if (context.tenant().logoUrl) {
+          <img
+            class="vitrine-header__logo-img"
+            [src]="context.tenant().logoUrl!"
+            alt=""
+            width="48"
+            height="48"
+            decoding="async"
+          />
+        }
+        <span
+          class="vitrine-header__logo-text"
+          [class.visually-hidden]="!!context.tenant().logoUrl"
+          >{{ context.tenant().nomeLoja }}</span
+        >
+      </a>
+      @if (context.tenant().slogan) {
+        <p class="vitrine-header__slogan">{{ context.tenant().slogan }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="vitrine-header__actions">
+    <form class="vitrine-header__search" role="search" (submit)="$event.preventDefault()">
+      <label class="visually-hidden" for="vitrine-search">Buscar produtos</label>
+      <span class="vitrine-header__search-icon" aria-hidden="true">
+        <app-icon name="search" [size]="18"></app-icon>
+      </span>
+      <input
+        id="vitrine-search"
+        type="search"
+        name="q"
+        class="vitrine-header__search-input"
+        placeholder="Faça sua busca"
+        autocomplete="off"
+      />
+    </form>
+
+    <div class="vitrine-header__toolbar" role="toolbar" aria-label="Atalhos da loja">
+      <button
+        type="button"
+        class="vitrine-header__icon-btn vitrine-header__icon-btn--filters-desktop"
+        aria-label="Abrir filtros"
+        [attr.aria-expanded]="filters.panelOpen()"
+        aria-haspopup="dialog"
+        (click)="filters.openPanel()"
+      >
+        <app-icon name="filter" [size]="20"></app-icon>
+      </button>
+      <a
+        routerLink="/"
+        fragment="rodape"
+        class="vitrine-header__icon-stack"
+        aria-label="Informações da loja"
+      >
+        <app-icon name="info" [size]="20"></app-icon>
+        <span class="vitrine-header__icon-caption">info</span>
+      </a>
+      <a
+        routerLink="/cart"
+        class="vitrine-header__icon-btn vitrine-header__icon-btn--link vitrine-header__icon-btn--cart vitrine-header__cart"
+        aria-label="Carrinho de compras"
+      >
+        <app-icon name="cart" [size]="20"></app-icon>
+        <span class="vitrine-header__cart-badge" aria-hidden="true">{{ cartCount() }}</span>
+      </a>
+      <button
+        type="button"
+        class="vitrine-header__icon-btn vitrine-header__menu"
+        aria-label="Abrir categorias"
+        aria-haspopup="dialog"
+        [attr.aria-expanded]="catalogUi.categoryMenuOpen()"
+        (click)="openCategoryMenu()"
+      >
+        <app-icon name="menu" [size]="20"></app-icon>
+      </button>
+    </div>
+  </div>
+
+  <a routerLink="/merchant" class="vitrine-header__staff visually-hidden-focusable">Área do lojista</a>
+</div>
+
+@if (catalogUi.categoryMenuOpen()) {
+  <div class="vitrine-cat-menu" role="dialog" aria-modal="true" aria-labelledby="vitrine-cat-menu-title">
+    <div class="vitrine-cat-menu__backdrop" tabindex="-1" (click)="closeCategoryMenu()"></div>
+    <div class="vitrine-cat-menu__panel" (click)="$event.stopPropagation()">
+      <header class="vitrine-cat-menu__head">
+        <h2 id="vitrine-cat-menu-title" class="vitrine-cat-menu__title">Categorias</h2>
+        <button type="button" class="vitrine-cat-menu__close" aria-label="Fechar menu de categorias" (click)="closeCategoryMenu()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </header>
+      <ul class="vitrine-cat-menu__list" role="list">
+        <li role="listitem">
+          <button
+            type="button"
+            class="vitrine-cat-menu__row"
+            [class.vitrine-cat-menu__row--active]="isAllCategoriesRowActive()"
+            (click)="chooseCategory(null)"
+          >
+            <span class="vitrine-cat-menu__thumb vitrine-cat-menu__thumb--all" aria-hidden="true">Todos</span>
+            <span class="vitrine-cat-menu__label">Todos</span>
+          </button>
+        </li>
+        @for (c of categories(); track c.id) {
+          <li role="listitem">
+            <button
+              type="button"
+              class="vitrine-cat-menu__row"
+              [class.vitrine-cat-menu__row--active]="isCategoryRowActive(c.id)"
+              (click)="chooseCategory(c.id)"
+            >
+              @if (c.imagemUrl) {
+                <span class="vitrine-cat-menu__thumb-wrap" aria-hidden="true">
+                  <img class="vitrine-cat-menu__img" [src]="c.imagemUrl" alt="" width="48" height="48" decoding="async" />
+                </span>
+              } @else {
+                <span class="vitrine-cat-menu__thumb vitrine-cat-menu__thumb--fallback" aria-hidden="true">{{ c.nome.charAt(0) }}</span>
+              }
+              <span class="vitrine-cat-menu__label">{{ c.nome }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+}

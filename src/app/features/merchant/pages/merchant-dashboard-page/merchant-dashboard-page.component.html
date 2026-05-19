@@ -1,0 +1,153 @@
+<main class="merchant-dash">
+  <div class="merchant-dash__top container">
+    <div class="merchant-dash__hero">
+      <p class="merchant-dash__eyebrow">{{ saudacao() }}</p>
+      <h1 class="merchant-dash__title">{{ ctx.shopLabel() }}</h1>
+      <p class="merchant-dash__lead">
+        Acompanhe o desempenho da loja em tempo real.
+      </p>
+    </div>
+
+    <section class="merchant-dash__section" aria-labelledby="merchant-dash-resumo">
+      <div class="merchant-dash__section-head">
+        <h2 id="merchant-dash-resumo" class="merchant-dash__h2">Resumo de hoje</h2>
+      </div>
+
+      <ul class="merchant-dash__stats" role="list">
+        <li class="merchant-dash__stat">
+          <span class="merchant-dash__stat-label">Pedidos hoje</span>
+          @if (loading()) {
+            <span class="merchant-dash__stat-value merchant-dash__stat-value--muted">…</span>
+          } @else if (resumo(); as r) {
+            <span class="merchant-dash__stat-value" [class.merchant-dash__stat-value--muted]="r.pedidosHoje === 0">
+              {{ r.pedidosHoje }}
+            </span>
+          } @else {
+            <span class="merchant-dash__stat-value merchant-dash__stat-value--muted">—</span>
+          }
+        </li>
+
+        <li class="merchant-dash__stat">
+          <span class="merchant-dash__stat-label">Em aberto</span>
+          @if (loading()) {
+            <span class="merchant-dash__stat-value merchant-dash__stat-value--muted">…</span>
+          } @else if (resumo(); as r) {
+            <span class="merchant-dash__stat-value"
+              [class.merchant-dash__stat-value--muted]="r.pedidosPendentes === 0"
+              [class.merchant-dash__stat-value--alert]="r.pedidosPendentes > 0">
+              {{ r.pedidosPendentes }}
+            </span>
+          } @else {
+            <span class="merchant-dash__stat-value merchant-dash__stat-value--muted">—</span>
+          }
+        </li>
+
+        <li class="merchant-dash__stat">
+          <span class="merchant-dash__stat-label">Vendas (mês)</span>
+          @if (loading()) {
+            <span class="merchant-dash__stat-value merchant-dash__stat-value--muted">…</span>
+          } @else if (resumo(); as r) {
+            <span class="merchant-dash__stat-value" [class.merchant-dash__stat-value--muted]="r.vendasMes === 0">
+              {{ currency(r.vendasMes) }}
+            </span>
+          } @else {
+            <span class="merchant-dash__stat-value merchant-dash__stat-value--muted">—</span>
+          }
+        </li>
+
+        <li class="merchant-dash__stat">
+          <span class="merchant-dash__stat-label">Visitas na vitrine</span>
+          <span class="merchant-dash__stat-value merchant-dash__stat-value--muted">Em breve</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="merchant-dash__section" aria-labelledby="merchant-dash-atalhos">
+      <div class="merchant-dash__section-head">
+        <h2 id="merchant-dash-atalhos" class="merchant-dash__h2">Atalhos</h2>
+        <p class="merchant-dash__hint">O que você mais usa, sempre à mão.</p>
+      </div>
+      <ul class="merchant-dash__actions" role="list">
+        <li>
+          <a routerLink="/merchant/orders/pedidos" class="merchant-dash__action">
+            <span class="merchant-dash__action-icon" aria-hidden="true">
+              <app-icon name="file-text" [size]="22"></app-icon>
+            </span>
+            <span class="merchant-dash__action-text">
+              <span class="merchant-dash__action-title">Pedidos</span>
+              <span class="merchant-dash__action-desc">Ver e tratar encomendas</span>
+            </span>
+            <span class="merchant-dash__action-chev" aria-hidden="true">›</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/merchant/orders/vendas" class="merchant-dash__action">
+            <span class="merchant-dash__action-icon" aria-hidden="true">
+              <app-icon name="currency" [size]="22"></app-icon>
+            </span>
+            <span class="merchant-dash__action-text">
+              <span class="merchant-dash__action-title">Vendas</span>
+              <span class="merchant-dash__action-desc">Receita, ticket médio e top produtos</span>
+            </span>
+            <span class="merchant-dash__action-chev" aria-hidden="true">›</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/merchant/loja/gerenciar/produtos" class="merchant-dash__action">
+            <span class="merchant-dash__action-icon" aria-hidden="true">
+              <app-icon name="package" [size]="22"></app-icon>
+            </span>
+            <span class="merchant-dash__action-text">
+              <span class="merchant-dash__action-title">Produtos</span>
+              <span class="merchant-dash__action-desc">Catálogo e preços</span>
+            </span>
+            <span class="merchant-dash__action-chev" aria-hidden="true">›</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/" class="merchant-dash__action merchant-dash__action--outline">
+            <span class="merchant-dash__action-icon" aria-hidden="true">
+              <app-icon name="home" [size]="22"></app-icon>
+            </span>
+            <span class="merchant-dash__action-text">
+              <span class="merchant-dash__action-title">Ver vitrine</span>
+              <span class="merchant-dash__action-desc">Como o cliente vê a loja</span>
+            </span>
+            <span class="merchant-dash__action-chev" aria-hidden="true">›</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/merchant/loja/configurar" class="merchant-dash__action">
+            <span class="merchant-dash__action-icon" aria-hidden="true">
+              <app-icon name="settings" [size]="22"></app-icon>
+            </span>
+            <span class="merchant-dash__action-text">
+              <span class="merchant-dash__action-title">Configurar</span>
+              <span class="merchant-dash__action-desc">Preferências da loja e operação</span>
+            </span>
+            <span class="merchant-dash__action-chev" aria-hidden="true">›</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/merchant/contas" class="merchant-dash__action">
+            <span class="merchant-dash__action-icon" aria-hidden="true">
+              <app-icon name="user" [size]="22"></app-icon>
+            </span>
+            <span class="merchant-dash__action-text">
+              <span class="merchant-dash__action-title">Contas</span>
+              <span class="merchant-dash__action-desc">Perfil, equipe e ajuda</span>
+            </span>
+            <span class="merchant-dash__action-chev" aria-hidden="true">›</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="merchant-dash__panel" aria-labelledby="merchant-dash-feed">
+      <h2 id="merchant-dash-feed" class="merchant-dash__panel-title">Seu dia</h2>
+      <p class="merchant-dash__panel-empty">
+        Alertas, novidades e lembretes aparecerão aqui em breve.
+      </p>
+    </section>
+  </div>
+</main>

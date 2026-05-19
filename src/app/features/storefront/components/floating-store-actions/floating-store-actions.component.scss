@@ -1,0 +1,54 @@
+.floating-actions {
+  position: fixed;
+  right: max(var(--space-4), env(safe-area-inset-right));
+  bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    background: var(--color-surface-base);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+
+    &:hover {
+      background: var(--color-neutral-100);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) solid var(--color-focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
+  &__whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: var(--radius-full);
+    background: var(--color-brand-whatsapp);
+    color: var(--color-on-primary);
+    box-shadow: var(--shadow-lg);
+
+    &:hover {
+      filter: brightness(1.05);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) solid var(--color-focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+}

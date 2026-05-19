@@ -1,0 +1,91 @@
+<main id="storefront-main" class="cart-page-root" tabindex="-1">
+  <div
+    class="cart-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cart-dialog-title"
+    aria-describedby="cart-dialog-desc"
+    [style.--cart-sky]="context.tenant().corSecundaria"
+    [style.--cart-sky-deep]="context.tenant().corPrimaria"
+  >
+    <div class="cart-modal__backdrop" tabindex="-1" (click)="fechar()"></div>
+
+    <div class="cart-modal__panel" (click)="$event.stopPropagation()">
+      <div class="cart-modal__grid">
+        <section class="cart-modal__form-card" aria-labelledby="cart-dialog-title">
+          <button type="button" class="cart-modal__close" aria-label="Fechar carrinho" (click)="fechar()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+
+          <p id="cart-dialog-desc" class="visually-hidden">Formulário para concluir o pedido com dados e pagamento.</p>
+
+          <app-cart-checkout-form
+            [corSecundaria]="context.tenant().corSecundaria"
+            [nome]="nome()"
+            [cpfCnpj]="cpfCnpj()"
+            [telefone]="telefone()"
+            [formaPagamento]="formaPagamento()"
+            [cartTrocoPara]="cartTrocoPara()"
+            [cartModoCartao]="cartModoCartao()"
+            [cartParcelas]="cartParcelas()"
+            [cartBandeira]="cartBandeira()"
+            (nomeChange)="nome.set($event)"
+            (cpfChange)="cpfCnpj.set($event)"
+            (telChange)="telefone.set($event)"
+            (pagamentoChange)="onPagamento($event)"
+            (trocoChange)="cartTrocoPara.set($event)"
+            (modoCartaoChange)="onModoCartao($event)"
+            (parcelasChange)="onParcelas($event)"
+            (bandeiraChange)="onBandeira($event)"
+          />
+        </section>
+
+        <app-cart-order-summary
+          [entrega]="entrega()"
+          [observacoes]="observacoes()"
+          [podeFinalizar]="podeFinalizar() && !submittingOrder()"
+          [itemMenuLine]="itemMenuLine()"
+          (shareClick)="abrirCompartilharCarrinho()"
+          (itemMenuOpen)="onItemMenuOpen($event)"
+          (entregaChange)="onEscolherEntrega($event)"
+          (observacoesChange)="observacoes.set($event)"
+          (finalizarClick)="finalizar()"
+          (falarVendedorClick)="falarVendedor()"
+        />
+        @if (submitError()) {
+          <p class="cart-modal__error" role="alert">{{ submitError() }}</p>
+        }
+      </div>
+    </div>
+  </div>
+
+  <app-cart-address-modal
+    [open]="enderecoModalOpen()"
+    [corPrimaria]="context.tenant().corPrimaria"
+    [initialAddress]="enderecoConfirmado()"
+    (saved)="onEnderecoSalvo($event)"
+    (back)="onEnderecoVoltar()"
+  />
+
+  <app-cart-line-menu
+    [line]="itemMenuLine()"
+    (close)="fecharItemMenu()"
+    (alterar)="alterarItem($event)"
+    (remover)="removerItemMenu($event)"
+  />
+
+  <app-cart-share-modal
+    [open]="shareCartOpen()"
+    (close)="fecharCompartilharCarrinho()"
+    (shareWhatsApp)="compartilharCarrinhoWhatsApp()"
+    (shareFacebook)="compartilharCarrinhoFacebook()"
+    (shareTelegram)="compartilharCarrinhoTelegram()"
+    (copyLink)="copiarLinkCarrinho()"
+  />
+
+  <app-cart-order-confirm-modal
+    [snap]="orderSnapshot()"
+    (close)="fecharConfirmacao()"
+    (sendWhatsApp)="enviarWhatsApp()"
+  />
+</main>

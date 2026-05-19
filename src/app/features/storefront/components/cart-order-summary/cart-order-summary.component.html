@@ -1,0 +1,99 @@
+<section class="cart-modal__summary" aria-labelledby="cart-summary-heading">
+  <header class="cart-modal__summary-head">
+    <h2 id="cart-summary-heading" class="cart-modal__summary-title">Confira seu pedido</h2>
+    <button type="button" class="cart-modal__icon-btn" aria-label="Compartilhar carrinho" (click)="shareClick.emit()">
+      <app-icon name="share" [size]="18"></app-icon>
+    </button>
+  </header>
+
+  <ul class="cart-modal__items" role="list">
+    @for (l of cart.lines(); track l.id) {
+      <li class="cart-modal__item">
+        <div class="cart-modal__item-thumb" aria-hidden="true">
+          @if (l.thumbUrl) {
+            <img [src]="l.thumbUrl" alt="" width="40" height="40" decoding="async" />
+          } @else {
+            <span class="cart-modal__item-thumb-fallback"></span>
+          }
+        </div>
+        <div class="cart-modal__item-body">
+          <p class="cart-modal__item-title">{{ l.quantidade }}x {{ l.titulo }}</p>
+          <p class="cart-modal__item-price">{{ l.precoUnit * l.quantidade | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
+        </div>
+        <button
+          type="button"
+          class="cart-modal__item-menu"
+          aria-haspopup="dialog"
+          [attr.aria-expanded]="itemMenuLine()?.id === l.id"
+          aria-label="Opções do item"
+          (click)="abrirMenuItem(l, $event)"
+        >
+          <span aria-hidden="true">⋮</span>
+        </button>
+      </li>
+    }
+  </ul>
+
+  @if (cart.lines().length === 0) {
+    <p class="cart-modal__empty">Seu carrinho está vazio. Adicione produtos no catálogo.</p>
+  }
+
+  <div class="cart-modal__subtotal">
+    <span>Subtotal:</span>
+    <span>{{ cart.subtotal() | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+  </div>
+
+  <a routerLink="/" class="cart-modal__btn-more">Adicionar mais itens</a>
+
+  <div class="cart-modal__divider" role="presentation"></div>
+
+  <fieldset class="cart-modal__entrega">
+    <legend class="cart-modal__entrega-legend">Entrega</legend>
+    <label class="cart-modal__radio-row">
+      <input
+        type="radio"
+        name="entrega"
+        value="loja"
+        [checked]="entrega() === 'loja'"
+        (change)="onEscolherEntrega('loja')"
+      />
+      <span>Retirar na loja</span>
+    </label>
+    <label class="cart-modal__radio-row">
+      <input
+        type="radio"
+        name="entrega"
+        value="endereco"
+        [checked]="entrega() === 'endereco'"
+        (change)="onEscolherEntrega('endereco')"
+      />
+      <span>Entregar no meu endereço</span>
+    </label>
+  </fieldset>
+
+  <div class="cart-modal__divider" role="presentation"></div>
+
+  <div class="cart-modal__total">
+    <span>Total:</span>
+    <span>{{ cart.subtotal() | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+  </div>
+
+  <label class="cart-modal__obs-label" for="cart-obs">Observações</label>
+  <textarea
+    id="cart-obs"
+    class="cart-modal__textarea"
+    rows="4"
+    placeholder="Detalhes do seu pedido"
+    [value]="observacoes()"
+    (input)="onObs($event)"
+  ></textarea>
+
+  <button type="button" class="cart-modal__submit" [disabled]="!podeFinalizar()" (click)="finalizarClick.emit()">
+    Finalizar o Pedido
+  </button>
+
+  <div class="cart-modal__footer-help">
+    <p class="cart-modal__footer-text">Ficou com alguma dúvida?</p>
+    <button type="button" class="cart-modal__btn-ghost" (click)="falarVendedorClick.emit()">Falar com o vendedor</button>
+  </div>
+</section>

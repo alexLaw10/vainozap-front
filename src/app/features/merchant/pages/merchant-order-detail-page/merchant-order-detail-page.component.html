@@ -1,0 +1,151 @@
+<main class="ord-det container">
+
+  <nav class="ord-det__back">
+    <a class="ord-det__back-link" routerLink="/merchant/orders/pedidos">← Voltar para pedidos</a>
+  </nav>
+
+  @if (loading()) {
+    <p class="ord-det__loading">Carregando pedido…</p>
+  } @else if (!pedido()) {
+    <p class="ord-det__loading">{{ error() ?? 'Pedido não encontrado.' }}</p>
+  } @else {
+
+    @let p = pedido()!;
+
+    <!-- Cabeçalho -->
+    <div class="ord-det__head">
+      <div class="ord-det__meta">
+        <h1 class="ord-det__title">Pedido</h1>
+        <span class="ord-det__id">{{ p.id }}</span>
+        <span class="ord-det__date">{{ formatDate(p.criadoEm) }}</span>
+      </div>
+      <span class="ord-badge ord-det__status-badge" [ngClass]="badgeClass(p.status)">
+        {{ statusLabel(p.status) }}
+      </span>
+    </div>
+
+    @if (error()) {
+      <p class="ord-det__error" role="alert">{{ error() }}</p>
+    }
+
+    <!-- Ações de status -->
+    @if (!isTerminal()) {
+      <div class="ord-det__actions">
+        <p class="ord-det__actions-label">Mover status:</p>
+        <div class="ord-det__actions-btns">
+          @for (next of nextStatuses(); track next) {
+            <button
+              type="button"
+              class="mcat-btn"
+              [ngClass]="nextBtnClass(next)"
+              [disabled]="saving()"
+              (click)="moverStatus(next)"
+            >
+              {{ saving() ? 'Salvando…' : nextLabel(next) }}
+            </button>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="ord-det__terminal">
+        <span class="ord-badge" [ngClass]="badgeClass(p.status)">{{ statusLabel(p.status) }}</span>
+        <span class="ord-det__terminal-msg">Status final — nenhuma ação disponível.</span>
+      </div>
+    }
+
+    <div class="ord-det__grid">
+
+      <!-- Cliente -->
+      <section class="ord-det__card">
+        <h2 class="ord-det__card-title">Cliente</h2>
+        <dl class="ord-det__dl">
+          <dt>Nome</dt><dd>{{ p.cliente.nome || '—' }}</dd>
+          <dt>Telefone</dt><dd>{{ p.cliente.telefone || '—' }}</dd>
+          @if (p.cliente.cpfCnpj) {
+            <dt>CPF / CNPJ</dt><dd>{{ p.cliente.cpfCnpj }}</dd>
+          }
+          @if (p.cliente.observacoes) {
+            <dt>Observações</dt><dd>{{ p.cliente.observacoes }}</dd>
+          }
+        </dl>
+      </section>
+
+      <!-- Pagamento -->
+      <section class="ord-det__card">
+        <h2 class="ord-det__card-title">Pagamento</h2>
+        <dl class="ord-det__dl">
+          <dt>Forma</dt><dd>{{ p.pagamento.forma || '—' }}</dd>
+          @if (p.pagamento.bandeira) {
+            <dt>Bandeira</dt><dd>{{ p.pagamento.bandeira }}</dd>
+          }
+          @if (p.pagamento.parcelas) {
+            <dt>Parcelas</dt><dd>{{ p.pagamento.parcelas }}×</dd>
+          }
+          @if (p.pagamento.modoCartao) {
+            <dt>Modo</dt><dd>{{ p.pagamento.modoCartao }}</dd>
+          }
+          @if (p.pagamento.trocoPara) {
+            <dt>Troco para</dt><dd>{{ formatCurrency(p.pagamento.trocoPara!) }}</dd>
+          }
+        </dl>
+      </section>
+
+      <!-- Entrega -->
+      <section class="ord-det__card">
+        <h2 class="ord-det__card-title">Entrega</h2>
+        <dl class="ord-det__dl">
+          <dt>Modo</dt><dd>{{ p.entrega.modo || '—' }}</dd>
+          @if (p.entrega.logradouro) {
+            <dt>Endereço</dt>
+            <dd>
+              {{ p.entrega.logradouro }}, {{ p.entrega.numero }}
+              @if (p.entrega.complemento) { – {{ p.entrega.complemento }} }
+            </dd>
+            @if (p.entrega.bairro) {
+              <dt>Bairro</dt><dd>{{ p.entrega.bairro }}</dd>
+            }
+            <dt>Cidade / UF</dt><dd>{{ p.entrega.cidade }} / {{ p.entrega.uf }}</dd>
+            @if (p.entrega.cep) {
+              <dt>CEP</dt><dd>{{ p.entrega.cep }}</dd>
+            }
+          }
+        </dl>
+      </section>
+
+    </div>
+
+    <!-- Itens do pedido -->
+    <section class="ord-det__items">
+      <h2 class="ord-det__card-title">Itens</h2>
+      <div class="mcat-table-wrap">
+        <table class="mcat-table">
+          <thead>
+            <tr>
+              <th class="mcat-table__th">Produto</th>
+              <th class="mcat-table__th">Qtd</th>
+              <th class="mcat-table__th">Unit.</th>
+              <th class="mcat-table__th">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (linha of p.linhas; track linha.id) {
+              <tr class="mcat-table__row">
+                <td class="mcat-table__td mcat-table__td--name">{{ linha.titulo }}</td>
+                <td class="mcat-table__td">{{ linha.quantidade }}</td>
+                <td class="mcat-table__td">{{ formatCurrency(linha.precoUnit) }}</td>
+                <td class="mcat-table__td">{{ formatCurrency(linha.quantidade * linha.precoUnit) }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr class="ord-det__tfoot">
+              <td class="mcat-table__td" colspan="3"><strong>Total</strong></td>
+              <td class="mcat-table__td ord-det__total">{{ formatCurrency(p.subtotal) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+  }
+</main>

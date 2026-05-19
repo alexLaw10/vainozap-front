@@ -1,0 +1,67 @@
+@if (snap(); as snap) {
+  <div class="cart-confirm" role="dialog" aria-modal="true" aria-labelledby="cart-confirm-title">
+    <div class="cart-confirm__backdrop" tabindex="-1" (click)="fechar()"></div>
+    <div class="cart-confirm__panel" (click)="$event.stopPropagation()">
+      <button type="button" class="cart-confirm__close" aria-label="Voltar ao carrinho" (click)="fechar()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+
+      <p id="cart-confirm-title" class="cart-confirm__lead">Agora é só enviar seu pedido via WhatsApp</p>
+      <p class="cart-confirm__order-id">Pedido #{{ snap.orderId }}</p>
+      <p class="cart-confirm__datetime">{{ formatResumoData(snap.createdAt) }}</p>
+
+      <div class="cart-confirm__customer">
+        <p class="cart-confirm__name">{{ snap.nome }}</p>
+        <p class="cart-confirm__doc"><strong>{{ snap.cpfCnpj }}</strong></p>
+        <p class="cart-confirm__tel"><strong>{{ snap.telefone }}</strong></p>
+      </div>
+
+      <ul class="cart-confirm__items" role="list">
+        @for (l of snap.lines; track l.id; let last = $last) {
+          <li class="cart-confirm__item" role="listitem">
+            <div class="cart-confirm__rail">
+              <span class="cart-confirm__qty">{{ l.quantidade }}</span>
+              @if (!last) {
+                <span class="cart-confirm__rail-line" aria-hidden="true"></span>
+              }
+            </div>
+            <div class="cart-confirm__thumb-wrap" aria-hidden="true">
+              @if (l.thumbUrl) {
+                <img class="cart-confirm__thumb" [src]="l.thumbUrl" alt="" width="48" height="48" decoding="async" />
+              } @else {
+                <span class="cart-confirm__thumb-fallback"></span>
+              }
+            </div>
+            <div class="cart-confirm__ledger">
+              <div class="cart-confirm__ledger-row">
+                <span class="cart-confirm__ledger-title">{{ l.titulo }}</span>
+                <span class="cart-confirm__ledger-dots" aria-hidden="true"></span>
+                <span class="cart-confirm__ledger-price">{{ l.precoUnit * l.quantidade | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+
+      <div class="cart-confirm__totals">
+        <div class="cart-confirm__row-line">
+          <span>Total dos itens ({{ snap.lines.length }}):</span>
+          <span>{{ snap.subtotal | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+        </div>
+        <div class="cart-confirm__row-line cart-confirm__row-line--strong">
+          <span>Total pedido:</span>
+          <span>{{ snap.subtotal | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+        </div>
+        <p class="cart-confirm__pay">Pagamento: <strong>Online</strong></p>
+        <p class="cart-confirm__pay">Forma de pagamento: <strong>{{ snap.formaPagamentoLabel }}</strong></p>
+      </div>
+
+      <p class="cart-confirm__hint">Clique no botão abaixo para encaminhar o pedido para o WhatsApp do vendedor.</p>
+
+      <button type="button" class="cart-confirm__wa" (click)="enviar()">
+        <app-icon name="share" [size]="22"></app-icon>
+        Enviar via WhatsApp
+      </button>
+    </div>
+  </div>
+}

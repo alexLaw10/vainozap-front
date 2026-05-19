@@ -1,0 +1,7 @@
+@use '../auth-shared' as auth;
+
+.login-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}

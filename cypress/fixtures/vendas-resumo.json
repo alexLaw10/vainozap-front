@@ -1,0 +1,12 @@
+{
+  "periodo": { "inicio": "2026-01-01", "fim": "2026-01-31" },
+  "totalReceita": 1000,
+  "totalPedidos": 5,
+  "ticketMedio": 200,
+  "receitaPendente": 0,
+  "pedidosPendentes": 0,
+  "granularidade": "MES",
+  "porPeriodo": [],
+  "topProdutos": [],
+  "porFormaPagamento": []
+}

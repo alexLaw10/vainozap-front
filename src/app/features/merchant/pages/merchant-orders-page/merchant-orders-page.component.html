@@ -1,0 +1,103 @@
+<main class="ord-page container">
+
+  <div class="ord-page__head">
+    <div>
+      <h1 class="ord-page__title">Pedidos</h1>
+      <p class="ord-page__sub">Acompanhe e gerencie os pedidos da sua loja</p>
+    </div>
+  </div>
+
+  <!-- Filtros de status (server-side) -->
+  <div class="ord-filters">
+    <button type="button" class="ord-filter-btn" [class.ord-filter-btn--active]="filtro() === 'todos'" (click)="setFiltro('todos')">
+      Todos
+      @if (filtro() === 'todos' && totalElements() > 0) {
+        <span class="ord-filter-count">{{ totalElements() }}</span>
+      }
+    </button>
+    @for (s of ALL_STATUSES; track s) {
+      <button type="button" class="ord-filter-btn" [class.ord-filter-btn--active]="filtro() === s" (click)="setFiltro(s)">
+        {{ STATUS_CONFIG[s].label }}
+        @if (filtro() === s && totalElements() > 0) {
+          <span class="ord-filter-count">{{ totalElements() }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Busca local (filtra a página atual por nome/telefone/id) -->
+  <div class="ord-search-bar">
+    <input
+      class="mcat-field__input ord-search-input"
+      type="search"
+      placeholder="Buscar por nome, telefone ou ID…"
+      [ngModel]="busca()"
+      (ngModelChange)="busca.set($event)"
+    />
+  </div>
+
+  @if (loading()) {
+    <p class="ord-empty">Carregando…</p>
+  } @else if (filtered().length === 0) {
+    <div class="ord-empty-state">
+      <p>{{ filtro() !== 'todos' ? 'Nenhum pedido com esse status.' : 'Nenhum pedido ainda.' }}</p>
+      @if (filtro() !== 'todos') {
+        <button type="button" class="mcat-btn mcat-btn--ghost" (click)="setFiltro('todos')">Ver todos</button>
+      }
+    </div>
+  } @else {
+    <div class="mcat-table-wrap">
+      <table class="mcat-table">
+        <thead>
+          <tr>
+            <th class="mcat-table__th">Cliente</th>
+            <th class="mcat-table__th mcat-table__th--hide-sm">Data</th>
+            <th class="mcat-table__th">Status</th>
+            <th class="mcat-table__th mcat-table__th--hide-sm">Total</th>
+            <th class="mcat-table__th mcat-table__th--actions">Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pedido of filtered(); track pedido.id) {
+            <tr class="mcat-table__row ord-row" (click)="goDetail(pedido.id)">
+              <td class="mcat-table__td">
+                <div class="ord-cliente">
+                  <span class="ord-cliente__nome">{{ pedido.cliente.nome || '—' }}</span>
+                  @if (pedido.cliente.telefone) {
+                    <span class="ord-cliente__tel">{{ pedido.cliente.telefone }}</span>
+                  }
+                </div>
+              </td>
+              <td class="mcat-table__td mcat-table__td--muted mcat-table__th--hide-sm">
+                {{ formatDate(pedido.criadoEm) }}
+              </td>
+              <td class="mcat-table__td">
+                <span class="ord-badge" [ngClass]="badgeClass(pedido.status)">
+                  {{ statusLabel(pedido.status) }}
+                </span>
+              </td>
+              <td class="mcat-table__td mcat-table__th--hide-sm">
+                {{ formatCurrency(pedido.subtotal) }}
+              </td>
+              <td class="mcat-table__td mcat-table__td--actions">
+                <a class="mcat-btn mcat-btn--ghost" [routerLink]="['/merchant/orders/pedidos', pedido.id]" (click)="$event.stopPropagation()">
+                  Ver
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginador -->
+    <app-paginator
+      [page]="curPage()"
+      [size]="pageSize"
+      [totalElements]="totalElements()"
+      [totalPages]="totalPages()"
+      (pageChange)="onPageChange($event)"
+    />
+  }
+
+</main>

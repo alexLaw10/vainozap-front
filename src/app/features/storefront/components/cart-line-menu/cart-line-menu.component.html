@@ -1,0 +1,26 @@
+@if (line(); as line) {
+  <div class="cart-item-menu" role="dialog" aria-modal="true" aria-labelledby="cart-item-menu-title">
+    <div class="cart-item-menu__backdrop" tabindex="-1" (click)="fechar()"></div>
+    <div class="cart-item-menu__panel" (click)="$event.stopPropagation()">
+      <div class="cart-item-menu__head">
+        <div class="cart-item-menu__thumb-wrap" aria-hidden="true">
+          @if (line.thumbUrl) {
+            <img class="cart-item-menu__thumb" [src]="line.thumbUrl" alt="" width="56" height="56" decoding="async" />
+          } @else {
+            <span class="cart-item-menu__thumb-fallback"></span>
+          }
+        </div>
+        <div class="cart-item-menu__meta">
+          <p id="cart-item-menu-title" class="cart-item-menu__name">{{ tituloPrincipal(line.titulo) }}</p>
+          @if (tituloVariante(line.titulo); as sub) {
+            <p class="cart-item-menu__variant">{{ sub }}</p>
+          }
+          <p class="cart-item-menu__price">{{ line.precoUnit * line.quantidade | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
+          <p class="cart-item-menu__qty">Quantidade: {{ line.quantidade }}</p>
+        </div>
+      </div>
+      <button type="button" class="cart-item-menu__btn-primary" (click)="onAlterar(line)">Alterar</button>
+      <button type="button" class="cart-item-menu__btn-outline" (click)="onRemover(line)">Remover do carrinho</button>
+    </div>
+  </div>
+}
