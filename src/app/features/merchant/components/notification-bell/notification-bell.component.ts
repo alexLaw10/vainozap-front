@@ -248,10 +248,15 @@ import { IconComponent } from '../../../../shared/ui/icon/icon.component';
 export class NotificationBellComponent implements OnInit, OnDestroy {
   readonly notifService = inject(NotificationService);
   private readonly el = inject(ElementRef);
+
   open = signal(false);
 
+  /** Controla se a lista já foi carregada pelo menos uma vez */
+  private loaded = false;
+
   ngOnInit(): void {
-    this.notifService.load();
+    // Conecta SSE imediatamente — mantém badge atualizado sem requisição HTTP.
+    // A lista só é buscada quando o usuário abrir o sino pela primeira vez.
     this.notifService.connectSse();
   }
 
@@ -267,7 +272,13 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
   }
 
   toggle(): void {
-    this.open.update((v) => !v);
+    const opening = !this.open();
+    this.open.set(opening);
+    // Busca a lista apenas na primeira abertura
+    if (opening && !this.loaded) {
+      this.loaded = true;
+      this.notifService.load();
+    }
   }
 
   close(): void {
