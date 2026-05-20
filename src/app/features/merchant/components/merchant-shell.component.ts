@@ -5,7 +5,6 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { filter, map, startWith } from 'rxjs/operators';
 
 import { MerchantCatalogService } from '../services/merchant-catalog.service';
-import { MerchantConfigService } from '../services/merchant-config.service';
 import { MerchantContextService } from '../services/merchant-context.service';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { NotificationBellComponent } from './notification-bell/notification-bell.component';
@@ -21,7 +20,7 @@ export interface MerchantSubNavItem {
   imports: [RouterLink, RouterOutlet, NotificationBellComponent, IconComponent],
   templateUrl: './merchant-shell.component.html',
   styleUrl: './merchant-shell.component.scss',
-  providers: [MerchantContextService, MerchantConfigService, MerchantCatalogService],
+  providers: [MerchantContextService, MerchantCatalogService],
 })
 export class MerchantShellComponent {
   protected readonly ctx = inject(MerchantContextService);
