@@ -45,69 +45,6 @@
   color: var(--color-neutral-700);
 }
 
-.app-boot__svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-.app-boot__stroke {
-  color: var(--color-neutral-700);
-}
-
-/* Nível sobe de baixo para cima (carrinho a encher) */
-.app-boot__liquid {
-  transform-origin: 60px 86px;
-  transform: scaleY(0);
-  animation: app-boot-fill-up 1.05s cubic-bezier(0.33, 1, 0.68, 1) forwards;
-  animation-delay: 0.12s;
-}
-
-@keyframes app-boot-fill-up {
-  from {
-    transform: scaleY(0);
-  }
-
-  to {
-    transform: scaleY(1);
-  }
-}
-
-/* Bolinhas (itens) a cair para o cesto */
-.app-boot__dot {
-  opacity: 0;
-  animation: app-boot-drop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.app-boot__dot--1 {
-  animation-delay: 0.35s;
-}
-
-.app-boot__dot--2 {
-  animation-delay: 0.52s;
-}
-
-.app-boot__dot--3 {
-  animation-delay: 0.69s;
-}
-
-@keyframes app-boot-drop {
-  0% {
-    opacity: 0;
-    transform: translateY(-18px);
-  }
-
-  55% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateY(38px) scale(0.35);
-  }
-}
-
 .app-boot__text {
   margin: 0;
   font-size: 0.95rem;
@@ -117,17 +54,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-boot__liquid {
-    animation-duration: 0.01ms;
-    animation-delay: 0s;
-    transform: scaleY(1);
-  }
-
-  .app-boot__dot {
-    animation: none;
-    opacity: 0;
-  }
-
   .app-boot {
     transition-duration: 0.15s;
   }

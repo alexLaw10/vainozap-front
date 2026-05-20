@@ -91,9 +91,14 @@
 .auth-form__slug-wrap {
   display: flex;
   align-items: stretch;
+
+  &--error .auth-form__slug-suffix,
+  &--error .auth-form__input--slug {
+    border-color: var(--color-danger);
+  }
 }
 
-.auth-form__slug-prefix {
+.auth-form__slug-suffix {
   display: inline-flex;
   align-items: center;
   padding: 0 var(--space-3);
@@ -102,14 +107,117 @@
   color: var(--color-text-muted);
   background: var(--color-neutral-100);
   border: 1.5px solid var(--color-border-subtle);
-  border-right: none;
-  border-radius: 0.625rem 0 0 0.625rem;
+  border-left: none;
+  border-radius: 0 0.625rem 0.625rem 0;
   white-space: nowrap;
 }
 
 .auth-form__input--slug {
-  border-radius: 0 0.625rem 0.625rem 0;
+  border-radius: 0.625rem 0 0 0.625rem;
   flex: 1;
+}
+
+// ── Input com ação (olho show/hide senha) ─────────────────────────────────────
+
+.auth-form__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-form__input--with-action {
+  padding-right: 2.5rem;
+}
+
+.auth-form__input-action {
+  position: absolute;
+  right: var(--space-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+
+  &:hover { color: var(--color-text-secondary); }
+}
+
+// ── Input com erro ─────────────────────────────────────────────────────────────
+
+.auth-form__input--error {
+  border-color: var(--color-danger) !important;
+  &:focus {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 15%, transparent) !important;
+  }
+}
+
+// ── Erros inline por campo ─────────────────────────────────────────────────────
+
+.auth-form__field-erro {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  font-weight: 500;
+}
+
+.auth-form__field-ok {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+// ── Erro box global (com ícone) ────────────────────────────────────────────────
+
+.auth-form__erro-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-on-danger-surface);
+  background: var(--color-danger-surface);
+  border: 1px solid var(--color-danger-border);
+  border-radius: 0.5rem;
+}
+
+// ── Força da senha ─────────────────────────────────────────────────────────────
+
+.senha-forca {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+
+  &__barra {
+    flex: 1;
+    height: 4px;
+    background: var(--color-border-subtle);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  &__preenchimento {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease, background 0.3s ease;
+
+    &--fraca  { width: 33%;  background: var(--color-danger); }
+    &--media  { width: 66%;  background: var(--color-warning); }
+    &--forte  { width: 100%; background: var(--color-success); }
+  }
+
+  &__label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    white-space: nowrap;
+
+    &--fraca  { color: var(--color-danger); }
+    &--media  { color: var(--color-warning); }
+    &--forte  { color: var(--color-success); }
+  }
 }
 
 // ── Ghost btn variant ─────────────────────────────────────────────────────────

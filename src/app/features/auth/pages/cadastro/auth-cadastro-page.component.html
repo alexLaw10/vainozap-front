@@ -2,7 +2,7 @@
   <div class="auth-page__card" [class.auth-page__card--wide]="step() === 2">
     <div class="auth-page__brand" aria-hidden="true">
       <span class="auth-page__brand-dot"></span>
-      <span class="auth-page__brand-name">Saas</span>
+      <span class="auth-page__brand-name">VainoZap</span>
     </div>
 
     <!-- ── Step indicator ────────────────────────────────────────────── -->
@@ -26,6 +26,8 @@
       </div>
 
       <form class="auth-form" (ngSubmit)="avancar()" novalidate>
+
+        <!-- Nome + WhatsApp -->
         <div class="auth-form__row">
           <div class="auth-form__field">
             <label class="auth-form__label" for="cad-nome">Nome completo</label>
@@ -55,51 +57,109 @@
           </div>
         </div>
 
+        <!-- E-mail -->
         <div class="auth-form__field">
           <label class="auth-form__label" for="cad-email">E-mail</label>
           <input
             id="cad-email"
             type="email"
             class="auth-form__input"
+            [class.auth-form__input--error]="erroEmail()"
             [(ngModel)]="form.email"
             name="email"
             autocomplete="email"
             placeholder="seu@email.com"
+            (ngModelChange)="erroEmail.set(null)"
             required
           />
+          @if (erroEmail()) {
+            <p class="auth-form__field-erro" role="alert">⚠ {{ erroEmail() }}</p>
+          }
         </div>
 
+        <!-- Senha + Confirmar senha -->
         <div class="auth-form__row">
+          <!-- Senha -->
           <div class="auth-form__field">
             <label class="auth-form__label" for="cad-senha">Senha</label>
-            <input
-              id="cad-senha"
-              type="password"
-              class="auth-form__input"
-              [(ngModel)]="form.senha"
-              name="senha"
-              autocomplete="new-password"
-              placeholder="Mínimo 6 caracteres"
-              required
-            />
+            <div class="auth-form__input-wrap">
+              <input
+                id="cad-senha"
+                [type]="mostrarSenha ? 'text' : 'password'"
+                class="auth-form__input auth-form__input--with-action"
+                [(ngModel)]="form.senha"
+                name="senha"
+                autocomplete="new-password"
+                placeholder="Mínimo 6 caracteres"
+                required
+              />
+              <button
+                type="button"
+                class="auth-form__input-action"
+                (click)="mostrarSenha = !mostrarSenha"
+                [attr.aria-label]="mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'"
+              >
+                <app-icon [name]="mostrarSenha ? 'eye-off' : 'eye'" [size]="16"></app-icon>
+              </button>
+            </div>
+            <!-- Barra de força da senha -->
+            @if (form.senha.length > 0) {
+              <div class="senha-forca">
+                <div class="senha-forca__barra">
+                  <div
+                    class="senha-forca__preenchimento"
+                    [class.senha-forca__preenchimento--fraca]="senhaForca === 'fraca'"
+                    [class.senha-forca__preenchimento--media]="senhaForca === 'media'"
+                    [class.senha-forca__preenchimento--forte]="senhaForca === 'forte'"
+                  ></div>
+                </div>
+                <span
+                  class="senha-forca__label"
+                  [class.senha-forca__label--fraca]="senhaForca === 'fraca'"
+                  [class.senha-forca__label--media]="senhaForca === 'media'"
+                  [class.senha-forca__label--forte]="senhaForca === 'forte'"
+                >{{ senhaForcaLabel }}</span>
+              </div>
+            }
           </div>
+
+          <!-- Confirmar senha -->
           <div class="auth-form__field">
             <label class="auth-form__label" for="cad-confirmar">Confirmar senha</label>
-            <input
-              id="cad-confirmar"
-              type="password"
-              class="auth-form__input"
-              [(ngModel)]="form.confirmarSenha"
-              name="confirmarSenha"
-              autocomplete="new-password"
-              placeholder="Repita a senha"
-              required
-            />
+            <div class="auth-form__input-wrap">
+              <input
+                id="cad-confirmar"
+                [type]="mostrarConfirmarSenha ? 'text' : 'password'"
+                class="auth-form__input auth-form__input--with-action"
+                [class.auth-form__input--error]="mostrarErrMismatch"
+                [(ngModel)]="form.confirmarSenha"
+                name="confirmarSenha"
+                autocomplete="new-password"
+                placeholder="Repita a senha"
+                (blur)="confirmarTocado = true"
+                required
+              />
+              <button
+                type="button"
+                class="auth-form__input-action"
+                (click)="mostrarConfirmarSenha = !mostrarConfirmarSenha"
+                [attr.aria-label]="mostrarConfirmarSenha ? 'Ocultar senha' : 'Mostrar senha'"
+              >
+                <app-icon [name]="mostrarConfirmarSenha ? 'eye-off' : 'eye'" [size]="16"></app-icon>
+              </button>
+            </div>
+            @if (mostrarErrMismatch) {
+              <p class="auth-form__field-erro" role="alert">⚠ As senhas não coincidem</p>
+            }
+            @if (confirmarTocado && senhasIguais && form.confirmarSenha.length > 0) {
+              <p class="auth-form__field-ok">✓ Senhas coincidem</p>
+            }
           </div>
         </div>
 
         <div class="auth-form__separator"></div>
 
+        <!-- Nome da loja -->
         <div class="auth-form__field">
           <label class="auth-form__label" for="cad-loja">Nome da loja</label>
           <input
@@ -114,10 +174,10 @@
           />
         </div>
 
+        <!-- Slug / endereço -->
         <div class="auth-form__field">
           <label class="auth-form__label" for="cad-slug">Endereço da loja</label>
-          <div class="auth-form__slug-wrap">
-            <span class="auth-form__slug-prefix" aria-hidden="true">saas.app/</span>
+          <div class="auth-form__slug-wrap" [class.auth-form__slug-wrap--error]="erroSlug()">
             <input
               id="cad-slug"
               type="text"
@@ -126,14 +186,24 @@
               name="slug"
               placeholder="minha-loja"
               pattern="^[a-z0-9\-]+$"
+              (ngModelChange)="erroSlug.set(null)"
               required
             />
+            <span class="auth-form__slug-suffix" aria-hidden="true">.vainozap.com.br</span>
           </div>
-          <p class="auth-form__hint">Apenas letras minúsculas, números e hífen</p>
+          @if (erroSlug()) {
+            <p class="auth-form__field-erro" role="alert">⚠ {{ erroSlug() }}</p>
+          } @else {
+            <p class="auth-form__hint">Apenas letras minúsculas, números e hífen</p>
+          }
         </div>
 
+        <!-- Erro global do step 1 -->
         @if (erro()) {
-          <p class="auth-form__erro" role="alert">{{ erro() }}</p>
+          <div class="auth-form__erro-box" role="alert">
+            <app-icon name="alert-circle" [size]="16"></app-icon>
+            {{ erro() }}
+          </div>
         }
 
         <app-button type="submit" [disabled]="!step1Valido">
@@ -156,8 +226,6 @@
       </div>
 
       <div class="cad-plans">
-
-        <!-- Beta — único disponível -->
         <button
           type="button"
           class="cad-plan-card cad-plan-card--beta cad-plan-card--selected"
@@ -178,7 +246,6 @@
           </p>
         </button>
 
-        <!-- Planos bloqueados -->
         <div class="cad-plans-locked">
           <p class="cad-plans-locked__label">Em breve</p>
           <div class="cad-plans-locked__grid">
@@ -190,11 +257,14 @@
             }
           </div>
         </div>
-
       </div>
 
+      <!-- Erro no step 2 -->
       @if (erro()) {
-        <p class="auth-form__erro" role="alert">{{ erro() }}</p>
+        <div class="auth-form__erro-box" role="alert">
+          <app-icon name="alert-circle" [size]="16"></app-icon>
+          {{ erro() }}
+        </div>
       }
 
       <div class="cad-plan-actions">

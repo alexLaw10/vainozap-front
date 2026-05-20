@@ -56,4 +56,7 @@ export const UI_ICON_REGISTRY: Record<UiIconName, UiIconDefinition> = {
   home: { viewBox: '0 0 24 24', path: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10' },
   lock: { viewBox: '0 0 24 24', path: 'M7 11V7a5 5 0 0 1 10 0v4M5 11h14v11H5z' },
   alert: { viewBox: '0 0 24 24', path: 'M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z' },
+  'alert-circle': { viewBox: '0 0 24 24', path: 'M12 8v4m0 4h.01M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20' },
+  eye: { viewBox: '0 0 24 24', path: 'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6' },
+  'eye-off': { viewBox: '0 0 24 24', path: 'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22' },
 };

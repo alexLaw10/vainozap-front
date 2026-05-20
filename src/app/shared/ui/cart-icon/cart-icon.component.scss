@@ -1,0 +1,78 @@
+:host {
+  display: block;
+  color: var(--color-neutral-700);
+}
+
+.cart-icon__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.cart-icon__dot {
+  opacity: 1;
+}
+
+.cart-icon--animated .cart-icon__liquid {
+  transform-origin: 60px 86px;
+  transform: scaleY(0);
+  animation: cart-icon-fill-up 1.05s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-delay: 0.12s;
+}
+
+.cart-icon--animated .cart-icon__dot {
+  opacity: 0;
+  animation: cart-icon-drop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.cart-icon--animated .cart-icon__dot--1 {
+  animation-delay: 0.35s;
+}
+
+.cart-icon--animated .cart-icon__dot--2 {
+  animation-delay: 0.52s;
+}
+
+.cart-icon--animated .cart-icon__dot--3 {
+  animation-delay: 0.69s;
+}
+
+@keyframes cart-icon-fill-up {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes cart-icon-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(38px) scale(0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-icon--animated .cart-icon__liquid {
+    animation-duration: 0.01ms;
+    animation-delay: 0s;
+    transform: scaleY(1);
+  }
+
+  .cart-icon--animated .cart-icon__dot {
+    animation: none;
+    opacity: 0;
+  }
+}

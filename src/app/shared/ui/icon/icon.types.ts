@@ -35,4 +35,7 @@ export type UiIconName =
   | 'image'
   | 'home'
   | 'lock'
-  | 'alert';
+  | 'alert'
+  | 'alert-circle'
+  | 'eye'
+  | 'eye-off';

@@ -1,0 +1,275 @@
+<!-- ── NAVBAR ── -->
+<nav class="nav">
+  <div class="nav__logo">
+    <div class="nav__logo-icon">
+      <app-cart-icon />
+    </div>
+    <span>Vaino<em>Zap</em></span>
+  </div>
+  <ul class="nav__links">
+    <li><a href="#como-funciona">Como funciona</a></li>
+    <li><a href="#recursos">Recursos</a></li>
+    <li><a href="#quem-somos">Quem somos</a></li>
+    <li><a href="#precos">Preços</a></li>
+  </ul>
+  <div class="nav__actions">
+    <a routerLink="/auth/login" class="nav__login">Entrar</a>
+    <a routerLink="/auth/cadastro" class="nav__cta">Criar minha loja</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero__badge">
+    <span class="hero__badge-dot"></span>
+    Vários nichos já vendem com o VainoZap
+  </div>
+
+  <h1 class="hero__title">
+    Seu catálogo digital.<br />
+    <span>Pedidos pelo</span> <em>WhatsApp.</em><br />
+    Tudo sob controle.
+  </h1>
+
+  <p class="hero__sub">
+    Crie sua loja online em minutos, compartilhe o link com seus clientes
+    e gerencie pedidos, estoque e vendas num só lugar.
+  </p>
+
+  <div class="hero__btns">
+    <a routerLink="/auth/cadastro" class="btn btn--green">
+      💬 Criar minha loja grátis
+    </a>
+    <a href="#como-funciona" class="btn btn--ghost">Ver como funciona →</a>
+  </div>
+
+  <div class="hero__stats">
+    <div class="stat"><strong>Vários</strong><span>Nichos de mercado</span></div>
+    <div class="stat"><strong>R$ 0</strong><span>Taxa por venda</span></div>
+    <div class="stat"><strong>5 min</strong><span>Para criar sua loja</span></div>
+    <div class="stat"><strong>100%</strong><span>Pelo celular</span></div>
+  </div>
+</section>
+
+<!-- ── COMO FUNCIONA ── -->
+<section class="how" id="como-funciona">
+  <span class="section-label">Como funciona</span>
+  <h2 class="section-title">Do cadastro ao primeiro pedido<br />em menos de 5 minutos</h2>
+  <p class="section-sub">Sem complicação. Sem contrato. Sem taxa por venda.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step__num">1</div>
+      <h3>Crie sua conta</h3>
+      <p>Cadastre sua loja com nome, logo e cor da sua marca em menos de 2 minutos.</p>
+    </div>
+    <div class="step">
+      <div class="step__num">2</div>
+      <h3>Adicione seus produtos</h3>
+      <p>Cadastre produtos com foto, preço, variações e controle de estoque.</p>
+    </div>
+    <div class="step">
+      <div class="step__num">3</div>
+      <h3>Compartilhe e venda</h3>
+      <p>Envie seu link no WhatsApp. O cliente faz o pedido, você recebe a notificação.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features" id="recursos">
+  <div class="features__inner">
+    <div class="features__header">
+      <span class="section-label">Recursos</span>
+      <h2 class="section-title">Tudo que você precisa<br />para vender mais</h2>
+      <p class="section-sub">Do catálogo online ao PDV presencial — o VainoZap é completo.</p>
+    </div>
+
+    <div class="features__grid">
+      @for (f of features; track f.title) {
+        <div class="feature-card" [class.feature-card--highlight]="f.highlight">
+          <div class="feature-card__icon">{{ f.icon }}</div>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.desc }}</p>
+          @if (f.badge) {
+            <span class="feature-card__badge">{{ f.badge }}</span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── DEMO / VITRINE ── -->
+<section class="demo">
+  <span class="section-label">Vitrine</span>
+  <h2 class="section-title">Veja como fica a loja<br />do seu cliente</h2>
+  <p class="section-sub">Interface limpa, rápida e pensada para converter visitas em pedidos.</p>
+
+  <div class="demo__mockup">
+    <div class="demo__bar">
+      <div class="demo__dots">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="demo__url">pacefit.vainozap.com.br</div>
+    </div>
+    <div class="demo__screen">
+      <div class="demo__store-header">
+        <div class="demo__store-logo">💪</div>
+        <div>
+          <div class="demo__store-name">PaceFit</div>
+          <div class="demo__store-sub">Suplementos &amp; Nutrição</div>
+        </div>
+      </div>
+      <div class="demo__products">
+        <div class="demo__product">
+          <div class="demo__product-img">🥤</div>
+          <div class="demo__product-info">
+            <div class="demo__product-name">Whey Protein 1kg</div>
+            <div class="demo__product-price">R$ 89,90</div>
+            <div class="demo__product-btn">+ Adicionar</div>
+          </div>
+        </div>
+        <div class="demo__product">
+          <div class="demo__product-img">💊</div>
+          <div class="demo__product-info">
+            <div class="demo__product-name">Creatina 300g</div>
+            <div class="demo__product-price">R$ 59,90</div>
+            <div class="demo__product-btn">+ Adicionar</div>
+          </div>
+        </div>
+        <div class="demo__product">
+          <div class="demo__product-img">🧃</div>
+          <div class="demo__product-info">
+            <div class="demo__product-name">BCAA 60 caps</div>
+            <div class="demo__product-price">R$ 44,90</div>
+            <div class="demo__product-btn">+ Adicionar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── QUEM SOMOS ── -->
+<section class="about" id="quem-somos">
+  <div class="about__inner">
+    <div class="about__content">
+      <span class="section-label">Quem somos</span>
+      <h2 class="section-title">Feito por quem entende<br />a rotina do lojista</h2>
+      <p class="about__text">
+        O VainoZap nasceu com um objetivo simples: ajudar pequenos e médios
+        comerciantes a venderem mais pelo WhatsApp, sem depender de marketplaces
+        caros ou sistemas complicados.
+      </p>
+      <p class="about__text">
+        Somos uma equipe brasileira focada em tecnologia acessível. Acreditamos
+        que todo lojista merece uma vitrine profissional, controle de estoque e
+        gestão de pedidos — tudo em um só lugar, direto do celular.
+      </p>
+      <div class="about__highlights">
+        @for (item of aboutHighlights; track item.label) {
+          <div class="about__highlight">
+            <strong>{{ item.value }}</strong>
+            <span>{{ item.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="about__values">
+      @for (v of aboutValues; track v.title) {
+        <div class="about__value-card">
+          <div class="about__value-icon">{{ v.icon }}</div>
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── PREÇOS ── -->
+<section class="pricing" id="precos">
+  <div class="pricing__inner">
+    <div class="pricing__header">
+      <span class="section-label">Preços</span>
+      <h2 class="section-title">Simples, sem surpresas</h2>
+      <p class="section-sub">Sem taxa por venda. Cancele quando quiser.</p>
+    </div>
+
+    <div class="pricing__grid">
+      @for (plan of plans; track plan.name) {
+        <div class="plan" [class.plan--popular]="plan.popular">
+          @if (plan.popular) {
+            <div class="plan__badge">✦ Mais popular</div>
+          }
+          <div class="plan__name">{{ plan.name }}</div>
+          <div class="plan__price">
+            <strong>{{ plan.price }}</strong>
+            <span>{{ plan.period }}</span>
+          </div>
+          <p class="plan__desc">{{ plan.desc }}</p>
+          <ul class="plan__features">
+            @for (item of plan.features; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+          <a
+            routerLink="/auth/cadastro"
+            class="plan__cta"
+            [class.plan__cta--outline]="plan.ctaStyle === 'outline'"
+            [class.plan__cta--filled]="plan.ctaStyle === 'filled'"
+            [class.plan__cta--green]="plan.ctaStyle === 'green'"
+          >{{ plan.cta }}</a>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA FINAL ── -->
+<section class="cta-final">
+  <span class="section-label">Comece hoje</span>
+  <h2 class="section-title">Pronto para vender<br />mais pelo WhatsApp?</h2>
+  <p class="section-sub">Crie sua loja em 5 minutos. Sem cartão de crédito. Sem contrato.</p>
+  <a routerLink="/auth/cadastro" class="btn btn--green">
+    💬 Criar minha loja grátis
+  </a>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer__logo">Vaino<em>Zap</em></div>
+  <div class="footer__contact">
+    <a [href]="'mailto:' + supportEmail" class="footer__link">
+      {{ supportEmail }}
+    </a>
+    <a
+      [href]="whatsappUrl"
+      class="footer__link"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      WhatsApp {{ whatsappPhone }}
+    </a>
+  </div>
+  <p>© 2026 VainoZap. Todos os direitos reservados.</p>
+</footer>
+
+<!-- ── WhatsApp flutuante ── -->
+<a
+  class="whatsapp-float"
+  [href]="whatsappUrl"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Falar conosco no WhatsApp"
+  title="Falar no WhatsApp"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path
+      fill="currentColor"
+      d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.881 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+    />
+  </svg>
+</a>

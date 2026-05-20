@@ -3,9 +3,11 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { merge, timer } from 'rxjs';
 import { debounceTime, filter, take } from 'rxjs/operators';
 
+import { CartIconComponent } from './shared/ui/cart-icon/cart-icon.component';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CartIconComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
