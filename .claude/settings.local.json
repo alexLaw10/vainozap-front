@@ -200,7 +200,11 @@
       "WebFetch(domain:empreender.com.br)",
       "WebFetch(domain:cardapioweb.com)",
       "Bash(mkdir -p /Users/alexjunior/Documents/projetos/Sass/saas-api/src/main/java/com/saas/catalog/interfaces/storefront *)",
-      "Bash(mkdir -p /Users/alexjunior/Documents/projetos/Sass/saas-api/src/main/java/com/saas/order/interfaces/storefront)"
+      "Bash(mkdir -p /Users/alexjunior/Documents/projetos/Sass/saas-api/src/main/java/com/saas/order/interfaces/storefront)",
+      "Bash(rm /Users/alexjunior/Documents/projetos/Sass/saas-api/src/main/java/com/saas/identity/infrastructure/JwtService.java)",
+      "Bash(xargs -I{} basename {})",
+      "Bash(rm /Users/alexjunior/Documents/projetos/Sass/saas-api/src/main/java/com/saas/identity/infrastructure/JwtAuthFilter.java \\\\ *)",
+      "Bash(python3 -c \"import json,sys; a=json.load\\(sys.stdin\\); proj=list\\(a['projects'].keys\\(\\)\\)[0]; print\\('outputPath:', a['projects'][proj]['architect']['build']['options'].get\\('outputPath','N/A'\\)\\)\")"
     ]
   }
 }
