@@ -33,13 +33,8 @@ export class MerchantContextService {
   constructor() {
     this.configService.get().subscribe({
       next: (tenantApi) => {
-        // Atualiza o nome independente do sfContext (que começa como mock)
+        // Fallback: se o token não tiver nomeLoja, usa o que veio da API
         this._shopName.set(tenantApi.nomeLoja ?? null);
-        // Persiste no localStorage para próximas visitas
-        if (tenantApi.nomeLoja) {
-          this.auth.nomeLoja.set(tenantApi.nomeLoja);
-          localStorage.setItem('merchant_nome_loja', tenantApi.nomeLoja);
-        }
         // Atualiza contexto completo (cores, logo, whatsapp…)
         this.sfContext.setTenantFromApi(tenantApi);
         this.loading.set(false);
