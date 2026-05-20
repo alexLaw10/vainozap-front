@@ -40,56 +40,29 @@ jobs:
           # Compacta o build para envio rápido
           tar -czf frontend-dist.tar.gz -C dist/saas/browser .
 
-          # Envia o tar e os arquivos de configuração
+          # Envia o tar + configs + Dockerfile minimalista
           scp -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
               -o ConnectTimeout=30 \
-              frontend-dist.tar.gz nginx.conf Dockerfile \
+              frontend-dist.tar.gz nginx.conf Dockerfile.serve \
               "$EC2_USER@$EC2_HOST:/home/ec2-user/vainozap-front/"
 
-          # Descompacta, rebuilda a imagem Docker e reinicia o container
+          # Descompacta, rebuilda imagem e reinicia container
           ssh -i ~/.ssh/deploy_key \
               -o StrictHostKeyChecking=no \
               -o ConnectTimeout=30 \
               "$EC2_USER@$EC2_HOST" \
-              "
-                set -e
-                cd /home/ec2-user/vainozap-front
-
-                # Extrai build na pasta html/
-                rm -rf html && mkdir -p html
-                tar -xzf frontend-dist.tar.gz -C html
-
-                # Cria Dockerfile minimalista (só serve os arquivos compilados)
-                cat > Dockerfile.serve <<'DOCKERFILE'
-FROM nginx:1.27-alpine
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d/app.conf
-COPY html/ /usr/share/nginx/html
-EXPOSE 80
-CMD [\"nginx\", \"-g\", \"daemon off;\"]
-DOCKERFILE
-
-                # Para e remove container antigo (se existir)
-                docker stop vainozap-front 2>/dev/null || true
-                docker rm   vainozap-front 2>/dev/null || true
-
-                # Rebuilda imagem com o Dockerfile minimalista
-                docker build -f Dockerfile.serve -t vainozap-front .
-
-                # Sobe novo container na porta 3000
-                docker run -d \
-                  --name vainozap-front \
-                  --restart unless-stopped \
-                  -p 3000:80 \
-                  vainozap-front
-
-                # Health check
-                for i in 1 2 3 4 5; do
-                  sleep 5
-                  curl -sf http://localhost:3000 && echo 'Frontend UP!' && exit 0
-                  echo \"Aguardando... tentativa \$i/5\"
-                done
-                echo 'Frontend nao respondeu em 25s'
-                exit 1
-              "
+              "set -e
+               cd /home/ec2-user/vainozap-front
+               rm -rf html && mkdir -p html
+               tar -xzf frontend-dist.tar.gz -C html
+               docker stop vainozap-front 2>/dev/null || true
+               docker rm   vainozap-front 2>/dev/null || true
+               docker build -f Dockerfile.serve -t vainozap-front .
+               docker run -d --name vainozap-front --restart unless-stopped -p 3000:80 vainozap-front
+               for i in 1 2 3 4 5; do
+                 sleep 5
+                 curl -sf http://localhost:3000 && echo 'Frontend UP!' && exit 0
+                 echo Aguardando tentativa \$i/5
+               done
+               echo 'Frontend nao respondeu em 25s' && exit 1"
