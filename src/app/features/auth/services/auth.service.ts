@@ -9,6 +9,8 @@ export interface LoginResponse {
   refreshToken: string;
   role: string;
   tenantId: string;
+  nomeLoja: string | null;
+  slug: string | null;
 }
 
 export interface RegisterData {
@@ -23,14 +25,26 @@ export interface RegisterData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly TOKEN_KEY         = 'merchant_token';
-  private readonly REFRESH_TOKEN_KEY = 'merchant_refresh_token';
+  private readonly TOKEN_KEY          = 'merchant_token';
+  private readonly REFRESH_TOKEN_KEY  = 'merchant_refresh_token';
+  private readonly NOME_LOJA_KEY      = 'merchant_nome_loja';
+  private readonly SLUG_KEY           = 'merchant_slug';
 
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/api/v1/auth`;
 
   private readonly _token = signal<string | null>(
     typeof localStorage !== 'undefined' ? localStorage.getItem(this.TOKEN_KEY) : null,
+  );
+
+  /** Nome da loja do lojista autenticado — persistido no localStorage. */
+  readonly nomeLoja = signal<string | null>(
+    typeof localStorage !== 'undefined' ? localStorage.getItem(this.NOME_LOJA_KEY) : null,
+  );
+
+  /** Slug da loja do lojista autenticado — persistido no localStorage. */
+  readonly slug = signal<string | null>(
+    typeof localStorage !== 'undefined' ? localStorage.getItem(this.SLUG_KEY) : null,
   );
 
   readonly token           = this._token.asReadonly();
@@ -67,12 +81,24 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    localStorage.removeItem(this.NOME_LOJA_KEY);
+    localStorage.removeItem(this.SLUG_KEY);
     this._token.set(null);
+    this.nomeLoja.set(null);
+    this.slug.set(null);
   }
 
   storeTokens(res: LoginResponse): void {
     localStorage.setItem(this.TOKEN_KEY, res.token);
     localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refreshToken);
+    if (res.nomeLoja) {
+      localStorage.setItem(this.NOME_LOJA_KEY, res.nomeLoja);
+      this.nomeLoja.set(res.nomeLoja);
+    }
+    if (res.slug) {
+      localStorage.setItem(this.SLUG_KEY, res.slug);
+      this.slug.set(res.slug);
+    }
     this._token.set(res.token);
   }
 }
