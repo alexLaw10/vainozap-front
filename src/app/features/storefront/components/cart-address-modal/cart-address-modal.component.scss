@@ -1,1 +1,158 @@
+// ── Cart Address Modal ─────────────────────────────────────────────────────────
+// Overlay de endereço: cobre o painel do carrinho inteiro.
+// Panel desliza da direita sobre o resumo do pedido.
+// ──────────────────────────────────────────────────────────────────────────────
 
+:host { display: contents; }
+
+// ── Wrapper (fixed overlay) ────────────────────────────────────────────────────
+.cart-endereco {
+  position: fixed;
+  inset: 0;
+  z-index: 960;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+// ── Backdrop ───────────────────────────────────────────────────────────────────
+.cart-endereco__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.35);
+  cursor: pointer;
+  animation: addr-fade-in 0.18s ease;
+}
+
+// ── Painel lateral ─────────────────────────────────────────────────────────────
+.cart-endereco__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(26rem, 100%);
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-6) var(--space-5);
+  background: #ffffff;
+  box-shadow: -4px 0 28px rgb(0 0 0 / 0.22);
+  animation: addr-slide-in 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @media (max-width: 30rem) {
+    width: 100%;
+    padding: var(--space-5) var(--space-4);
+  }
+}
+
+// ── Título ─────────────────────────────────────────────────────────────────────
+.cart-endereco__title {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+// ── Campos ─────────────────────────────────────────────────────────────────────
+.cart-endereco__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.cart-endereco__grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+// ── CEP help ───────────────────────────────────────────────────────────────────
+.cart-endereco__cep-help {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--color-neutral-500);
+}
+
+.cart-endereco__cep-icon {
+  display: flex;
+  align-items: center;
+  color: var(--color-neutral-400);
+}
+
+.cart-endereco__cep-help-text { font-weight: 500; }
+
+.cart-endereco__consult-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cart-endereco-primary, #7c3aed);
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover { opacity: 0.8; }
+}
+
+// ── Erro ───────────────────────────────────────────────────────────────────────
+.cart-endereco__erro {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+// ── Botões ─────────────────────────────────────────────────────────────────────
+.cart-endereco__submit {
+  margin-top: auto;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--cart-endereco-primary, #7c3aed);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.88; }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.cart-endereco__voltar {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-neutral-600);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: var(--color-neutral-100); }
+}
+
+// ── Animações ──────────────────────────────────────────────────────────────────
+@keyframes addr-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes addr-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0);    }
+}

@@ -1,6 +1,7 @@
 import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { timeout, TimeoutError } from 'rxjs';
 
 import { CartAddressModalComponent } from '../../components/cart-address-modal/cart-address-modal.component';
 import { CartCheckoutFormComponent } from '../../components/cart-checkout-form/cart-checkout-form.component';
@@ -274,11 +275,16 @@ export class CartPageComponent {
       createdOrderId = String(Math.floor(1000 + Math.random() * 9000));
     } else {
       try {
-        const created = await firstValueFrom(this.orderService.create(payload));
+        const created = await firstValueFrom(
+          this.orderService.create(payload).pipe(timeout(15_000))
+        );
         createdOrderId = created.id;
       } catch (error) {
+        const msg = error instanceof TimeoutError
+          ? 'O servidor demorou para responder. Verifique sua conexão e tente novamente.'
+          : 'Não foi possível finalizar o pedido agora. Tente novamente.';
         console.warn('[Order] Erro ao criar pedido', error);
-        this.submitError.set('Nao foi possivel finalizar o pedido agora. Tente novamente.');
+        this.submitError.set(msg);
         this.submittingOrder.set(false);
         return;
       }
