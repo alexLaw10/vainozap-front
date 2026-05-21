@@ -7,8 +7,10 @@ import { filter, map, startWith } from 'rxjs/operators';
 import { MerchantCatalogService } from '../services/merchant-catalog.service';
 import { MerchantContextService } from '../services/merchant-context.service';
 import { PanelThemeService } from '../services/panel-theme.service';
+import { AuthService } from '../../auth/services/auth.service';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { NotificationBellComponent } from './notification-bell/notification-bell.component';
+import { environment } from '../../../../environments/environment';
 
 export interface MerchantSubNavItem {
   path: string;
@@ -26,7 +28,15 @@ export interface MerchantSubNavItem {
 export class MerchantShellComponent {
   protected readonly ctx = inject(MerchantContextService);
   protected readonly panelTheme = inject(PanelThemeService);
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+
+  /** URL da vitrine pública do lojista — abre em nova aba. */
+  protected readonly vitrineUrl = computed(() => {
+    const slug = this.auth.slug();
+    if (!slug) return null;
+    return `${window.location.protocol}//${slug}${environment.domainSuffix}`;
+  });
 
   protected readonly currentUrl = toSignal(
     this.router.events.pipe(

@@ -58,10 +58,12 @@
           }
         </button>
         <app-notification-bell />
-        <a routerLink="/" class="mx-header__store">
-          <span>Ver loja</span>
-          <app-icon name="external-link" [size]="16"></app-icon>
-        </a>
+        @if (vitrineUrl()) {
+          <a [href]="vitrineUrl()" target="_blank" rel="noopener noreferrer" class="mx-header__store">
+            <span>Ver loja</span>
+            <app-icon name="external-link" [size]="16"></app-icon>
+          </a>
+        }
       </div>
     </div>
 
