@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { of } from 'rxjs';
 import { provideRouter } from '@angular/router';
 
 import { PRODUTOS_MOCK } from '../../../../mock/produtos.mock';
@@ -7,6 +9,15 @@ import { StorefrontCatalogService } from '../../services/storefront-catalog.serv
 import { StorefrontContextService } from '../../services/storefront-context.service';
 import { ProductCardComponent } from './product-card.component';
 
+const catalogServiceMock = {
+  load: () => {},
+  listCategories: () => [],
+  listProducts: () => [],
+  loading: signal(false),
+  getProduct: (_id: string) => of(null),
+  isProductSoldOut: () => false,
+};
+
 describe('ProductCardComponent', () => {
   let fixture: ComponentFixture<ProductCardComponent>;
 
@@ -14,7 +25,7 @@ describe('ProductCardComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ProductCardComponent],
       providers: [
-        StorefrontCatalogService,
+        { provide: StorefrontCatalogService, useValue: catalogServiceMock },
         StorefrontCartService,
         StorefrontContextService,
         provideRouter([]),

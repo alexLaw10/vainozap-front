@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { of } from 'rxjs';
 import { provideRouter } from '@angular/router';
 
 import { StorefrontCartService } from '../../services/storefront-cart.service';
@@ -7,6 +9,15 @@ import { StorefrontCatalogUiService } from '../../services/storefront-catalog-ui
 import { StorefrontContextService } from '../../services/storefront-context.service';
 import { StorefrontFiltersService } from '../../services/storefront-filters.service';
 import { VitrineHeaderComponent } from './vitrine-header.component';
+
+const catalogServiceMock = {
+  load: () => {},
+  listCategories: () => [],
+  listProducts: () => [],
+  loading: signal(false),
+  getProduct: (_id: string) => of(null),
+  isProductSoldOut: () => false,
+};
 
 describe('VitrineHeaderComponent', () => {
   let fixture: ComponentFixture<VitrineHeaderComponent>;
@@ -17,7 +28,7 @@ describe('VitrineHeaderComponent', () => {
       providers: [
         StorefrontContextService,
         StorefrontCartService,
-        StorefrontCatalogService,
+        { provide: StorefrontCatalogService, useValue: catalogServiceMock },
         StorefrontCatalogUiService,
         StorefrontFiltersService,
         provideRouter([]),

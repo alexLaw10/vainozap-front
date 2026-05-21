@@ -1,9 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 import { StorefrontCatalogService } from '../../services/storefront-catalog.service';
 import { ProductPageComponent } from './product-page.component';
+
+const catalogServiceMock = {
+  load: () => {},
+  listCategories: () => [],
+  listProducts: () => [],
+  loading: signal(false),
+  getProduct: (_id: string) => of(null),
+  isProductSoldOut: () => false,
+};
 
 describe('ProductPageComponent', () => {
   let fixture: ComponentFixture<ProductPageComponent>;
@@ -14,7 +24,7 @@ describe('ProductPageComponent', () => {
       imports: [ProductPageComponent],
       providers: [
         provideRouter([]),
-        StorefrontCatalogService,
+        { provide: StorefrontCatalogService, useValue: catalogServiceMock },
         {
           provide: ActivatedRoute,
           useValue: {
