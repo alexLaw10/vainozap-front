@@ -14,6 +14,10 @@ export class NotificationService {
   unreadCount = computed(() => this.notifications().filter(n => !n.lida).length);
 
   private eventSource: EventSource | null = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private reconnectDelay = 3_000;
+  private readonly MAX_RECONNECT_DELAY = 60_000;
+  private destroyed = false;
 
   load(): void {
     this.http.get<NotificationModel[]>(this.base).subscribe(list => {
@@ -22,30 +26,66 @@ export class NotificationService {
   }
 
   connectSse(): void {
-    if (this.eventSource) return;
+    if (this.eventSource || this.destroyed) return;
     const token = this.auth.token();
     if (!token) return;
 
-    this.eventSource = new EventSource(`${this.base}/stream?token=${token}`);
+    const es = new EventSource(`${this.base}/stream?token=${token}`);
+    this.eventSource = es;
 
-    this.eventSource.addEventListener('notification', (event: MessageEvent) => {
+    es.addEventListener('notification', (event: MessageEvent) => {
       const notif: NotificationModel = JSON.parse(event.data);
       this.notifications.update(list => [notif, ...list]);
       this.playSound();
     });
 
-    this.eventSource.addEventListener('connected', () => {
-      console.log('[Notifications] SSE connected');
+    es.addEventListener('connected', () => {
+      // Conexão estabelecida — reseta o delay de reconexão
+      this.reconnectDelay = 3_000;
     });
 
-    this.eventSource.onerror = () => {
-      // Browser auto-reconnects after ~3s
+    es.onerror = () => {
+      // Fecha o EventSource com erro e agenda reconexão com backoff exponencial
+      es.close();
+      if (this.eventSource === es) this.eventSource = null;
+      this.scheduleReconnect();
     };
   }
 
   disconnectSse(): void {
+    this.destroyed = true;
+    this.clearReconnectTimer();
     this.eventSource?.close();
     this.eventSource = null;
+  }
+
+  /** Reinicia a conexão SSE (ex: após login em nova aba). */
+  resetSse(): void {
+    this.destroyed = false;
+    this.clearReconnectTimer();
+    this.eventSource?.close();
+    this.eventSource = null;
+    this.reconnectDelay = 3_000;
+    this.connectSse();
+  }
+
+  private scheduleReconnect(): void {
+    if (this.destroyed || this.reconnectTimer) return;
+    const token = this.auth.token();
+    if (!token) return;
+
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      this.reconnectDelay = Math.min(this.reconnectDelay * 2, this.MAX_RECONNECT_DELAY);
+      this.connectSse();
+    }, this.reconnectDelay);
+  }
+
+  private clearReconnectTimer(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
   }
 
   markRead(id: string): void {
