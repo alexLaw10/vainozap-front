@@ -242,7 +242,24 @@
       "Bash(grep \"\\\\.ts$\")",
       "Bash(grep \"\\\\.java$\")",
       "Bash(npm test *)",
-      "Bash(npx jest *)"
+      "Bash(npx jest *)",
+      "Bash(curl -s \"https://api.github.com/repos/alexLaw10/vainozap-front/actions/runs?per_page=3\")",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s \"https://api.github.com/repos/alexLaw10/vainozap-back/actions/runs?per_page=3\")",
+      "Bash(curl -s http://vainozap.com.br/ --max-time 10)",
+      "Bash(curl -sI http://vainozap.com.br/ --max-time 10)",
+      "Bash(curl -sI http://www.vainozap.com.br/ --max-time 10)",
+      "WebFetch(domain:centraldofuncionario.com.br)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:autenticador.secullum.com.br)",
+      "Bash(curl -s \"https://api.github.com/repos/alexLaw10/vainozap-front/actions/runs?per_page=15\")",
+      "Bash(curl -sI http://vainozap.com.br/main-6Y6CIHVD.js --max-time 10)",
+      "Bash(mkdir -p /Users/alexjunior/Documents/projetos/ponto-bot)",
+      "Read(//Users/alexjunior/Documents/projetos/**)",
+      "Bash(chmod +x /Users/alexjunior/Documents/projetos/ponto-bot/setup.sh)",
+      "WebFetch(domain:sasecullum.blob.core.windows.net)",
+      "WebFetch(domain:www.secullum.com.br)",
+      "WebFetch(domain:pontoweb.secullum.com.br)"
     ]
   }
 }
