@@ -28,6 +28,10 @@
 
     @media (min-width: 36rem) {
       grid-template-columns: 4.75rem minmax(0, 1fr);
+
+      &--single {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 35.99rem) {

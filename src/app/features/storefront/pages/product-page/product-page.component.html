@@ -17,7 +17,7 @@
 
     @if (product(); as p) {
       <div class="product__layout">
-        <div class="product__gallery" aria-label="Galeria de imagens">
+        <div class="product__gallery" [class.product__gallery--single]="p.fotos.length <= 1" aria-label="Galeria de imagens">
           @if (p.fotos.length > 1) {
             <div class="product__thumbs" role="tablist" aria-label="Miniaturas">
               @for (src of p.fotos; track $index) {
