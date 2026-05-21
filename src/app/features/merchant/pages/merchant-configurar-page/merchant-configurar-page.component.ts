@@ -28,6 +28,57 @@ export class MerchantConfigurarPageComponent implements OnInit {
 
   protected readonly FORMAS_PAGAMENTO = ['PIX', 'Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Transferência'];
 
+  // Chips rápidos para o resumo de horário — clique adiciona o período
+  protected readonly HORARIO_CHIPS = [
+    'Seg–Sex 9h–18h',
+    'Seg–Sex 8h–17h',
+    'Seg–Sex 10h–19h',
+    'Sáb 9h–13h',
+    'Sáb 9h–18h',
+    'Dom 10h–16h',
+    'Seg–Sáb 9h–18h',
+    'Todos os dias 9h–18h',
+    '24h / 7 dias',
+  ];
+
+  // Templates prontos para o campo de detalhes
+  protected readonly HORARIO_TEMPLATES = [
+    {
+      label: 'Semana comercial',
+      texto: 'Segunda a Sexta das 9h às 18h.\nSábado das 9h às 13h.\nDomingo e feriados: fechado.',
+    },
+    {
+      label: 'Seg–Sex integral',
+      texto: 'Segunda a Sexta das 9h às 18h.\nSábado, Domingo e feriados: fechado.',
+    },
+    {
+      label: 'Seg–Sáb integral',
+      texto: 'Segunda a Sábado das 9h às 18h.\nDomingo e feriados: fechado.',
+    },
+    {
+      label: 'Todos os dias',
+      texto: 'Todos os dias das 9h às 18h.\nFeriados: horário pode variar.',
+    },
+    {
+      label: '24 horas',
+      texto: 'Atendimento 24 horas, 7 dias por semana, incluindo feriados.',
+    },
+  ];
+
+  protected appendHorarioChip(chip: string): void {
+    const ctrl = this.form.controls.horarioAtendimentoLinha;
+    const atual = ctrl.value.trim();
+    ctrl.setValue(atual ? `${atual} · ${chip}` : chip);
+  }
+
+  protected clearHorarioLinha(): void {
+    this.form.controls.horarioAtendimentoLinha.setValue('');
+  }
+
+  protected applyHorarioTemplate(texto: string): void {
+    this.form.controls.horarioAtendimentoDetalhes.setValue(texto);
+  }
+
   protected readonly form = this.fb.nonNullable.group({
     // Identidade
     nomeLoja:            ['', [Validators.required, Validators.maxLength(100)]],
@@ -135,6 +186,30 @@ export class MerchantConfigurarPageComponent implements OnInit {
     return (this.form.controls.formasPagamento.value as string[]).includes(forma);
   }
 
+  protected readonly REDES_CHIPS: { rotulo: string; placeholder: string; cor: string; inicial: string }[] = [
+    { rotulo: 'Instagram',  placeholder: 'https://instagram.com/sua-loja',  cor: '#e1306c', inicial: 'In' },
+    { rotulo: 'Facebook',   placeholder: 'https://facebook.com/sua-loja',   cor: '#1877f2', inicial: 'Fb' },
+    { rotulo: 'WhatsApp',   placeholder: 'https://wa.me/5511999998888',      cor: '#25d366', inicial: 'Wa' },
+    { rotulo: 'TikTok',     placeholder: 'https://tiktok.com/@sua-loja',    cor: '#010101', inicial: 'Tk' },
+    { rotulo: 'YouTube',    placeholder: 'https://youtube.com/@sua-loja',   cor: '#ff0000', inicial: 'Yt' },
+    { rotulo: 'Twitter/X',  placeholder: 'https://x.com/sua-loja',          cor: '#000000', inicial: 'X'  },
+    { rotulo: 'LinkedIn',   placeholder: 'https://linkedin.com/company/...',cor: '#0a66c2', inicial: 'Li' },
+    { rotulo: 'Pinterest',  placeholder: 'https://pinterest.com/sua-loja',  cor: '#e60023', inicial: 'Pi' },
+    { rotulo: 'Telegram',   placeholder: 'https://t.me/sua-loja',           cor: '#2aabee', inicial: 'Tg' },
+  ];
+
+  protected redeChipJaAdicionada(rotulo: string): boolean {
+    return (this.redesArr.value as { rotulo: string }[]).some((r) => r.rotulo === rotulo);
+  }
+
+  protected addRedeByChip(chip: { rotulo: string; placeholder: string }): void {
+    if (this.redeChipJaAdicionada(chip.rotulo)) return;
+    this.redesArr.push(this.fb.group({
+      rotulo: [chip.rotulo, Validators.required],
+      url:    ['', Validators.required],
+    }));
+  }
+
   protected addRede(): void {
     this.redesArr.push(this.fb.group({ rotulo: ['', Validators.required], url: ['', Validators.required] }));
   }
@@ -145,6 +220,24 @@ export class MerchantConfigurarPageComponent implements OnInit {
 
   protected get redesLength(): number { return this.redesArr.length; }
 
+  protected chipParaRede(rotulo: string): { rotulo: string; placeholder: string; cor: string; inicial: string } | undefined {
+    return this.REDES_CHIPS.find((c) => c.rotulo === rotulo);
+  }
+
+  /** Lista de nomes de campos inválidos para exibir na mensagem de validação. */
+  protected invalidFields(): string[] {
+    const fields: string[] = [];
+    if (this.form.controls.nomeLoja.invalid) fields.push('Nome da loja');
+    if (this.form.controls.slug.invalid)     fields.push('Slug (URL)');
+    this.redesArr.controls.forEach((ctrl, i) => {
+      const g = ctrl as FormGroup;
+      const rotulo = (g.controls['rotulo']?.value as string) || `Rede ${i + 1}`;
+      if (g.controls['rotulo']?.invalid) fields.push(`Nome — ${rotulo}`);
+      if (g.controls['url']?.invalid)    fields.push(`URL — ${rotulo}`);
+    });
+    return fields;
+  }
+
   protected save(): void {
     this.form.markAllAsTouched();
     if (this.form.invalid || this.saving()) return;
@@ -153,31 +246,50 @@ export class MerchantConfigurarPageComponent implements OnInit {
     this.success.set(false);
 
     const v = this.form.getRawValue();
+    // lidos diretamente dos controles para garantir serialização correta
+    const formasPagamento = this.form.controls.formasPagamento.value as string[];
+    const redesSociais    = this.redesArr.getRawValue() as { rotulo: string; url: string }[];
+
     const payload = {
-      slug: v.slug, nomeLoja: v.nomeLoja, tituloDocumento: v.tituloDocumento || null,
-      logoUrl: v.logoUrl || null, faviconUrl: v.faviconUrl || null,
-      corPrimaria: v.corPrimaria || null, corSecundaria: v.corSecundaria || null,
-      corDestaqueCatalogo: v.corDestaqueCatalogo || null,
-      whatsapp: v.whatsapp || null, slogan: v.slogan || null,
-      emailContato: v.emailContato || null, telefoneContato: v.telefoneContato || null,
-      horarioAtendimentoLinha: v.horarioAtendimentoLinha || null,
-      horarioAtendimentoDetalhes: v.horarioAtendimentoDetalhes || null,
-      cnpj: v.cnpj || null, nomeProprietario: v.nomeProprietario || null,
-      enderecoLinha: v.enderecoLinha || null,
-      planoTipo: null as unknown as string,
-      ativo: null as unknown as boolean,
+      slug:                        v.slug,
+      nomeLoja:                    v.nomeLoja,
+      tituloDocumento:             v.tituloDocumento             || null,
+      logoUrl:                     v.logoUrl                     || null,
+      faviconUrl:                  v.faviconUrl                  || null,
+      corPrimaria:                 v.corPrimaria                 || null,
+      corSecundaria:               v.corSecundaria               || null,
+      corDestaqueCatalogo:         v.corDestaqueCatalogo         || null,
+      whatsapp:                    v.whatsapp                    || null,
+      slogan:                      v.slogan                      || null,
+      emailContato:                v.emailContato                || null,
+      telefoneContato:             v.telefoneContato             || null,
+      horarioAtendimentoLinha:     v.horarioAtendimentoLinha     || null,
+      horarioAtendimentoDetalhes:  v.horarioAtendimentoDetalhes  || null,
+      cnpj:                        v.cnpj                        || null,
+      nomeProprietario:            v.nomeProprietario            || null,
+      enderecoLinha:               v.enderecoLinha               || null,
       rodape: {
-        textoLinkWhatsapp: v.textoLinkWhatsapp || null,
-        seloTitulo: v.seloTitulo || null, seloSubtitulo: v.seloSubtitulo || null,
-        reclamacoesTexto: v.reclamacoesTexto || null, reclamacoesUrl: v.reclamacoesUrl || null,
-        formasPagamento: v.formasPagamento,
-        redesSociais: (v.redesSociais as { rotulo: string; url: string }[]),
-        redesPlaceholder: v.redesPlaceholder || null, faixaInferior: v.faixaInferior || null,
+        textoLinkWhatsapp:  v.textoLinkWhatsapp  || null,
+        seloTitulo:         v.seloTitulo         || null,
+        seloSubtitulo:      v.seloSubtitulo      || null,
+        reclamacoesTexto:   v.reclamacoesTexto   || null,
+        reclamacoesUrl:     v.reclamacoesUrl     || null,
+        formasPagamento,
+        redesSociais,
+        redesPlaceholder:   v.redesPlaceholder   || null,
+        faixaInferior:      v.faixaInferior       || null,
       },
     };
 
-    this.configService.update(payload, this.logoFile, this.faviconFile).subscribe({
-      next: () => { this.saving.set(false); this.success.set(true); setTimeout(() => this.success.set(false), 3000); },
+    this.configService.update(payload).subscribe({
+      // Recarrega o formulário com a resposta real da API — garante que o que
+      // está na tela bate exatamente com o que foi salvo no banco.
+      next: (saved: TenantApi) => {
+        this.saving.set(false);
+        this.success.set(true);
+        this.patchForm(saved);
+        setTimeout(() => this.success.set(false), 3000);
+      },
       error: (e: { error?: { error?: string }; message?: string }) => {
         this.saving.set(false);
         this.error.set(e?.error?.error ?? e?.message ?? 'Erro ao salvar configurações.');

@@ -38,4 +38,6 @@ export type UiIconName =
   | 'alert'
   | 'alert-circle'
   | 'eye'
-  | 'eye-off';
+  | 'eye-off'
+  | 'sun'
+  | 'moon';

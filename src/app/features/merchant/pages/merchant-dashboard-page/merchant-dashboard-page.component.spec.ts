@@ -3,7 +3,6 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { stubTenantApi } from '../../../../testing/test-stubs';
 import { MerchantConfigService } from '../../services/merchant-config.service';
 import { MerchantContextService } from '../../services/merchant-context.service';
 import { MerchantDashboardPageComponent } from './merchant-dashboard-page.component';
@@ -28,7 +27,8 @@ describe('MerchantDashboardPageComponent', () => {
     fixture = TestBed.createComponent(MerchantDashboardPageComponent);
     fixture.detectChanges();
 
-    http.expectOne((r) => r.url.includes('/merchant/settings')).flush(stubTenantApi());
+    // MerchantContextService lê o contexto do JWT — sem chamada HTTP para /settings.
+    // Somente o resumo do dashboard é carregado nesta página.
     http.expectOne((r) => r.url.includes('/dashboard/resumo')).flush({
       pedidosHoje: 0,
       pedidosPendentes: 0,

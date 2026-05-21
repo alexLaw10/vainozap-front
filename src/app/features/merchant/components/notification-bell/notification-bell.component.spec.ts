@@ -18,7 +18,10 @@ describe('NotificationBellComponent', () => {
     fixture = TestBed.createComponent(NotificationBellComponent);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    http.expectOne((r) => r.url.includes('/merchant/notifications') && !r.url.includes('stream')).flush([]);
+    // O ngOnInit conecta SSE via EventSource (não HttpClient).
+    // A lista de notificações só é buscada via HTTP quando o usuário
+    // abre o sino pela primeira vez — nenhuma requisição HTTP no init.
+    http.expectNone((r) => r.url.includes('/merchant/notifications'));
   });
 
   afterEach(() => {

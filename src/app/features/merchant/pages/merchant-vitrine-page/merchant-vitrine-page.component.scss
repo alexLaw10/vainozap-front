@@ -40,25 +40,64 @@
   font-size: var(--font-size-sm);
 }
 
-// ── Frame ──────────────────────────────────────────────────────────────────────
+// ── Frame — reset para tema claro (espelha a loja pública) ────────────────────
 
 .vit-frame {
   border-radius: 1rem;
   overflow: hidden;
   box-shadow:
-    0 0 0 1px var(--color-border-subtle),
-    0 8px 40px rgb(15 23 42 / 0.12);
+    0 0 0 1px rgb(255 255 255 / 0.10),
+    0 8px 40px rgb(0 0 0 / 0.32);
+
+  /* Isola o conteúdo do frame do dark theme do painel */
+  --color-surface-base:     #ffffff;
+  --color-surface-subtle:   #f8fafc;
+  --color-surface-raised:   #ffffff;
+  --color-border-subtle:    #e2e8f0;
+  --color-border-strong:    #cbd5e1;
+  --color-text-primary:     #0f172a;
+  --color-text-secondary:   #475569;
+  --color-text-muted:       #64748b;
+  --color-text-disabled:    #94a3b8;
+  --color-neutral-0:        #ffffff;
+  --color-neutral-50:       #f8fafc;
+  --color-neutral-100:      #f1f5f9;
+  --color-neutral-200:      #e2e8f0;
+  --color-primary-muted:    color-mix(in srgb, var(--color-primary) 12%, white);
+  --color-success-muted:    #dcfce7;
+  --color-danger-muted:     #fee2e2;
+  --color-warning-muted:    #fef9c3;
+  --color-on-success-muted: #166534;
+  --color-on-danger-muted:  #991b1b;
+  --color-on-warning-muted: #854d0e;
+  --color-chip-neutral-bg:  #f3f4f6;
+  --color-chip-neutral-fg:  #4b5563;
+  --color-blue-muted:       #dbeafe;
+  --color-on-blue-muted:    #1e40af;
+  --color-violet-muted:     #ede9fe;
+  --color-on-violet-muted:  #5b21b6;
+  --color-amber-muted:      #fef3c7;
+  --color-on-amber-muted:   #92400e;
 }
 
-// ── Barra de edição — acima do preview ────────────────────────────────────────
+// ── Barra de edição — acima do preview (dark, parte do painel) ───────────────
 
 .vit-edit-bar {
+  // Variáveis locais — padrão dark; shell sobrescreve no modo claro via CSS cascade
+  --_bar-bg:         color-mix(in srgb, var(--color-app-dark) 94%, white);
+  --_bar-border:     rgb(255 255 255 / 0.06);
+  --_btn-bg:         rgb(255 255 255 / 0.06);
+  --_btn-border:     rgb(255 255 255 / 0.10);
+  --_btn-color:      rgb(255 255 255 / 0.55);
+  --_btn-hover-bg:   rgb(255 255 255 / 0.11);
+  --_btn-hover-color: rgb(255 255 255 / 0.90);
+
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-surface-subtle);
-  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--_bar-bg);
+  border-bottom: 1px solid var(--_bar-border);
 }
 
 .vit-edit-btn {
@@ -68,10 +107,10 @@
   padding: 0.35rem var(--space-3);
   font-size: var(--font-size-xs);
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: var(--_btn-color);
   text-decoration: none;
-  background: var(--color-surface-base);
-  border: 1.5px solid var(--color-border-subtle);
+  background: var(--_btn-bg);
+  border: 1px solid var(--_btn-border);
   border-radius: 2rem;
   transition:
     border-color 0.12s ease,
@@ -79,9 +118,9 @@
     background 0.12s ease;
 
   &:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-    background: color-mix(in srgb, var(--color-primary) 6%, white);
+    background: var(--_btn-hover-bg);
+    border-color: color-mix(in srgb, var(--color-primary) 60%, transparent);
+    color: var(--_btn-hover-color);
   }
 
   &:focus-visible {
@@ -98,8 +137,11 @@
   overflow: hidden;
   background: var(--color-surface-base);
 
-  // Mantém o header fixo dentro do frame em vez de sticky na janela
-  :global(app-vitrine-header) {
+  // Cancela o sticky do vitrine-header dentro do preview — ele não deve
+  // grudar na janela do painel, só na loja pública.
+  // ::ng-deep é necessário porque a regra precisa sobrescrever o :host do componente filho.
+  ::ng-deep app-vitrine-header {
     position: static !important;
+    z-index: auto !important;
   }
 }

@@ -42,12 +42,14 @@
           }
         </li>
 
-        <li class="merchant-dash__stat">
+        <li class="merchant-dash__stat merchant-dash__stat--money">
           <span class="merchant-dash__stat-label">Vendas (mês)</span>
           @if (loading()) {
             <span class="merchant-dash__stat-value merchant-dash__stat-value--muted">…</span>
           } @else if (resumo(); as r) {
-            <span class="merchant-dash__stat-value" [class.merchant-dash__stat-value--muted]="r.vendasMes === 0">
+            <span class="merchant-dash__stat-value"
+              [class.merchant-dash__stat-value--money]="r.vendasMes > 0"
+              [class.merchant-dash__stat-value--muted]="r.vendasMes === 0">
               {{ currency(r.vendasMes) }}
             </span>
           } @else {

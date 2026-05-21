@@ -6,6 +6,7 @@ import { filter, map, startWith } from 'rxjs/operators';
 
 import { MerchantCatalogService } from '../services/merchant-catalog.service';
 import { MerchantContextService } from '../services/merchant-context.service';
+import { PanelThemeService } from '../services/panel-theme.service';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { NotificationBellComponent } from './notification-bell/notification-bell.component';
 
@@ -24,6 +25,7 @@ export interface MerchantSubNavItem {
 })
 export class MerchantShellComponent {
   protected readonly ctx = inject(MerchantContextService);
+  protected readonly panelTheme = inject(PanelThemeService);
   private readonly router = inject(Router);
 
   protected readonly currentUrl = toSignal(

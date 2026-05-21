@@ -47,7 +47,7 @@
               <input class="mcat-field__input"
                      [class.mcat-field__input--error]="form.controls.slug.invalid && form.controls.slug.touched"
                      formControlName="slug" placeholder="minha-loja" />
-              <span class="cfg-slug-suffix">.minhaapp.com.br</span>
+              <span class="cfg-slug-suffix">.vainozapcom.br</span>
             </div>
             @if (form.controls.slug.touched && form.controls.slug.errors?.['required']) {
               <span class="mcat-field__error">Slug é obrigatório.</span>
@@ -101,32 +101,85 @@
         <h2 class="cfg-card__title">Cores</h2>
         <div class="cfg-grid">
           <div class="mcat-field">
-            <label class="mcat-field__label">Cor primária</label>
+            <label class="mcat-field__label">
+              Cor primária
+              <span class="cfg-tip" aria-label="O que esta cor afeta">?
+                <span class="cfg-tip__bubble">
+                  Ícones do header (carrinho, filtros, menu), badge de quantidade do carrinho, botões de ação e foco em toda a vitrine.
+                </span>
+              </span>
+            </label>
             <div class="cfg-color-row">
               <input type="color" class="cfg-color-input" formControlName="corPrimaria" />
               <input class="mcat-field__input cfg-color-text" formControlName="corPrimaria" placeholder="#000000" />
             </div>
           </div>
           <div class="mcat-field">
-            <label class="mcat-field__label">Cor secundária</label>
+            <label class="mcat-field__label">
+              Cor secundária
+              <span class="cfg-tip" aria-label="O que esta cor afeta">?
+                <span class="cfg-tip__bubble">
+                  Texto dos botões de pedido e checkout (ex: "Enviar pedido via WhatsApp"). Use uma cor que contraste bem com a primária.
+                </span>
+              </span>
+            </label>
             <div class="cfg-color-row">
               <input type="color" class="cfg-color-input" formControlName="corSecundaria" />
               <input class="mcat-field__input cfg-color-text" formControlName="corSecundaria" placeholder="#000000" />
             </div>
           </div>
           <div class="mcat-field">
-            <label class="mcat-field__label">Destaque do catálogo</label>
+            <label class="mcat-field__label">
+              Destaque do catálogo
+              <span class="cfg-tip" aria-label="O que esta cor afeta">?
+                <span class="cfg-tip__bubble">
+                  Botão "Adicionar" e preço em destaque nos cards de produto. Se não preenchido, usa a cor primária automaticamente.
+                </span>
+              </span>
+            </label>
             <div class="cfg-color-row">
               <input type="color" class="cfg-color-input" formControlName="corDestaqueCatalogo" />
               <input class="mcat-field__input cfg-color-text" formControlName="corDestaqueCatalogo" placeholder="#000000" />
             </div>
           </div>
           <div class="cfg-color-preview">
-            <button type="button" class="cfg-preview-btn"
-              [style.background]="form.controls.corPrimaria.value"
-              [style.color]="form.controls.corSecundaria.value">
-              Preview do botão
-            </button>
+            <p class="cfg-color-preview__label">Prévia</p>
+            <div class="cfg-color-preview__items">
+
+              <!-- Ícone (usa cor primária) -->
+              <div class="cfg-preview-item">
+                <svg class="cfg-preview-icon"
+                     [style.color]="form.controls.corPrimaria.value"
+                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span class="cfg-preview-item__desc">Ícones</span>
+              </div>
+
+              <!-- Botão Adicionar (usa destaque do catálogo, texto branco) -->
+              <div class="cfg-preview-item">
+                <button type="button" class="cfg-preview-btn"
+                  [style.background]="form.controls.corDestaqueCatalogo.value || form.controls.corPrimaria.value"
+                  style="color: #ffffff">
+                  + Adicionar
+                </button>
+                <span class="cfg-preview-item__desc">Cards de produto</span>
+              </div>
+
+              <!-- Botão Fazer pedido (usa primária + secundária como texto) -->
+              <div class="cfg-preview-item">
+                <button type="button" class="cfg-preview-btn"
+                  [style.background]="form.controls.corPrimaria.value"
+                  [style.color]="form.controls.corSecundaria.value">
+                  Fazer pedido
+                </button>
+                <span class="cfg-preview-item__desc">Botão de pedido</span>
+              </div>
+
+            </div>
           </div>
         </div>
       </section>
@@ -167,15 +220,40 @@
       <section class="cfg-card">
         <h2 class="cfg-card__title">Atendimento</h2>
         <div class="cfg-grid">
+
+          <!-- Resumo -->
           <div class="mcat-field cfg-field--full">
             <label class="mcat-field__label">Horário (resumo)</label>
-            <input class="mcat-field__input" formControlName="horarioAtendimentoLinha" placeholder="Seg-Sex 9h–18h · Sáb 9h–13h" />
+            <div class="cfg-horario-input-row">
+              <input class="mcat-field__input" formControlName="horarioAtendimentoLinha"
+                     placeholder="Ex: Seg–Sex 9h–18h · Sáb 9h–13h" />
+              @if (form.controls.horarioAtendimentoLinha.value) {
+                <button type="button" class="cfg-horario-clear" (click)="clearHorarioLinha()" aria-label="Limpar">✕</button>
+              }
+            </div>
+            <div class="cfg-horario-chips">
+              @for (chip of HORARIO_CHIPS; track chip) {
+                <button type="button" class="cfg-hchip" (click)="appendHorarioChip(chip)">{{ chip }}</button>
+              }
+            </div>
+            <span class="mcat-field__hint">Clique nos períodos para adicionar ao resumo</span>
           </div>
+
+          <!-- Detalhes -->
           <div class="mcat-field cfg-field--full">
             <label class="mcat-field__label">Horário (detalhes)</label>
-            <textarea class="mcat-field__textarea" rows="3" formControlName="horarioAtendimentoDetalhes"
+            <div class="cfg-horario-templates">
+              @for (tpl of HORARIO_TEMPLATES; track tpl.label) {
+                <button type="button" class="cfg-hchip cfg-hchip--tpl" (click)="applyHorarioTemplate(tpl.texto)">
+                  {{ tpl.label }}
+                </button>
+              }
+            </div>
+            <textarea class="mcat-field__textarea" rows="4" formControlName="horarioAtendimentoDetalhes"
               placeholder="Segunda a Sexta das 9h às 18h.&#10;Sábado das 9h às 13h.&#10;Domingo e feriados: fechado."></textarea>
+            <span class="mcat-field__hint">Clique em um template para preencher automaticamente, ou escreva livremente</span>
           </div>
+
         </div>
       </section>
 
@@ -225,18 +303,73 @@
       <!-- Redes sociais -->
       <section class="cfg-card">
         <h2 class="cfg-card__title">Redes sociais</h2>
+
+        <!-- Chips de adição rápida -->
+        <div class="cfg-rede-chips">
+          @for (chip of REDES_CHIPS; track chip.rotulo) {
+            <button
+              type="button"
+              class="cfg-rede-chip"
+              [class.cfg-rede-chip--added]="redeChipJaAdicionada(chip.rotulo)"
+              [disabled]="redeChipJaAdicionada(chip.rotulo)"
+              (click)="addRedeByChip(chip)"
+            >
+              <span class="cfg-rede-chip__dot" [style.background]="chip.cor"></span>
+              {{ chip.rotulo }}
+              @if (redeChipJaAdicionada(chip.rotulo)) { <span class="cfg-rede-chip__check">✓</span> }
+            </button>
+          }
+        </div>
+
+        <!-- Lista de redes adicionadas -->
         <div class="cfg-redes">
+          @if (redesLength === 0) {
+            <p class="cfg-empty-redes">Clique nas redes acima para adicionar, ou use o botão abaixo para uma entrada personalizada.</p>
+          }
+
           @for (rede of redesArr.controls; track $index) {
             <div class="cfg-rede-row" [formGroup]="redeAt($index)">
-              <input class="mcat-field__input" formControlName="rotulo" placeholder="Instagram" />
-              <input class="mcat-field__input cfg-rede-url" formControlName="url" placeholder="https://instagram.com/minhaloja" />
-              <button type="button" class="cfg-rede-remove" (click)="removeRede($index)" aria-label="Remover">✕</button>
+
+              <!-- Badge colorido com inicial da rede -->
+              @if (chipParaRede(redeAt($index).controls['rotulo'].value); as chip) {
+                <span class="cfg-rede-badge" [style.background]="chip.cor" [attr.title]="chip.rotulo">
+                  {{ chip.inicial }}
+                </span>
+              } @else {
+                <span class="cfg-rede-badge cfg-rede-badge--custom" title="Personalizado">#</span>
+              }
+
+              <!-- Nome da rede (apenas leitura se veio de chip, editável se personalizado) -->
+              @if (chipParaRede(redeAt($index).controls['rotulo'].value)) {
+                <span class="cfg-rede-label">{{ redeAt($index).controls['rotulo'].value }}</span>
+              } @else {
+                <input
+                  class="mcat-field__input cfg-rede-rotulo"
+                  formControlName="rotulo"
+                  placeholder="Nome da rede"
+                  [class.mcat-field__input--error]="redeAt($index).controls['rotulo'].invalid && redeAt($index).controls['rotulo'].touched"
+                />
+              }
+
+              <!-- URL -->
+              <input
+                class="mcat-field__input cfg-rede-url"
+                formControlName="url"
+                [placeholder]="chipParaRede(redeAt($index).controls['rotulo'].value)?.placeholder ?? 'https://...'"
+                [class.mcat-field__input--error]="redeAt($index).controls['url'].invalid && redeAt($index).controls['url'].touched"
+              />
+
+              <!-- Remover -->
+              <button type="button" class="cfg-rede-remove" (click)="removeRede($index)" aria-label="Remover rede">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
             </div>
           }
-          @if (redesLength === 0) {
-            <p class="cfg-empty-redes">Nenhuma rede adicionada.</p>
-          }
-          <button type="button" class="mcat-add-btn" (click)="addRede()">+ Adicionar rede social</button>
+
+          <button type="button" class="cfg-rede-custom-btn" (click)="addRede()">+ Personalizado</button>
         </div>
       </section>
 
@@ -246,7 +379,9 @@
     <div class="cfg-footer">
       @if (error()) { <p class="cfg-error">{{ error() }}</p> }
       @if (form.invalid && form.touched) {
-        <p class="cfg-error" role="alert">Corrija os campos obrigatórios antes de salvar.</p>
+        <p class="cfg-error" role="alert">
+          Campos obrigatórios não preenchidos: <strong>{{ invalidFields().join(', ') }}</strong>
+        </p>
       }
       <button type="button" class="mcat-btn mcat-btn--primary" [disabled]="saving() || form.invalid" (click)="save()">
         {{ saving() ? 'Salvando…' : 'Salvar alterações' }}

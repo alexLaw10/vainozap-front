@@ -19,7 +19,7 @@ export const TENANT_MOCK: Tenant = {
     'Segunda a sexta: 08:00–18:00\nSábado: 09:00–13:00\nDomingo: encerrado',
   cnpj: '12.345.678/0001-90',
   ativo: true,
-  slogan: 'DE QUEM CORRE PARA QUEM CORRE',
+  slogan: 'DE QUEMdsad CORRE PARA QUEM CORRE',
   emailContato: 'mypacefitnesss@gmail.com',
   nomeProprietario: 'Law',
   enderecoLinha: 'Rua das Flores, 123, Centro, São Paulo, SP',

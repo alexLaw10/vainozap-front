@@ -2,11 +2,13 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NotificationModel } from '../../../shared/models/notification.model';
 import { AuthService } from '../../auth/services/auth.service';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
+  private readonly base = `${environment.apiUrl}/api/v1/merchant/notifications`;
 
   notifications = signal<NotificationModel[]>([]);
   unreadCount = computed(() => this.notifications().filter(n => !n.lida).length);
@@ -14,7 +16,7 @@ export class NotificationService {
   private eventSource: EventSource | null = null;
 
   load(): void {
-    this.http.get<NotificationModel[]>('/api/v1/merchant/notifications').subscribe(list => {
+    this.http.get<NotificationModel[]>(this.base).subscribe(list => {
       this.notifications.set(list);
     });
   }
@@ -23,7 +25,8 @@ export class NotificationService {
     if (this.eventSource) return;
     const token = this.auth.token();
     if (!token) return;
-    this.eventSource = new EventSource(`/api/v1/merchant/notifications/stream?token=${token}`);
+
+    this.eventSource = new EventSource(`${this.base}/stream?token=${token}`);
 
     this.eventSource.addEventListener('notification', (event: MessageEvent) => {
       const notif: NotificationModel = JSON.parse(event.data);
@@ -46,7 +49,7 @@ export class NotificationService {
   }
 
   markRead(id: string): void {
-    this.http.patch(`/api/v1/merchant/notifications/${id}/read`, {}).subscribe(() => {
+    this.http.patch(`${this.base}/${id}/read`, {}).subscribe(() => {
       this.notifications.update(list =>
         list.map(n => n.id === id ? { ...n, lida: true } : n)
       );
@@ -54,7 +57,7 @@ export class NotificationService {
   }
 
   markAllRead(): void {
-    this.http.patch('/api/v1/merchant/notifications/read-all', {}).subscribe(() => {
+    this.http.patch(`${this.base}/read-all`, {}).subscribe(() => {
       this.notifications.update(list => list.map(n => ({ ...n, lida: true })));
     });
   }

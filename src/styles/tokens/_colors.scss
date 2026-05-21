@@ -13,16 +13,30 @@
   --color-neutral-800: #1e293b;
   --color-neutral-900: #0f172a;
 
-  /* Brand (overridden at runtime by ShellComponent from tenant API) */
-  --color-primary: #6366f1;
+  /* ── Paleta da marca ────────────────────────────────────────────────────────
+   * Roxo  #7c3aed — tech, moderno, diferenciação
+   * Verde #22c55e — energia, crescimento, WhatsApp
+   * Dark  #1a1f2e — fundo escuro profissional (painel admin)
+   * ────────────────────────────────────────────────────────────────────────── */
+
+  /* Brand primary — roxo (overridden at runtime para tenant storefront) */
+  --color-primary: #7c3aed;
   --color-primary-hover: color-mix(in srgb, var(--color-primary) 85%, black);
   --color-primary-active: color-mix(in srgb, var(--color-primary) 72%, black);
-  --color-primary-muted: color-mix(in srgb, var(--color-primary) 14%, white);
+  --color-primary-muted: color-mix(in srgb, var(--color-primary) 12%, white);
   --color-on-primary: #ffffff;
 
-  --color-secondary: #0ea5e9;
+  /* Brand secondary — verde */
+  --color-secondary: #22c55e;
   --color-secondary-hover: color-mix(in srgb, var(--color-secondary) 85%, black);
   --color-on-secondary: #ffffff;
+
+  /* Dark background — painel admin */
+  --color-app-dark:          #1a1f2e;
+  --color-app-dark-surface:  #212739;  /* cards sobre o fundo dark */
+  --color-app-dark-raised:   #272e42;  /* cards elevados / hover */
+  --color-app-dark-border:   rgb(255 255 255 / 0.08);
+  --color-app-dark-border-strong: rgb(255 255 255 / 0.14);
 
   /* Cor do botão Comprar — pode ser diferente da primária (tenant.corDestaqueCatalogo) */
   --color-destaque-catalogo: var(--color-primary);
@@ -44,18 +58,20 @@
   /* Feedback */
   --color-danger: #dc2626;
   --color-danger-muted: #fee2e2;
-  --color-success: #16a34a;
+  /* Verde da marca = sucesso (crescimento, confirmação, WhatsApp) */
+  --color-success: #22c55e;
   --color-success-muted: #dcfce7;
   --color-warning: #ca8a04;
   --color-warning-muted: #fef9c3;
-  --color-info: var(--color-secondary);
+  /* Info desacoplado do secondary — mantém azul céu semântico */
+  --color-info: #0ea5e9;
   --color-info-muted: #e0f2fe;
   /* Texto forte sobre fundo info/sky claro (chips, detalhes) */
   --color-info-emphasis: #075985;
 
-  /* Auth / links violeta (telas de login, botão primário da lib UI onde aplicável) */
-  --color-auth-accent: #7c3aed;
-  --color-auth-accent-hover: #6d28d9;
+  /* Auth / links — mesmo roxo da primary (alias para consistência) */
+  --color-auth-accent: var(--color-primary);
+  --color-auth-accent-hover: var(--color-primary-hover);
 
   /* Texto sobre fundos “muted” de feedback (badges, estoque) */
   --color-on-success-muted: #166534;

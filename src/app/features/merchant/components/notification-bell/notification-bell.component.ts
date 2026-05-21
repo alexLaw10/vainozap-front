@@ -69,6 +69,7 @@ import { IconComponent } from '../../../../shared/ui/icon/icon.component';
         cursor: pointer;
         padding: 8px;
         border-radius: 8px;
+        /* Usa tokens semânticos → adapta ao tema claro e escuro automaticamente */
         color: var(--color-text-muted);
         display: flex;
         align-items: center;
@@ -79,7 +80,7 @@ import { IconComponent } from '../../../../shared/ui/icon/icon.component';
 
         &:hover,
         &.active {
-          background: var(--color-chip-neutral-bg);
+          background: var(--color-neutral-200);
           color: var(--color-text-primary);
         }
       }

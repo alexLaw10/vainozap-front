@@ -1,6 +1,6 @@
 .merchant-dash {
   --dash-radius: 1.125rem;
-  --dash-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 8px 24px rgb(15 23 42 / 0.06);
+  --dash-shadow: 0 1px 3px rgb(15 23 42 / 0.06), 0 6px 20px rgb(15 23 42 / 0.05);
 
   padding-block: var(--space-6) var(--space-10);
   min-height: calc(100vh - 4.5rem);
@@ -11,34 +11,65 @@
     gap: var(--space-8);
   }
 
+  /* Hero — gradiente dark da marca */
   &__hero {
-    padding: var(--space-6) var(--space-5);
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-7) var(--space-6);
     border-radius: var(--dash-radius);
     background: linear-gradient(
       135deg,
-      color-mix(in srgb, var(--color-success) 18%, white) 0%,
-      var(--color-surface-base) 48%,
-      color-mix(in srgb, var(--color-primary) 10%, white) 100%
+      color-mix(in srgb, var(--color-primary) 22%, var(--color-app-dark-surface)) 0%,
+      var(--color-app-dark-surface) 55%,
+      color-mix(in srgb, var(--color-success) 16%, var(--color-app-dark-surface)) 100%
     );
-    border: 1px solid color-mix(in srgb, var(--color-success) 35%, var(--color-border-subtle));
-    box-shadow: var(--dash-shadow);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 30%, var(--color-app-dark-border));
+    box-shadow:
+      var(--dash-shadow),
+      0 0 0 1px color-mix(in srgb, var(--color-primary) 12%, transparent);
+
+    /* Orbe decorativo roxo */
+    &::before {
+      content: '';
+      position: absolute;
+      top: -4rem;
+      right: -4rem;
+      width: 14rem;
+      height: 14rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 28%, transparent) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* Orbe verde pequeno */
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2rem;
+      left: 40%;
+      width: 8rem;
+      height: 8rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--color-success) 20%, transparent) 0%, transparent 70%);
+      pointer-events: none;
+    }
   }
 
   &__eyebrow {
     margin: 0 0 var(--space-1);
     font-size: var(--font-size-sm);
     font-weight: 600;
-    color: var(--color-text-secondary);
+    color: color-mix(in srgb, var(--color-primary) 80%, white);
     letter-spacing: 0.02em;
   }
 
   &__title {
     margin: 0 0 var(--space-2);
     font-size: clamp(1.5rem, 4vw, 2rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     color: var(--color-text-primary);
-    line-height: 1.2;
+    line-height: 1.15;
   }
 
   &__lead {
@@ -67,6 +98,7 @@
     margin: 0;
     font-size: var(--font-size-lg);
     font-weight: 700;
+    letter-spacing: -0.01em;
     color: var(--color-text-primary);
   }
 
@@ -76,6 +108,7 @@
     color: var(--color-text-muted);
   }
 
+  /* Stats */
   &__stats {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
@@ -90,24 +123,34 @@
     background: var(--color-surface-base);
     border-radius: calc(var(--dash-radius) - 0.25rem);
     border: 1px solid var(--color-border-subtle);
-    box-shadow: 0 1px 0 rgb(15 23 42 / 0.04);
+    border-top: 3px solid var(--color-primary);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.18);
+
+    /* Vendas (mês) — destaque verde */
+    &--money {
+      border-top-color: var(--color-success);
+    }
   }
 
   &__stat-label {
     display: block;
     font-size: var(--font-size-xs);
-    font-weight: 600;
+    font-weight: 700;
     color: var(--color-text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     margin-bottom: var(--space-2);
   }
 
   &__stat-value {
     font-size: var(--font-size-xl);
-    font-weight: 700;
+    font-weight: 800;
     color: var(--color-text-primary);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+
+    &--money {
+      color: var(--color-success);
+    }
 
     &--muted {
       color: var(--color-text-disabled);
@@ -119,6 +162,7 @@
     }
   }
 
+  /* Atalhos */
   &__actions {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
@@ -146,11 +190,11 @@
       box-shadow 0.15s ease;
 
     &:hover {
-      border-color: color-mix(in srgb, var(--color-success) 45%, var(--color-border-subtle));
+      border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-border-subtle));
       box-shadow:
-        0 1px 2px rgb(15 23 42 / 0.06),
-        0 12px 28px rgb(22 163 74 / 0.08);
-      transform: translateY(-1px);
+        0 1px 3px rgb(15 23 42 / 0.06),
+        0 12px 28px color-mix(in srgb, var(--color-primary) 12%, transparent);
+      transform: translateY(-2px);
     }
 
     &:focus-visible {
@@ -158,6 +202,7 @@
       outline-offset: 2px;
     }
 
+    /* Ações secundárias (vitrine, configurar, contas) */
     &--outline {
       background: var(--color-surface-subtle);
       box-shadow: none;
@@ -168,7 +213,7 @@
     }
 
     &--soon {
-      opacity: 0.72;
+      opacity: 0.65;
       cursor: default;
       box-shadow: none;
 
@@ -180,6 +225,7 @@
     }
   }
 
+  /* Ícones: verde para ações de negócio, roxo para ações de loja/config */
   &__action-icon {
     flex-shrink: 0;
     display: flex;
@@ -199,7 +245,7 @@
 
   &__action--soon &__action-icon {
     background: var(--color-neutral-100);
-    color: var(--color-text-muted);
+    color: var(--color-text-disabled);
   }
 
   &__action-text {
@@ -224,10 +270,8 @@
 
   &__action-chev {
     flex-shrink: 0;
-    font-size: 1.5rem;
-    font-weight: 300;
-    color: var(--color-text-muted);
-    line-height: 1;
+    color: var(--color-text-disabled);
+    display: flex;
   }
 
   &__panel {

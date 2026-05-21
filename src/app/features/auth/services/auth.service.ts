@@ -56,6 +56,8 @@ export class AuthService {
     const t = this._token();
     if (!t) return null;
     try {
+
+      console.log(JSON.parse(atob(t.split('.')[1])))
       return JSON.parse(atob(t.split('.')[1])) as JwtPayload;
     } catch {
       return null;

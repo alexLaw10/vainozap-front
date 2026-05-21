@@ -1,4 +1,4 @@
-<div class="merchant-shell">
+<div class="merchant-shell" [class.merchant-shell--light]="panelTheme.theme() === 'light'">
   <header class="mx-header">
     <div class="mx-header__bar container">
       <a routerLink="/merchant" class="mx-header__brand" aria-label="Início do painel">
@@ -45,6 +45,18 @@
       </nav>
 
       <div class="mx-header__actions">
+        <button
+          class="mx-theme-toggle"
+          (click)="panelTheme.toggle()"
+          [attr.aria-label]="panelTheme.theme() === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'"
+          [attr.title]="panelTheme.theme() === 'dark' ? 'Modo claro' : 'Modo escuro'"
+        >
+          @if (panelTheme.theme() === 'dark') {
+            <app-icon name="sun" [size]="18"></app-icon>
+          } @else {
+            <app-icon name="moon" [size]="18"></app-icon>
+          }
+        </button>
         <app-notification-bell />
         <a routerLink="/" class="mx-header__store">
           <span>Ver loja</span>

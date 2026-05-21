@@ -54,6 +54,21 @@
     object-fit: contain;
   }
 
+  &__logo-placeholder {
+    display: block;
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-md);
+    background: var(--color-neutral-100);
+  }
+
+  &__logo-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
   &__logo-text {
     font-size: var(--font-size-2xl);
     font-weight: 700;
@@ -63,7 +78,6 @@
 
   &__slogan {
     margin: 0;
-    max-width: min(22rem, 100%);
     font-size: var(--font-size-xs);
     font-weight: 500;
     letter-spacing: 0.06em;
@@ -137,12 +151,12 @@
     border: none;
     border-radius: var(--radius-md);
     background: transparent;
-    color: var(--color-text-primary);
+    color: var(--color-primary);
     text-decoration: none;
     cursor: pointer;
 
     &:hover {
-      background: var(--color-neutral-100);
+      background: var(--color-primary-muted);
     }
 
     &:focus-visible {
@@ -175,7 +189,7 @@
     height: 1.125rem;
     padding: 0 0.25rem;
     border-radius: var(--radius-full);
-    background: var(--color-neutral-900);
+    background: var(--color-primary);
     color: var(--color-neutral-0);
     font-size: 0.625rem;
     font-weight: 700;
@@ -194,7 +208,7 @@
     border: none;
     border-radius: var(--radius-md);
     background: transparent;
-    color: var(--color-text-primary);
+    color: var(--color-primary);
     cursor: pointer;
 
     &--link {
@@ -202,7 +216,7 @@
     }
 
     &:hover {
-      background: var(--color-neutral-100);
+      background: var(--color-primary-muted);
     }
 
     &:focus-visible {

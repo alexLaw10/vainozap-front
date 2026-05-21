@@ -15,16 +15,20 @@
             height="48"
             decoding="async"
           />
+        } @else {
+          <span class="vitrine-header__logo-placeholder" aria-hidden="true"></span>
         }
-        <span
-          class="vitrine-header__logo-text"
-          [class.visually-hidden]="!!context.tenant().logoUrl"
-          >{{ context.tenant().nomeLoja }}</span
-        >
+        <span class="vitrine-header__logo-brand">
+          <span
+            class="vitrine-header__logo-text"
+            [class.visually-hidden]="!!context.tenant().logoUrl"
+            >{{ context.tenant().nomeLoja }}</span
+          >
+          @if (context.tenant().slogan) {
+            <span class="vitrine-header__slogan">{{ context.tenant().slogan }}</span>
+          }
+        </span>
       </a>
-      @if (context.tenant().slogan) {
-        <p class="vitrine-header__slogan">{{ context.tenant().slogan }}</p>
-      }
     </div>
   </div>
 

@@ -13,11 +13,7 @@ export class MerchantConfigService {
     return this.http.get<TenantApi>(this.base);
   }
 
-  update(settings: Omit<TenantApi, 'id' | 'planoTipo' | 'ativo' | 'trialEndsAt'>, logo?: File, favicon?: File): Observable<TenantApi> {
-    const form = new FormData();
-    form.append('settings', new Blob([JSON.stringify(settings)], { type: 'application/json' }));
-    if (logo) form.append('logo', logo);
-    if (favicon) form.append('favicon', favicon);
-    return this.http.put<TenantApi>(this.base, form);
+  update(settings: Omit<TenantApi, 'id' | 'planoTipo' | 'ativo' | 'trialEndsAt'>): Observable<TenantApi> {
+    return this.http.put<TenantApi>(this.base, settings);
   }
 }

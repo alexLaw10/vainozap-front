@@ -1,1 +1,176 @@
+<footer class="vitrine-footer">
 
+  <!-- ── CTA WhatsApp ──────────────────────────────────────────────────────── -->
+  <div class="vitrine-footer__cta">
+    <a [href]="waLink()" target="_blank" rel="noopener noreferrer"
+       class="vitrine-footer__cta-btn">
+      {{ rodape().textoLinkWhatsapp || 'Fale conosco pelo WhatsApp' }}
+    </a>
+  </div>
+
+  <!-- ── Corpo 3 colunas ───────────────────────────────────────────────────── -->
+  <div class="vitrine-footer__body">
+    <div class="container">
+      <div class="vitrine-footer__grid">
+
+        <!-- Col 1: Contato ────────────────────────────────────────────────── -->
+        <div>
+          <h3 class="vitrine-footer__heading">Contato</h3>
+
+          <!-- Telefone -->
+          <p class="vitrine-footer__contact-line">
+            <app-icon name="phone" [size]="14" class="vitrine-footer__ico"></app-icon>
+            <a [href]="telHref()" class="vitrine-footer__contact-link">{{ telefoneExibicao() }}</a>
+          </p>
+
+          <!-- E-mail -->
+          @if (context.tenant().emailContato) {
+            <p class="vitrine-footer__contact-line">
+              <app-icon name="mail" [size]="14" class="vitrine-footer__ico"></app-icon>
+              <a [href]="'mailto:' + context.tenant().emailContato"
+                 class="vitrine-footer__contact-link">{{ context.tenant().emailContato }}</a>
+            </p>
+          }
+
+          <!-- Horário (clicável para expandir detalhes) -->
+          @if (horarioLinha()) {
+            <p class="vitrine-footer__contact-line">
+              <app-icon name="calendar" [size]="14" class="vitrine-footer__ico"></app-icon>
+              <button type="button" class="vitrine-footer__link-btn"
+                      (click)="toggleHorarios()"
+                      [attr.aria-expanded]="horariosAbertos()">
+                {{ horarioLinha() }}
+                @if (horarioDetalhes()) {
+                  &nbsp;<app-icon name="chevron-down" [size]="11"></app-icon>
+                }
+              </button>
+            </p>
+            @if (horariosAbertos() && horarioDetalhes()) {
+              <pre class="vitrine-footer__horario-detalhe">{{ horarioDetalhes() }}</pre>
+            }
+          }
+
+          <!-- Endereço -->
+          @if (context.tenant().enderecoLinha) {
+            <p class="vitrine-footer__contact-line">
+              <app-icon name="map-pin" [size]="14"
+                        class="vitrine-footer__ico vitrine-footer__ico--pin"></app-icon>
+              <span class="vitrine-footer__contact-muted">{{ context.tenant().enderecoLinha }}</span>
+            </p>
+          }
+        </div>
+
+        <!-- Col 2: Pagamento + Redes sociais ────────────────────────────── -->
+        <div>
+
+          <!-- Formas de pagamento -->
+          @if (rodape().formasPagamento?.length) {
+            <h3 class="vitrine-footer__heading">Pagamento</h3>
+            <ul class="vitrine-footer__pay-pills">
+              @for (forma of rodape().formasPagamento; track forma) {
+                <li class="vitrine-footer__pay-pill">{{ forma }}</li>
+              }
+            </ul>
+          }
+
+          <!-- Redes sociais -->
+          <h3 class="vitrine-footer__heading vitrine-footer__heading--spaced">Redes sociais</h3>
+          @if (rodape().redesSociais?.length) {
+            <div class="vitrine-footer__social-row">
+              @for (rede of rodape().redesSociais; track rede.rotulo) {
+                @if (rede.rotulo === 'Instagram') {
+                  <a [href]="rede.url" target="_blank" rel="noopener noreferrer"
+                     class="vitrine-footer__social-ig" [attr.aria-label]="rede.rotulo">
+                    <span class="vitrine-footer__ig-gradient">
+                      <app-icon name="brand-instagram" [size]="18"></app-icon>
+                    </span>
+                  </a>
+                } @else {
+                  <a [href]="rede.url" target="_blank" rel="noopener noreferrer"
+                     class="vitrine-footer__contact-link"
+                     style="font-size: 0.875rem; font-weight: 600;">{{ rede.rotulo }}</a>
+                }
+              }
+            </div>
+          } @else {
+            <p class="vitrine-footer__contact-muted">{{ rodape().redesPlaceholder }}</p>
+          }
+        </div>
+
+        <!-- Col 3: Selo + Reclamações + Filtrar ─────────────────────────── -->
+        <div>
+
+          <!-- Selo de confiança -->
+          <div class="vitrine-footer__badge">
+            <span class="vitrine-footer__shield" aria-hidden="true">✓</span>
+            <div class="vitrine-footer__badge-text">
+              <span class="vitrine-footer__badge-title">{{ rodape().seloTitulo }}</span>
+              <span class="vitrine-footer__badge-sub">{{ rodape().seloSubtitulo }}</span>
+            </div>
+          </div>
+
+          <!-- Reclamações -->
+          @if (rodape().reclamacoesTexto) {
+            <div class="vitrine-footer__reclamacoes-wrap" style="margin-top: 1.25rem">
+              <span class="vitrine-footer__reclamacoes-label">Reclamações</span>
+              @if (rodape().reclamacoesUrl) {
+                <a [href]="rodape().reclamacoesUrl!" target="_blank" rel="noopener noreferrer"
+                   class="vitrine-footer__contact-link" style="font-size: 0.9rem">
+                  {{ rodape().reclamacoesTexto }}
+                </a>
+              } @else {
+                <p class="vitrine-footer__contact-muted" style="margin: 0">
+                  {{ rodape().reclamacoesTexto }}
+                </p>
+              }
+            </div>
+          }
+
+          <!-- Filtrar produtos -->
+          <button type="button" class="vitrine-footer__btn-outline"
+                  style="margin-top: 1.25rem"
+                  (click)="abrirFiltros()">
+            Filtrar produtos
+          </button>
+        </div>
+
+      </div><!-- /grid -->
+
+      <!-- ── Faixa inferior: nome, CNPJ, endereço, copyright ────────────── -->
+      <div class="vitrine-footer__biz">
+        <div class="vitrine-footer__biz-block">
+          <p class="vitrine-footer__biz-name">{{ context.tenant().nomeLoja }}</p>
+
+          @if (cnpjExibicao()) {
+            <p class="vitrine-footer__biz-cnpj">CNPJ: {{ cnpjExibicao() }}</p>
+          }
+
+          @if (context.tenant().enderecoLinha) {
+            <p class="vitrine-footer__biz-address">
+              <app-icon name="map-pin" [size]="12"
+                        class="vitrine-footer__ico vitrine-footer__ico--pin"></app-icon>
+              {{ context.tenant().enderecoLinha }}
+            </p>
+          }
+
+          @if (rodape().faixaInferior) {
+            <p class="vitrine-footer__contact-muted" style="margin-top: 0.5rem; font-size: 0.8125rem">
+              {{ rodape().faixaInferior }}
+            </p>
+          }
+
+          <p class="vitrine-footer__copyright">
+            <small>© {{ currentYear }} {{ context.tenant().nomeLoja }}. Todos os direitos reservados.</small>
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /container -->
+  </div><!-- /body -->
+
+  <!-- ── Powered by ────────────────────────────────────────────────────────── -->
+  <div class="vitrine-footer__powered">
+    <p class="vitrine-footer__powered-inner">Powered by <strong>Vainozap</strong></p>
+  </div>
+
+</footer>

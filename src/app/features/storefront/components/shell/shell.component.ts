@@ -67,14 +67,7 @@ export class ShellComponent {
         link.type = 'image/x-icon';
       }
 
-      // Brand colors — override CSS custom properties from tenant
-      const root = this.doc.documentElement;
-      root.style.setProperty('--color-primary', tenant.corPrimaria);
-      root.style.setProperty('--color-secondary', tenant.corSecundaria);
-      root.style.setProperty(
-        '--color-destaque-catalogo',
-        tenant.corDestaqueCatalogo ?? tenant.corPrimaria,
-      );
+      // Brand colors são aplicadas pelo StorefrontContextService via effect().
     });
   }
 }
