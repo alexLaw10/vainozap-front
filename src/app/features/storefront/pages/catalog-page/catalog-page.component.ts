@@ -1,6 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
+import { VitrineBannerComponent } from '../../components/vitrine-banner/vitrine-banner.component';
 import { IconComponent } from '../../../../shared/ui/icon/icon.component';
 import { StorefrontCatalogService } from '../../services/storefront-catalog.service';
 import { StorefrontCatalogUiService } from '../../services/storefront-catalog-ui.service';
@@ -12,7 +13,7 @@ export type CatalogSortMode = 'name' | 'price-asc' | 'price-desc';
 @Component({
   selector: 'app-catalog-page',
   standalone: true,
-  imports: [ProductCardComponent, IconComponent],
+  imports: [ProductCardComponent, VitrineBannerComponent, IconComponent],
   templateUrl: './catalog-page.component.html',
   styleUrl: './catalog-page.component.scss',
 })

@@ -117,8 +117,8 @@ export class ProductPageComponent {
     const phone = (t.whatsapp ?? '').replace(/\D/g, '');
     if (!phone) return null;
     const msg = encodeURIComponent(
-      `Olá! 👋 Vim pelo catálogo online e tenho interesse no produto *${p.nome}*.\n\n` +
-      `Ele ainda está disponível? Poderia me passar mais informações sobre preço e condições?\n\n` +
+      `Olá! 👋 Vim pelo catálogo da *${t.nomeLoja}* e tenho interesse em *${p.nome}*.\n\n` +
+      `Poderia me passar mais informações sobre disponibilidade, valor e condições?\n\n` +
       `Aguardo seu retorno. Obrigado! 😊`
     );
     return `https://wa.me/${phone}?text=${msg}`;

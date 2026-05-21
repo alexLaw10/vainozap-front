@@ -81,6 +81,8 @@ export interface Tenant {
   logoUrl: string | null;
   /** URL do favicon (PNG/SVG/ICO). Se null, usa o favicon padrão do app. */
   faviconUrl: string | null;
+  /** URL do banner hero exibido acima das categorias. Opcional. */
+  bannerUrl?: string | null;
   corPrimaria: string;
   /**
    * Cor secundária da marca (ex.: painel azul do modal do carrinho — resumo do pedido).

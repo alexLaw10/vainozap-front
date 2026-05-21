@@ -11,6 +11,7 @@ export function stubTenantApi(over: Partial<TenantApi> = {}): TenantApi {
     tituloDocumento: null,
     logoUrl: null,
     faviconUrl: null,
+    bannerUrl: null,
     corPrimaria: '#111111',
     corSecundaria: '#222222',
     corDestaqueCatalogo: '#333333',

@@ -121,6 +121,7 @@ export class StorefrontContextService {
       tituloDocumento:            t.tituloDocumento       ?? undefined,
       logoUrl:                    t.logoUrl,
       faviconUrl:                 t.faviconUrl,
+      bannerUrl:                  t.bannerUrl ?? null,
       corPrimaria:                t.corPrimaria           ?? '#7c3aed',
       corSecundaria:              t.corSecundaria         ?? '#22c55e',
       corDestaqueCatalogo:        t.corDestaqueCatalogo   ?? undefined,

@@ -22,6 +22,7 @@ export interface TenantApi {
   tituloDocumento: string | null;
   logoUrl: string | null;
   faviconUrl: string | null;
+  bannerUrl: string | null;
   corPrimaria: string | null;
   corSecundaria: string | null;
   corDestaqueCatalogo: string | null;

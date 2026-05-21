@@ -13,7 +13,15 @@ export class MerchantConfigService {
     return this.http.get<TenantApi>(this.base);
   }
 
-  update(settings: Omit<TenantApi, 'id' | 'planoTipo' | 'ativo' | 'trialEndsAt'>): Observable<TenantApi> {
-    return this.http.put<TenantApi>(this.base, settings);
+  update(
+    settings: Omit<TenantApi, 'id' | 'planoTipo' | 'ativo' | 'trialEndsAt'>,
+    files?: { logoFile?: File; faviconFile?: File; bannerFile?: File },
+  ): Observable<TenantApi> {
+    const fd = new FormData();
+    fd.append('settings', JSON.stringify(settings));
+    if (files?.logoFile)    fd.append('logoFile',    files.logoFile);
+    if (files?.faviconFile) fd.append('faviconFile', files.faviconFile);
+    if (files?.bannerFile)  fd.append('bannerFile',  files.bannerFile);
+    return this.http.put<TenantApi>(this.base, fd);
   }
 }

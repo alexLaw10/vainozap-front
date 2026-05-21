@@ -23,8 +23,14 @@ export class MerchantConfigurarPageComponent implements OnInit {
 
   protected readonly logoPreview    = signal<string | null>(null);
   protected readonly faviconPreview = signal<string | null>(null);
-  private logoFile: File | undefined;
+  protected readonly bannerPreview  = signal<string | null>(null);
+  private logoFile:    File | undefined;
   private faviconFile: File | undefined;
+  private bannerFile:  File | undefined;
+  /** URLs S3 salvas — distintas dos blob URLs usados só para preview local. */
+  private savedLogoUrl:    string | null = null;
+  private savedFaviconUrl: string | null = null;
+  private savedBannerUrl:  string | null = null;
 
   protected readonly FORMAS_PAGAMENTO = ['PIX', 'Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Transferência'];
 
@@ -144,8 +150,12 @@ export class MerchantConfigurarPageComponent implements OnInit {
       formasPagamento: t.rodape?.formasPagamento ?? [],
       redesPlaceholder: t.rodape?.redesPlaceholder ?? '', faixaInferior: t.rodape?.faixaInferior ?? '',
     });
-    this.logoPreview.set(t.logoUrl);
-    this.faviconPreview.set(t.faviconUrl);
+    this.savedLogoUrl    = t.logoUrl    ?? null;
+    this.savedFaviconUrl = t.faviconUrl ?? null;
+    this.savedBannerUrl  = t.bannerUrl  ?? null;
+    this.logoPreview.set(this.savedLogoUrl);
+    this.faviconPreview.set(this.savedFaviconUrl);
+    this.bannerPreview.set(this.savedBannerUrl);
     this.redesArr.clear();
     (t.rodape?.redesSociais ?? []).forEach((r) =>
       this.redesArr.push(this.fb.group({ rotulo: [r.rotulo, Validators.required], url: [r.url, Validators.required] }))
@@ -164,6 +174,31 @@ export class MerchantConfigurarPageComponent implements OnInit {
       this.faviconFile = f;
       this.faviconPreview.set(URL.createObjectURL(f));
     });
+  }
+
+  protected removeLogo(): void {
+    this.logoFile = undefined;
+    this.savedLogoUrl = null;
+    this.logoPreview.set(null);
+  }
+
+  protected removeFavicon(): void {
+    this.faviconFile = undefined;
+    this.savedFaviconUrl = null;
+    this.faviconPreview.set(null);
+  }
+
+  protected pickBanner(): void {
+    this.pickImage((f) => {
+      this.bannerFile = f;
+      this.bannerPreview.set(URL.createObjectURL(f));
+    });
+  }
+
+  protected removeBanner(): void {
+    this.bannerFile = undefined;
+    this.savedBannerUrl = null;
+    this.bannerPreview.set(null);
   }
 
   private pickImage(cb: (f: File) => void): void {
@@ -254,8 +289,9 @@ export class MerchantConfigurarPageComponent implements OnInit {
       slug:                        v.slug,
       nomeLoja:                    v.nomeLoja,
       tituloDocumento:             v.tituloDocumento             || null,
-      logoUrl:                     v.logoUrl                     || null,
-      faviconUrl:                  v.faviconUrl                  || null,
+      logoUrl:                     this.savedLogoUrl,
+      faviconUrl:                  this.savedFaviconUrl,
+      bannerUrl:                   this.savedBannerUrl,
       corPrimaria:                 v.corPrimaria                 || null,
       corSecundaria:               v.corSecundaria               || null,
       corDestaqueCatalogo:         v.corDestaqueCatalogo         || null,
@@ -281,13 +317,20 @@ export class MerchantConfigurarPageComponent implements OnInit {
       },
     };
 
-    this.configService.update(payload).subscribe({
+    const files = {
+      logoFile:    this.logoFile,
+      faviconFile: this.faviconFile,
+      bannerFile:  this.bannerFile,
+    };
+    this.logoFile = this.faviconFile = this.bannerFile = undefined;
+
+    this.configService.update(payload, files).subscribe({
       // Recarrega o formulário com a resposta real da API — garante que o que
       // está na tela bate exatamente com o que foi salvo no banco.
       next: (saved: TenantApi) => {
         this.saving.set(false);
         this.success.set(true);
-        this.patchForm(saved);
+        this.patchForm(saved);   // atualiza savedBannerUrl + bannerPreview com a URL S3 real
         setTimeout(() => this.success.set(false), 3000);
       },
       error: (e: { error?: { error?: string }; message?: string }) => {

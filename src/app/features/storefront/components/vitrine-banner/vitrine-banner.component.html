@@ -1,0 +1,30 @@
+@if (context.tenant().bannerUrl) {
+  <section class="vitrine-banner" aria-label="Banner da loja">
+    <div
+      class="vitrine-banner__hero"
+      [style.background-image]="'url(' + context.tenant().bannerUrl + ')'"
+      role="img"
+      [attr.aria-label]="context.tenant().nomeLoja"
+    >
+      <div class="vitrine-banner__overlay"></div>
+      <div class="vitrine-banner__content">
+        @if (context.tenant().logoUrl) {
+          <img
+            class="vitrine-banner__logo"
+            [src]="context.tenant().logoUrl!"
+            [alt]="context.tenant().nomeLoja"
+            width="80"
+            height="80"
+            decoding="async"
+          />
+        }
+        <div class="vitrine-banner__text">
+          <h2 class="vitrine-banner__name">{{ context.tenant().nomeLoja }}</h2>
+          @if (context.tenant().slogan) {
+            <p class="vitrine-banner__slogan">{{ context.tenant().slogan }}</p>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+}

@@ -96,6 +96,49 @@
         </div>
       </section>
 
+      <!-- Banner -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Banner da vitrine</h2>
+        <p class="cfg-card__desc">Imagem exibida como hero acima das categorias. Recomendado: 1440 × 400 px, JPG ou WebP.</p>
+
+        <div class="cfg-banner-wrap">
+          @if (bannerPreview()) {
+            <div class="cfg-banner-preview">
+              <img class="cfg-banner-img" [src]="bannerPreview()!" alt="Preview do banner" />
+              <div class="cfg-banner-actions">
+                <button
+                  type="button"
+                  class="mcat-btn mcat-btn--sm"
+                  [disabled]="saving()"
+                  (click)="pickBanner()"
+                >
+                  Trocar imagem
+                </button>
+                <button
+                  type="button"
+                  class="mcat-btn mcat-btn--sm mcat-btn--danger"
+                  [disabled]="saving()"
+                  (click)="removeBanner()"
+                >
+                  Remover
+                </button>
+              </div>
+            </div>
+          } @else {
+            <button
+              type="button"
+              class="cfg-banner-empty"
+              [disabled]="saving()"
+              (click)="pickBanner()"
+            >
+              <span class="cfg-banner-empty__icon">+</span>
+              <span>Adicionar banner</span>
+              <span class="cfg-banner-empty__hint">PNG, JPG, WebP · até 10 MB</span>
+            </button>
+          }
+        </div>
+      </section>
+
       <!-- Cores -->
       <section class="cfg-card">
         <h2 class="cfg-card__title">Cores</h2>

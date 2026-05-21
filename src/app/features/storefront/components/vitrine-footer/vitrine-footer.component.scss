@@ -373,6 +373,11 @@
     color: var(--color-neutral-100);
     padding: var(--space-3) var(--space-4);
     text-align: center;
+
+    :host-context(.merchant-shell--light) & {
+      background: var(--color-neutral-200);
+      color: var(--color-neutral-600);
+    }
   }
 
   &__powered-inner {
@@ -382,5 +387,9 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-neutral-300);
+
+    :host-context(.merchant-shell--light) & {
+      color: var(--color-neutral-500);
+    }
   }
 }
