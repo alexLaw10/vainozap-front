@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, filter, map, take, tap, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 
@@ -45,6 +45,16 @@ export class AuthService {
     typeof localStorage !== 'undefined' ? localStorage.getItem(this.TOKEN_KEY) : null,
   );
 
+  // ── Concurrent-refresh guard ─────────────────────────────────────────────────
+  /** true enquanto uma chamada a /auth/refresh estiver em voo. */
+  private _refreshing = false;
+  /**
+   * Emite o novo access token quando o refresh conclui com sucesso,
+   * ou null quando começa (indicando que está em andamento).
+   * Requisições que chegam durante o refresh aguardam o próximo valor não-null.
+   */
+  readonly refreshToken$ = new BehaviorSubject<string | null>(null);
+
   readonly token           = this._token.asReadonly();
   readonly isAuthenticated = computed(() => !!this._token());
 
@@ -56,8 +66,6 @@ export class AuthService {
     const t = this._token();
     if (!t) return null;
     try {
-
-      console.log(JSON.parse(atob(t.split('.')[1])))
       return JSON.parse(atob(t.split('.')[1])) as JwtPayload;
     } catch {
       return null;
@@ -90,7 +98,51 @@ export class AuthService {
     );
   }
 
-  /** Troca o refresh token por um novo access token (chamado pelo interceptor). */
+  /** true se já há um refresh em andamento (usado pelo interceptor). */
+  get isRefreshing(): boolean { return this._refreshing; }
+
+  /**
+   * Garante que apenas UMA chamada a /auth/refresh seja feita por vez.
+   *
+   * - Se não há refresh em andamento: dispara a requisição, emite o novo token
+   *   no BehaviorSubject quando completa e reseta o estado.
+   * - Se já há um refresh em andamento: aguarda o BehaviorSubject emitir o
+   *   próximo token não-null e resolve com ele (sem fazer nova requisição).
+   *
+   * Sempre retorna o novo access token como string.
+   */
+  refreshOnce(): Observable<string> {
+    if (!this._refreshing) {
+      this._refreshing = true;
+      this.refreshToken$.next(null); // sinaliza "em andamento"
+
+      const rt = this.refreshToken;
+      return this.http
+        .post<LoginResponse>(`${this.base}/refresh`, { refreshToken: rt })
+        .pipe(
+          tap((res) => {
+            this.storeTokens(res);
+            this._refreshing = false;
+            this.refreshToken$.next(res.token); // desbloqueia requisições em fila
+          }),
+          map((res) => res.token),
+          catchError((err) => {
+            // Reseta o estado para que tentativas futuras possam tentar novamente
+            this._refreshing = false;
+            this.refreshToken$.next(null);
+            return throwError(() => err);
+          }),
+        );
+    }
+
+    // Já está em andamento — aguarda o próximo token emitido
+    return this.refreshToken$.pipe(
+      filter((token): token is string => token !== null),
+      take(1),
+    );
+  }
+
+  /** @internal Troca o refresh token por um novo access token (raw, sem guard). */
   refresh(): Observable<LoginResponse> {
     const refreshToken = this.refreshToken;
     return this.http

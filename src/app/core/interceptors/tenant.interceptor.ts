@@ -2,6 +2,7 @@ import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../features/auth/services/auth.service';
 import { StorefrontContextService } from '../../features/storefront/services/storefront-context.service';
 
 export function tenantInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
@@ -17,12 +18,16 @@ export function tenantInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn
 }
 
 function resolveSlug(): string | null {
-  // Quando estamos na área merchant, usar o slug do tenant autenticado
-  // (já carregado pelo MerchantContextService via /api/v1/merchant/settings)
+  // Quando estamos na área merchant, identificar o tenant do lojista autenticado.
+  // Prioridade:
+  //   1. sfContext.tenant()?.slug — já carregado após /merchant/settings
+  //   2. auth.slug()              — extraído diretamente do JWT (disponível desde o login)
+  //      Fallback necessário para chamadas que acontecem antes de sfContext estar populado
+  //      (ex: categorias/produtos da vitrine interna carregados logo após o login)
   if (window.location.pathname.startsWith('/merchant')) {
     const sfContext = inject(StorefrontContextService);
-    const slug = sfContext.tenant()?.slug;
-    if (slug) return slug;
+    const auth      = inject(AuthService);
+    return sfContext.tenant()?.slug ?? auth.slug() ?? null;
   }
 
   // Storefront público: resolver por subdomínio ou devTenantSlug
@@ -30,5 +35,5 @@ function resolveSlug(): string | null {
   if (hostname.endsWith(environment.domainSuffix)) {
     return hostname.slice(0, -environment.domainSuffix.length);
   }
-  return environment.devTenantSlug;
+  return environment.devTenantSlug ?? null;
 }

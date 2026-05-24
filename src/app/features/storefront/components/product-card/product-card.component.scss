@@ -45,14 +45,14 @@
     margin: 0;
     font-size: var(--font-size-base);
     font-weight: 700;
-    color: var(--color-text-primary);
+    color: var(--color-secondary);
   }
 
   &__price-cash {
     margin: 0;
     font-size: clamp(var(--font-size-base), 2.5vw, 1.1rem);
     font-weight: 700;
-    color: var(--card-buy);
+    color: var(--color-secondary);
     line-height: var(--line-height-tight);
   }
 

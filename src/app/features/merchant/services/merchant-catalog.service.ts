@@ -46,22 +46,23 @@ export class MerchantCatalogService {
     return this.http.get<PageResult<ProdutoApi>>(`${this.base}/products`, { params });
   }
 
-  createProduct(p: Omit<ProdutoApi, 'id' | 'tenantId'>, files: File[] = []): Observable<ProdutoApi> {
-    return this.http.post<ProdutoApi>(`${this.base}/products`, this.buildForm(p, files));
+  createProduct(p: Omit<ProdutoApi, 'id' | 'tenantId'>, files: File[] = [], videoFiles: File[] = []): Observable<ProdutoApi> {
+    return this.http.post<ProdutoApi>(`${this.base}/products`, this.buildForm(p, files, videoFiles));
   }
 
   getProduct(id: string): Observable<ProdutoApi> {
     return this.http.get<ProdutoApi>(`${this.base}/products/${id}`);
   }
 
-  updateProduct(id: string, p: Omit<ProdutoApi, 'id' | 'tenantId'>, files: File[] = []): Observable<ProdutoApi> {
-    return this.http.put<ProdutoApi>(`${this.base}/products/${id}`, this.buildForm(p, files));
+  updateProduct(id: string, p: Omit<ProdutoApi, 'id' | 'tenantId'>, files: File[] = [], videoFiles: File[] = []): Observable<ProdutoApi> {
+    return this.http.put<ProdutoApi>(`${this.base}/products/${id}`, this.buildForm(p, files, videoFiles));
   }
 
-  private buildForm(p: Omit<ProdutoApi, 'id' | 'tenantId'>, files: File[]): FormData {
+  private buildForm(p: Omit<ProdutoApi, 'id' | 'tenantId'>, files: File[], videoFiles: File[] = []): FormData {
     const form = new FormData();
     form.append('product', new Blob([JSON.stringify(p)], { type: 'application/json' }));
     files.forEach((f) => form.append('files', f));
+    videoFiles.forEach((f) => form.append('videoFiles', f));
     return form;
   }
 

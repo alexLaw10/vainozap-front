@@ -48,6 +48,7 @@ export class ProductPageComponent {
   });
 
   protected readonly mainPhotoIndex = signal(0);
+  protected readonly lightboxIndex  = signal<number | null>(null);
   protected readonly quantity = signal(1);
   protected readonly observacao = signal('');
   protected readonly selectedOpcaoPorVariacao = signal<Record<string, string>>({});
@@ -101,6 +102,9 @@ export class ProductPageComponent {
 
   protected selectThumb(i: number): void { this.mainPhotoIndex.set(i); }
   protected isThumbActive(i: number): boolean { return this.mainPhotoIndex() === i; }
+
+  protected openVideo(i: number): void  { this.lightboxIndex.set(i); }
+  protected closeLightbox(): void        { this.lightboxIndex.set(null); }
 
   protected selectOpcao(p: Produto, variacaoId: string, opcaoId: string): void {
     const v = p.variacoes.find((x) => x.id === variacaoId);

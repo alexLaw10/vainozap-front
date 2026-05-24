@@ -15,13 +15,15 @@ export class MerchantConfigService {
 
   update(
     settings: Omit<TenantApi, 'id' | 'planoTipo' | 'ativo' | 'trialEndsAt'>,
-    files?: { logoFile?: File; faviconFile?: File; bannerFile?: File },
+    files?: { logo?: File; favicon?: File; banner?: File },
   ): Observable<TenantApi> {
     const fd = new FormData();
-    fd.append('settings', JSON.stringify(settings));
-    if (files?.logoFile)    fd.append('logoFile',    files.logoFile);
-    if (files?.faviconFile) fd.append('faviconFile', files.faviconFile);
-    if (files?.bannerFile)  fd.append('bannerFile',  files.bannerFile);
+    // Envia a parte JSON com Content-Type explícito para que o Spring
+    // consiga desserializar o @RequestPart("settings") corretamente.
+    fd.append('settings', new Blob([JSON.stringify(settings)], { type: 'application/json' }));
+    if (files?.logo)    fd.append('logo',    files.logo);
+    if (files?.favicon) fd.append('favicon', files.favicon);
+    if (files?.banner)  fd.append('banner',  files.banner);
     return this.http.put<TenantApi>(this.base, fd);
   }
 }

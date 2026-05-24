@@ -64,7 +64,7 @@
         <div>
 
           <!-- Formas de pagamento -->
-          @if (rodape().formasPagamento?.length) {
+          @if (rodape().formasPagamento.length) {
             <h3 class="vitrine-footer__heading">Pagamento</h3>
             <ul class="vitrine-footer__pay-pills">
               @for (forma of rodape().formasPagamento; track forma) {
@@ -75,7 +75,7 @@
 
           <!-- Redes sociais -->
           <h3 class="vitrine-footer__heading vitrine-footer__heading--spaced">Redes sociais</h3>
-          @if (rodape().redesSociais?.length) {
+          @if (rodape().redesSociais.length) {
             <div class="vitrine-footer__social-row">
               @for (rede of rodape().redesSociais; track rede.rotulo) {
                 @if (rede.rotulo === 'Instagram') {

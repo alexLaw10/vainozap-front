@@ -13,30 +13,35 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
   const auth   = inject(AuthService);
   const router = inject(Router);
 
-  // Adiciona Bearer token apenas nas chamadas da área do lojista
+  // Adiciona Bearer token nas chamadas da área do lojista e nas chamadas
+  // de storefront feitas com token disponível (ex: vitrine interna do merchant)
   const token = auth.token();
-  if (token && req.url.includes('/api/v1/merchant')) {
+  if (token && (req.url.includes('/api/v1/merchant') || req.url.includes('/api/v1/storefront'))) {
     req = addBearer(req, token);
   }
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      // Se receber 401 em rota merchant e tiver refresh token → tenta renovar
+      // Só tenta renovar em rotas merchant, com status 401, tendo refresh token,
+      // e desde que não seja a própria requisição de refresh (evita loop infinito)
       if (
         err.status === 401 &&
         req.url.includes('/api/v1/merchant') &&
         auth.refreshToken &&
-        !req.url.includes('/api/v1/auth/refresh') // evita loop infinito
+        !req.url.includes('/api/v1/auth/refresh')
       ) {
-        return auth.refresh().pipe(
-          switchMap((res) => {
-            // Refaz a requisição original com o novo access token
-            return next(addBearer(req, res.token));
-          }),
+        /**
+         * refreshOnce() garante que apenas UMA requisição POST /auth/refresh
+         * seja feita, independentemente de quantas requisições paralelas tenham
+         * recebido 401 ao mesmo tempo. As demais aguardam o BehaviorSubject
+         * emitir o novo token e então reenviam seus requests com ele.
+         */
+        return auth.refreshOnce().pipe(
+          switchMap((newToken) => next(addBearer(req, newToken))),
           catchError(() => {
             // Refresh falhou (token expirado/revogado) → logout e redireciona
             auth.logout();
-            router.navigate(['/auth/login']);
+            void router.navigate(['/auth/login']);
             return throwError(() => err);
           }),
         );

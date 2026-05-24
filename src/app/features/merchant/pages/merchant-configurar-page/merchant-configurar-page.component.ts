@@ -318,9 +318,9 @@ export class MerchantConfigurarPageComponent implements OnInit {
     };
 
     const files = {
-      logoFile:    this.logoFile,
-      faviconFile: this.faviconFile,
-      bannerFile:  this.bannerFile,
+      logo:    this.logoFile,
+      favicon: this.faviconFile,
+      banner:  this.bannerFile,
     };
     this.logoFile = this.faviconFile = this.bannerFile = undefined;
 

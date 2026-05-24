@@ -1,4 +1,4 @@
-import { CurrencyPipe, NgClass } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -19,7 +19,6 @@ import { PaginatorComponent } from '../../../../shared/components/paginator/pagi
   imports: [
     RouterLink,
     CurrencyPipe,
-    NgClass,
     PaginatorComponent,
     ButtonComponent,
     ConfirmDialogComponent,

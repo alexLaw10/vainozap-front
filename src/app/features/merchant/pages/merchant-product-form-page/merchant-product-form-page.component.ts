@@ -6,15 +6,19 @@ import type { CategoriaApi, OpcaoVariacaoApi, ProdutoApi, VariacaoApi, VariacaoT
 import { IconComponent } from '../../../../shared/ui/icon/icon.component';
 import { MerchantCatalogService } from '../../services/merchant-catalog.service';
 
-export const MAX_FOTOS = 10;
-export const ALL_SLOTS = Array.from({ length: MAX_FOTOS }, (_, i) => i);
+export const MAX_FOTOS   = 10;
+export const MAX_VIDEOS  = 5;
+export const ALL_SLOTS   = Array.from({ length: MAX_FOTOS }, (_, i) => i);
+export const ALL_VIDEO_SLOTS = Array.from({ length: MAX_VIDEOS }, (_, i) => i);
 
-
-interface PhotoSlot {
+interface MediaSlot {
   url: string;      // URL real (após upload ou carregada do produto)
   file: File | null; // arquivo local ainda não enviado
   preview: string;  // blob URL (pendente) ou URL real
 }
+
+/** Alias semântico para manter compatibilidade interna */
+type PhotoSlot = MediaSlot;
 
 @Component({
   selector: 'app-merchant-product-form-page',
@@ -30,7 +34,9 @@ export class MerchantProductFormPageComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
 
   protected readonly MAX_FOTOS = MAX_FOTOS;
+  protected readonly MAX_VIDEOS = MAX_VIDEOS;
   protected readonly ALL_SLOTS = ALL_SLOTS;
+  protected readonly ALL_VIDEO_SLOTS = ALL_VIDEO_SLOTS;
 
   protected readonly editId = signal<string | null>(null);
   protected readonly isEdit = computed(() => !!this.editId());
@@ -44,6 +50,10 @@ export class MerchantProductFormPageComponent implements OnInit, OnDestroy {
   protected readonly photos = signal<PhotoSlot[]>([]);
   protected readonly pendingCount = computed(() => this.photos().filter((p) => p.file !== null).length);
   protected readonly photoCount = computed(() => this.photos().length);
+
+  protected readonly videos = signal<MediaSlot[]>([]);
+  protected readonly pendingVideoCount = computed(() => this.videos().filter((v) => v.file !== null).length);
+  protected readonly videoCount = computed(() => this.videos().length);
 
   protected readonly form = this.fb.nonNullable.group({
     nome:        ['', [Validators.required, Validators.minLength(2)]],
@@ -85,6 +95,7 @@ export class MerchantProductFormPageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.photos().forEach((p) => { if (p.file) URL.revokeObjectURL(p.preview); });
+    this.videos().forEach((v) => { if (v.file) URL.revokeObjectURL(v.preview); });
   }
 
   // ── Carregamento ──────────────────────────────────────────────────────────
@@ -108,7 +119,8 @@ export class MerchantProductFormPageComponent implements OnInit, OnDestroy {
           semEstoque: p.semEstoque ?? false,
         });
         this.form.patchValue({ estoque: p.estoque ?? 0 });
-        this.photos.set((p.fotos ?? []).map((url) => ({ url, file: null, preview: url })));
+        this.photos.set((p.fotos  ?? []).map((url) => ({ url, file: null, preview: url })));
+        this.videos.set((p.videos ?? []).map((url) => ({ url, file: null, preview: url })));
         (p.variacoes ?? []).forEach((v) => this.variacoesArr.push(this.makeVariacaoGroup(v)));
         this.syncVariacoesCount();
       },
@@ -158,6 +170,37 @@ export class MerchantProductFormPageComponent implements OnInit, OnDestroy {
       next.splice(i, 1);
       return next;
     });
+  }
+
+  // ── Vídeos ────────────────────────────────────────────────────────────────
+
+  protected slotVideo(i: number): MediaSlot | null { return this.videos()[i] ?? null; }
+
+  protected openAddVideo(): void {
+    if (this.videos().length >= MAX_VIDEOS) return;
+    this.pickVideoFile((file) => {
+      const preview = URL.createObjectURL(file);
+      this.videos.update((arr) => [...arr, { url: '', file, preview }]);
+    });
+  }
+
+  protected removeVideo(i: number, ev: Event): void {
+    ev.stopPropagation();
+    this.videos.update((arr) => {
+      const next = [...arr];
+      const old = next[i];
+      if (old?.file) URL.revokeObjectURL(old.preview);
+      next.splice(i, 1);
+      return next;
+    });
+  }
+
+  private pickVideoFile(cb: (f: File) => void): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'video/mp4,video/webm,video/quicktime,video/avi';
+    input.onchange = () => { const f = input.files?.[0]; if (f) cb(f); };
+    input.click();
   }
 
   // ── Variações ─────────────────────────────────────────────────────────────
@@ -233,8 +276,10 @@ export class MerchantProductFormPageComponent implements OnInit, OnDestroy {
     this.saving.set(true);
     this.error.set(null);
 
-    const pendingFiles = this.photos().filter((p) => p.file !== null).map((p) => p.file!);
-    const existingUrls = this.photos().filter((p) => p.file === null).map((p) => p.url);
+    const pendingFiles      = this.photos().filter((p) => p.file !== null).map((p) => p.file!);
+    const existingUrls      = this.photos().filter((p) => p.file === null).map((p) => p.url);
+    const pendingVideoFiles = this.videos().filter((v) => v.file !== null).map((v) => v.file!);
+    const existingVideoUrls = this.videos().filter((v) => v.file === null).map((v) => v.url);
 
     const v = this.form.getRawValue() as {
       nome: string; descricao: string; preco: number; categoryId: string;
@@ -252,6 +297,7 @@ export class MerchantProductFormPageComponent implements OnInit, OnDestroy {
       semEstoque:  v.semEstoque,
       estoque:     (v.semEstoque || temVariacoes) ? null : Number(v.estoque),
       fotos:      existingUrls,
+      videos:     existingVideoUrls,
       variacoes: v.variacoes.map((vr, idx) => ({
         id:     vr.id ?? null,
         nome:   vr.nome,
@@ -269,8 +315,8 @@ export class MerchantProductFormPageComponent implements OnInit, OnDestroy {
 
     const id = this.editId();
     const request$ = id
-      ? this.catalog.updateProduct(id, payload, pendingFiles)
-      : this.catalog.createProduct(payload, pendingFiles);
+      ? this.catalog.updateProduct(id, payload, pendingFiles, pendingVideoFiles)
+      : this.catalog.createProduct(payload, pendingFiles, pendingVideoFiles);
 
     request$.subscribe({
       next: () => {

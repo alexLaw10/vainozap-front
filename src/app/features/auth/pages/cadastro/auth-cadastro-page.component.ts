@@ -1,4 +1,3 @@
-import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -23,7 +22,7 @@ export type SenhaForca = 'fraca' | 'media' | 'forte';
 @Component({
   selector: 'app-auth-cadastro-page',
   standalone: true,
-  imports: [FormsModule, RouterLink, CurrencyPipe, ButtonComponent, IconComponent],
+  imports: [FormsModule, RouterLink, ButtonComponent, IconComponent],
   templateUrl: './auth-cadastro-page.component.html',
   styleUrl: './auth-cadastro-page.component.scss',
 })

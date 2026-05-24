@@ -1,5 +1,4 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 
 import type { TenantRodape } from '../../../../shared/models/tenant.model';
 import { IconComponent } from '../../../../shared/ui/icon/icon.component';
@@ -9,7 +8,7 @@ import { StorefrontFiltersService } from '../../services/storefront-filters.serv
 @Component({
   selector: 'app-vitrine-footer',
   standalone: true,
-  imports: [RouterLink, IconComponent],
+  imports: [IconComponent],
   templateUrl: './vitrine-footer.component.html',
   styleUrl: './vitrine-footer.component.scss',
 })

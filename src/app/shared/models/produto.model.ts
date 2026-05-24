@@ -28,6 +28,7 @@ export interface Produto {
   descricao: string;
   preco: number;
   fotos: string[];
+  videos?: string[];
   categoriaId: string;
   variacoes: Variacao[];
   ativo: boolean;

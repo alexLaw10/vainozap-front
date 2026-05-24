@@ -58,6 +58,7 @@ export interface ProdutoApi {
   estoque: number | null;   // null = usa variações; número = produto simples
   semEstoque: boolean;      // true = serviço/consultoria — sem carrinho, botão WhatsApp
   fotos: string[];
+  videos: string[];          // URLs de vídeos (MP4/WebM/MOV)
   variacoes: VariacaoApi[];
 }
 

@@ -99,13 +99,14 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--color-neutral-100);
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 4 / 3;
+    max-height: min(55vh, 420px);
   }
 
   &__hero-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
   }
 
@@ -199,7 +200,7 @@
     margin-inline-start: auto;
     font-size: clamp(var(--font-size-xl), 4vw, var(--font-size-2xl));
     font-weight: 700;
-    color: var(--color-text-primary);
+    color: var(--color-secondary);
 
     @media (max-width: 26rem) {
       flex: 1 1 100%;
@@ -553,7 +554,8 @@
   }
 
   &__skeleton-hero {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 4 / 3;
+    max-height: min(55vh, 420px);
     border-radius: var(--radius-lg);
   }
 
@@ -578,4 +580,117 @@
 .skeleton-pulse {
   background: var(--color-neutral-200);
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+// ── Seção de vídeos ───────────────────────────────────────────────────────────
+
+.product-videos {
+  margin-top: var(--space-10);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-border-subtle);
+
+  &__title {
+    margin: 0 0 var(--space-6);
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    text-align: center;
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-5);
+
+    @media (max-width: 35.99rem) {
+      gap: var(--space-4);
+    }
+  }
+
+  &__item {
+    position: relative;
+    width: clamp(100px, 18vw, 148px);
+    height: clamp(100px, 18vw, 148px);
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    border: 3px solid var(--color-neutral-300);
+    transition: border-color 0.2s, transform 0.2s;
+    background: #000;
+    flex-shrink: 0;
+
+    &:hover {
+      border-color: var(--color-text-primary);
+      transform: scale(1.04);
+    }
+
+    @media (max-width: 35.99rem) {
+      width: clamp(80px, 22vw, 110px);
+      height: clamp(80px, 22vw, 110px);
+    }
+  }
+
+  &__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0.82;
+    pointer-events: none;
+  }
+
+  &__play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    pointer-events: none;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.5));
+  }
+}
+
+// ── Lightbox de vídeo ─────────────────────────────────────────────────────────
+
+.pv-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  cursor: pointer;
+
+  &__close {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s;
+    z-index: 1;
+
+    &:hover { background: rgba(255, 255, 255, 0.28); }
+  }
+
+  &__video {
+    max-width: min(90vw, 960px);
+    max-height: 85vh;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    cursor: default;
+    outline: none;
+  }
 }

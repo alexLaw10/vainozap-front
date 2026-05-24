@@ -1,1 +1,24 @@
+<div class="floating-actions">
+  @if (showScrollTop()) {
+    <button
+      type="button"
+      class="floating-actions__top"
+      aria-label="Voltar ao topo"
+      (click)="scrollToTop()"
+    >
+      <app-icon name="chevron-up" [size]="20" [strokeWidth]="2.5"></app-icon>
+    </button>
+  }
 
+  @if (context.tenant().whatsapp) {
+    <a
+      class="floating-actions__whatsapp"
+      [href]="waLink()"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Fale pelo WhatsApp"
+    >
+      <app-icon name="brand-whatsapp" [size]="26" [strokeWidth]="1.75"></app-icon>
+    </a>
+  }
+</div>

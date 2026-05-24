@@ -40,4 +40,6 @@ export type UiIconName =
   | 'eye'
   | 'eye-off'
   | 'sun'
-  | 'moon';
+  | 'moon'
+  | 'play'
+  | 'video';

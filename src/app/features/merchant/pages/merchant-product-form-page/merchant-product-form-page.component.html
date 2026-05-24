@@ -141,7 +141,58 @@
         </div>
       </section>
 
-      <!-- ── Col 3: Variações + Ações ───────────────────────────────────── -->
+      <!-- ── Col 3: Vídeos ─────────────────────────────────────────────── -->
+      <section class="pf-card">
+        <div class="pf-card__head">
+          <h2 class="pf-card__title">Vídeos</h2>
+          <span class="pf-badge">{{ videoCount() }}/{{ MAX_VIDEOS }}</span>
+        </div>
+
+        @if (pendingVideoCount() > 0) {
+          <p class="pf-hint pf-hint--pending">
+            <app-icon name="alert" [size]="13" [strokeWidth]="2.5"></app-icon>
+            {{ pendingVideoCount() }} vídeo{{ pendingVideoCount() > 1 ? 's' : '' }} serão enviados ao salvar
+          </p>
+        } @else {
+          <p class="pf-hint">Clique para adicionar (MP4, WebM ou MOV · máx. 200 MB cada)</p>
+        }
+
+        <div class="pf-video-list">
+          @for (i of ALL_VIDEO_SLOTS; track i) {
+            @if (slotVideo(i); as vid) {
+              <!-- Slot preenchido -->
+              <div class="pf-vslot pf-vslot--filled" [class.pf-vslot--pending]="vid.file">
+                <video class="pf-vslot__video" [src]="vid.preview" muted playsinline preload="metadata"></video>
+                <div class="pf-vslot__overlay">
+                  <app-icon name="play" [size]="20" [strokeWidth]="1.5"></app-icon>
+                </div>
+                <button type="button" class="pf-vslot__remove" (click)="removeVideo(i, $event)" title="Remover vídeo" aria-label="Remover vídeo">
+                  <app-icon name="close" [size]="13" [strokeWidth]="2.5"></app-icon>
+                </button>
+                @if (vid.file) {
+                  <span class="pf-vslot__tag">Pendente</span>
+                }
+              </div>
+            } @else if (i === videoCount()) {
+              <!-- Botão de adicionar -->
+              <button type="button" class="pf-vslot pf-vslot--add"
+                [disabled]="videoCount() >= MAX_VIDEOS"
+                (click)="openAddVideo()"
+                aria-label="Adicionar vídeo">
+                <app-icon name="video" [size]="20" [strokeWidth]="1.5"></app-icon>
+                <span>Adicionar</span>
+              </button>
+            } @else {
+              <!-- Slot vazio futuro -->
+              <div class="pf-vslot pf-vslot--empty">
+                <span class="pf-slot__num">{{ i + 1 }}</span>
+              </div>
+            }
+          }
+        </div>
+      </section>
+
+      <!-- ── Col 4: Variações + Ações ───────────────────────────────────── -->
       <section class="pf-card">
         <div class="pf-card__head">
           <h2 class="pf-card__title">Variações</h2>

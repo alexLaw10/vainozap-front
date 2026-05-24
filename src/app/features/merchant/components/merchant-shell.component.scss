@@ -517,7 +517,6 @@
 
 @media (max-width: 720px) {
   .mx-header__bar {
-    // Duas colunas: brand à esquerda, actions à direita — mesmo alinhamento vertical
     grid-template-columns: 1fr auto;
     align-items: center;
     padding-block: var(--space-2);
@@ -535,8 +534,93 @@
     justify-self: end;
   }
 
-  // Nav central oculta no mobile — já coberta pela barra de navegação inferior
+  // Nav central oculta no mobile — substituída pela bottom nav bar abaixo
   .mx-header__main {
     display: none;
+  }
+}
+
+// ── Bottom navigation bar (mobile only) ──────────────────────────────────────
+
+.mx-bottom-nav {
+  display: none; // oculta por padrão (desktop usa o header)
+}
+
+@media (max-width: 720px) {
+  // Espaço para a bottom nav não sobrepor conteúdo
+  .merchant-shell__body--with-bottom-nav {
+    padding-bottom: 64px;
+  }
+
+  .mx-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: 64px;
+    background: var(--color-app-dark);
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    box-shadow: 0 -4px 20px rgb(0 0 0 / 0.30);
+
+    // Safe area para iPhones com home indicator
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .mx-bottom-nav__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    color: rgb(255 255 255 / 0.45);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    transition: color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+
+    &--active {
+      color: var(--color-primary);
+    }
+
+    &:not(&--active):active {
+      color: rgb(255 255 255 / 0.75);
+    }
+  }
+
+  .mx-bottom-nav__ico {
+    display: flex;
+    transition: transform 0.15s ease;
+
+    .mx-bottom-nav__item--active & {
+      transform: translateY(-1px);
+    }
+  }
+
+  .mx-bottom-nav__label {
+    line-height: 1;
+  }
+}
+
+// Light mode: ajusta cores da bottom nav
+.merchant-shell--light {
+  @media (max-width: 720px) {
+    .mx-bottom-nav {
+      background: #ffffff;
+      border-top-color: var(--color-neutral-200);
+      box-shadow: 0 -2px 12px rgb(15 23 42 / 0.08);
+    }
+
+    .mx-bottom-nav__item {
+      color: var(--color-text-muted);
+
+      &--active {
+        color: var(--color-primary);
+      }
+    }
   }
 }

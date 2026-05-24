@@ -88,6 +88,7 @@ export class StorefrontCatalogService {
       descricao: p.descricao,
       preco: p.preco,
       fotos: p.fotos ?? [],
+      videos: p.videos ?? [],
       categoriaId: p.categoryId ?? '',
       ativo: p.ativo,
       semEstoque: p.semEstoque ?? false,

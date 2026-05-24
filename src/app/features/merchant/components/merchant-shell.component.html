@@ -106,7 +106,38 @@
     }
   </header>
 
-  <main class="merchant-shell__body">
+  <main class="merchant-shell__body merchant-shell__body--with-bottom-nav">
     <router-outlet />
   </main>
+
+  <!-- ── Bottom navigation bar — visível apenas em mobile ─────────────────── -->
+  <nav class="mx-bottom-nav" aria-label="Navegação principal">
+    <a
+      routerLink="/merchant/loja/vitrine"
+      class="mx-bottom-nav__item"
+      [class.mx-bottom-nav__item--active]="isTab('loja')"
+      aria-label="Loja"
+    >
+      <span class="mx-bottom-nav__ico"><app-icon name="home" [size]="22"></app-icon></span>
+      <span class="mx-bottom-nav__label">Loja</span>
+    </a>
+    <a
+      routerLink="/merchant/orders"
+      class="mx-bottom-nav__item"
+      [class.mx-bottom-nav__item--active]="isTab('pedidos')"
+      aria-label="Pedidos"
+    >
+      <span class="mx-bottom-nav__ico"><app-icon name="file-text" [size]="22"></app-icon></span>
+      <span class="mx-bottom-nav__label">Pedidos</span>
+    </a>
+    <a
+      routerLink="/merchant/contas"
+      class="mx-bottom-nav__item"
+      [class.mx-bottom-nav__item--active]="isTab('contas')"
+      aria-label="Conta"
+    >
+      <span class="mx-bottom-nav__ico"><app-icon name="user" [size]="22"></app-icon></span>
+      <span class="mx-bottom-nav__label">Conta</span>
+    </a>
+  </nav>
 </div>

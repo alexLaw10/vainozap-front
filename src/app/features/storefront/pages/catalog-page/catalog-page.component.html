@@ -70,22 +70,15 @@
     <div class="vitrine-section__row vitrine-section__row--products">
       <h2 id="produtos-heading" class="vitrine-section__title vitrine-section__title--inline">Produtos</h2>
       <div class="catalog-product-tools">
-        <span class="catalog-product-tools__grid" aria-hidden="true" title="Vista em grelha">
+        <button
+          type="button"
+          class="catalog-product-tools__sort"
+          [attr.aria-label]="'Ordenar: ' + currentSortLabel()"
+          [attr.aria-expanded]="sortPanelOpen()"
+          (click)="openSortPanel()"
+        >
           <app-icon name="grid" [size]="18"></app-icon>
-        </span>
-        <div class="vitrine-sort">
-          <label class="vitrine-sort__label" for="sort-select">Ordenar</label>
-          <select
-            id="sort-select"
-            class="vitrine-sort__select"
-            (change)="setSortFromSelect($event)"
-            [attr.title]="'Ordenar'"
-          >
-            <option value="name">Nome</option>
-            <option value="price-asc">Menor preço</option>
-            <option value="price-desc">Maior preço</option>
-          </select>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -109,3 +102,39 @@
     }
   </section>
 </main>
+
+<!-- Painel de ordenação -->
+@if (sortPanelOpen()) {
+  <div class="sort-panel-backdrop" role="presentation" (click)="closeSortPanel()">
+    <div
+      class="sort-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sort-panel-title"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="sort-panel__header">
+        <button type="button" class="sort-panel__back" aria-label="Fechar" (click)="closeSortPanel()">
+          <app-icon name="arrow-left" [size]="18" [strokeWidth]="2.5"></app-icon>
+        </button>
+        <h2 id="sort-panel-title" class="sort-panel__title">Ordem dos produtos</h2>
+      </div>
+
+      <ul class="sort-panel__list" role="list">
+        @for (opt of SORT_OPTIONS; track opt.value) {
+          <li>
+            <button
+              type="button"
+              class="sort-panel__option"
+              [class.sort-panel__option--active]="sortMode() === opt.value"
+              (click)="selectSort(opt.value)"
+            >
+              <span class="sort-panel__option-icon" aria-hidden="true">{{ opt.icon }}</span>
+              <span class="sort-panel__option-label">{{ opt.label }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+}
