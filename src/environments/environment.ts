@@ -8,7 +8,7 @@ export const environment = {
    */
   billingEnabled: false,
   /** Slug usado quando não há subdomínio (localhost). */
-  devTenantSlug: 'minha-loja2',
+  devTenantSlug: '',
   /**
    * true  → usa mock local, não faz chamadas ao backend.
    * false → consome a API real (backend deve estar rodando).

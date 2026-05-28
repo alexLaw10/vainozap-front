@@ -194,36 +194,28 @@
   <div class="pricing__inner">
     <div class="pricing__header">
       <span class="section-label">Preços</span>
-      <h2 class="section-title">Simples, sem surpresas</h2>
-      <p class="section-sub">Sem taxa por venda. Cancele quando quiser.</p>
+      <h2 class="section-title">Comece grátis hoje</h2>
+      <p class="section-sub">
+        30 dias de avaliação no plano Básico. Sem cartão de crédito e sem taxa por venda.
+      </p>
     </div>
 
     <div class="pricing__grid">
-      @for (plan of plans; track plan.name) {
-        <div class="plan" [class.plan--popular]="plan.popular">
-          @if (plan.popular) {
-            <div class="plan__badge">✦ Mais popular</div>
-          }
-          <div class="plan__name">{{ plan.name }}</div>
-          <div class="plan__price">
-            <strong>{{ plan.price }}</strong>
-            <span>{{ plan.period }}</span>
-          </div>
-          <p class="plan__desc">{{ plan.desc }}</p>
-          <ul class="plan__features">
-            @for (item of plan.features; track item) {
-              <li>{{ item }}</li>
-            }
-          </ul>
-          <a
-            routerLink="/auth/cadastro"
-            class="plan__cta"
-            [class.plan__cta--outline]="plan.ctaStyle === 'outline'"
-            [class.plan__cta--filled]="plan.ctaStyle === 'filled'"
-            [class.plan__cta--green]="plan.ctaStyle === 'green'"
-          >{{ plan.cta }}</a>
+      <div class="plan plan--popular">
+        <div class="plan__badge">{{ plan.badge }}</div>
+        <div class="plan__name">{{ plan.name }}</div>
+        <div class="plan__price">
+          <strong>{{ plan.price }}</strong>
+          <span>{{ plan.period }}</span>
         </div>
-      }
+        <p class="plan__desc">{{ plan.desc }}</p>
+        <ul class="plan__features">
+          @for (item of plan.features; track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+        <a routerLink="/auth/cadastro" class="plan__cta plan__cta--filled">{{ plan.cta }}</a>
+      </div>
     </div>
   </div>
 </section>

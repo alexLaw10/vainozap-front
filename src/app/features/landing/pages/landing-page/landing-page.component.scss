@@ -555,9 +555,10 @@ $white:   #ffffff;
   }
 
   &__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    display: flex;
+    justify-content: center;
+    max-width: 420px;
+    margin: 0 auto;
   }
 }
 
@@ -855,8 +856,7 @@ $white:   #ffffff;
     &::before { display: none; }
   }
 
-  .features__grid,
-  .pricing__grid {
+  .features__grid {
     grid-template-columns: 1fr;
   }
 

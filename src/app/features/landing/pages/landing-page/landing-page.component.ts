@@ -82,49 +82,22 @@ export class LandingPageComponent {
     },
   ];
 
-  readonly plans = [
-    {
-      name: 'Starter',
-      price: 'Grátis',
-      period: '',
-      desc: 'Para quem está começando e quer testar sem compromisso.',
-      features: ['Até 20 produtos', '1 loja', 'Pedidos via WhatsApp', 'Link personalizado'],
-      cta: 'Começar grátis',
-      ctaStyle: 'outline',
-      popular: false,
-    },
-    {
-      name: 'Pro',
-      price: 'R$ 49',
-      period: '/mês',
-      desc: 'Para lojistas que vendem de verdade e precisam de controle total.',
-      features: [
-        'Produtos ilimitados',
-        'Até 3 lojas',
-        'PDV presencial',
-        'Controle de estoque',
-        'Dashboard de vendas',
-        'Notificações em tempo real',
-      ],
-      cta: 'Assinar agora',
-      ctaStyle: 'filled',
-      popular: true,
-    },
-    {
-      name: 'Business',
-      price: 'R$ 99',
-      period: '/mês',
-      desc: 'Para quem tem múltiplos negócios e precisa de escala.',
-      features: [
-        'Produtos ilimitados',
-        'Lojas ilimitadas',
-        'Tudo do plano Pro',
-        'Suporte prioritário',
-        'Domínio próprio',
-      ],
-      cta: 'Falar com vendas',
-      ctaStyle: 'green',
-      popular: false,
-    },
-  ];
+  /** Único plano exibido na landing — alinhado ao trial de 30 dias do cadastro (plano Básico). */
+  readonly plan = {
+    name: 'Avaliação gratuita',
+    price: 'R$ 0',
+    period: 'por 30 dias',
+    desc: 'Teste o VainoZap com acesso ao plano Básico. Sem cartão de crédito e sem compromisso.',
+    features: [
+      'Catálogo digital ilimitado',
+      'Link personalizado da sua loja',
+      'Pedidos ilimitados via WhatsApp',
+      'Controle de estoque e variações',
+      'Cupons de desconto',
+      'PDV presencial e dashboard de vendas',
+      '1 loja · sem taxa por venda',
+    ],
+    cta: 'Criar minha loja grátis',
+    badge: '30 dias grátis',
+  };
 }
