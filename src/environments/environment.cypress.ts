@@ -8,6 +8,7 @@ export const environment = {
   production: false,
   apiUrl: '',
   domainSuffix: '.minhaapp.com.br',
+  billingEnabled: false,
   devTenantSlug: 'e2e-dev-tenant',
   useMock: true,
 };

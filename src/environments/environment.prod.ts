@@ -5,6 +5,11 @@ export const environment = {
   // ex: 'https://api.minhaapp.com.br'
   apiUrl: 'http://vainozap.com.br',
   domainSuffix: '.vainozap.com.br',
+  /**
+   * Controle temporário de billing:
+   * false -> desabilita fluxos de checkout/Asaas no frontend.
+   */
+  billingEnabled: false,
   devTenantSlug: null,
   useMock: false,
 };
