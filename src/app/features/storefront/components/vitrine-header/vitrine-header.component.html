@@ -34,17 +34,10 @@
 
   <div class="vitrine-header__actions">
     <form class="vitrine-header__search" role="search" (submit)="$event.preventDefault()">
-      <label class="visually-hidden" for="vitrine-search">Buscar produtos</label>
-      <span class="vitrine-header__search-icon" aria-hidden="true">
-        <app-icon name="search" [size]="18"></app-icon>
-      </span>
-      <input
-        id="vitrine-search"
-        type="search"
-        name="q"
-        class="vitrine-header__search-input"
+      <app-input-search
         placeholder="Faça sua busca"
-        autocomplete="off"
+        [(value)]="searchQuery"
+        (search)="onSearch($event)"
       />
     </form>
 
@@ -71,10 +64,12 @@
       <a
         routerLink="/cart"
         class="vitrine-header__icon-btn vitrine-header__icon-btn--link vitrine-header__icon-btn--cart vitrine-header__cart"
-        aria-label="Carrinho de compras"
+        [attr.aria-label]="cartCount() > 0 ? 'Carrinho de compras — ' + cartCount() + ' iten' + (cartCount() === 1 ? '' : 's') : 'Carrinho de compras'"
       >
         <app-icon name="cart" [size]="20"></app-icon>
-        <span class="vitrine-header__cart-badge" aria-hidden="true">{{ cartCount() }}</span>
+        @if (cartCount() > 0) {
+          <span class="vitrine-header__cart-badge" aria-hidden="true">{{ cartCount() }}</span>
+        }
       </a>
       <button
         type="button"

@@ -1,4 +1,5 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 
 export interface CartLine {
@@ -10,6 +11,14 @@ export interface CartLine {
   thumbUrl?: string;
 }
 
+interface CartSnapshot {
+  lines: CartLine[];
+  savedAt: number;
+}
+
+const STORAGE_KEY  = 'sf:cart';
+const TTL_MS       = 7 * 24 * 60 * 60 * 1000; // 7 dias
+
 function newLineId(): string {
   return typeof crypto !== 'undefined' && crypto.randomUUID
     ? crypto.randomUUID()
@@ -18,13 +27,25 @@ function newLineId(): string {
 
 @Injectable({ providedIn: 'root' })
 export class StorefrontCartService {
-  private readonly router = inject(Router);
+  private readonly router      = inject(Router);
+  private readonly platformId  = inject(PLATFORM_ID);
+  private readonly isBrowser   = isPlatformBrowser(this.platformId);
 
-  readonly lines = signal<CartLine[]>([]);
+  readonly lines = signal<CartLine[]>(this.loadFromStorage());
 
   readonly subtotal = computed(() =>
     this.lines().reduce((sum, l) => sum + l.precoUnit * l.quantidade, 0),
   );
+
+  constructor() {
+    // Persiste no localStorage sempre que o carrinho mudar
+    effect(() => {
+      const lines = this.lines();
+      this.saveToStorage(lines);
+    });
+  }
+
+  // ── Mutations ──────────────────────────────────────────────────────────────
 
   addLine(line: Omit<CartLine, 'id'>): void {
     const id = newLineId();
@@ -47,6 +68,7 @@ export class StorefrontCartService {
 
   clear(): void {
     this.lines.set([]);
+    // O effect acima detecta lines=[] e remove a entrada do localStorage
   }
 
   /** Soma unidades no carrinho para o mesmo `productId` (várias variantes). */
@@ -71,7 +93,7 @@ export class StorefrontCartService {
   }
 
   /**
-   * +1 no catálogo: uma só linha desse produto incrementa; várias linhas (variantes) abre a ficha.
+   * +1 no catálogo: uma só linha incrementa; várias linhas (variantes) abre a ficha.
    */
   incrementProductFromCatalog(productId: string): void {
     const matches = this.lines().filter((l) => l.productId === productId);
@@ -81,6 +103,39 @@ export class StorefrontCartService {
     }
     if (matches.length > 1) {
       void this.router.navigate(['/products', productId]);
+    }
+  }
+
+  // ── localStorage ──────────────────────────────────────────────────────────
+
+  private loadFromStorage(): CartLine[] {
+    if (!this.isBrowser) return [];
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      const snap = JSON.parse(raw) as CartSnapshot;
+      if (!Array.isArray(snap.lines) || Date.now() - snap.savedAt > TTL_MS) {
+        localStorage.removeItem(STORAGE_KEY);
+        return [];
+      }
+      return snap.lines;
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      return [];
+    }
+  }
+
+  private saveToStorage(lines: CartLine[]): void {
+    if (!this.isBrowser) return;
+    try {
+      if (lines.length === 0) {
+        localStorage.removeItem(STORAGE_KEY);
+        return;
+      }
+      const snap: CartSnapshot = { lines, savedAt: Date.now() };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
+    } catch {
+      // quota exceeded — ignora silenciosamente
     }
   }
 }

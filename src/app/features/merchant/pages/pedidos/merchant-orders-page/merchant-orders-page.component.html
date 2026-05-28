@@ -1,0 +1,184 @@
+<main class="ord-page container">
+
+  <div class="ord-page__head">
+    <div>
+      <h1 class="ord-page__title">Pedidos</h1>
+      <p class="ord-page__sub">Acompanhe e gerencie os pedidos da sua loja</p>
+    </div>
+  </div>
+
+  <!-- Filtros de status -->
+  <div class="ord-filters">
+    <button type="button" class="ord-filter-btn"
+      [class.ord-filter-btn--active]="filtro() === 'todos'"
+      (click)="setFiltro('todos')">
+      Todos
+      @if (filtro() === 'todos' && totalElements() > 0) {
+        <span class="ord-filter-count">{{ totalElements() }}</span>
+      }
+    </button>
+    @for (s of ALL_STATUSES; track s) {
+      <button type="button" class="ord-filter-btn"
+        [class.ord-filter-btn--active]="filtro() === s"
+        (click)="setFiltro(s)">
+        {{ STATUS_CONFIG[s].label }}
+        @if (filtro() === s && totalElements() > 0) {
+          <span class="ord-filter-count">{{ totalElements() }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Busca local -->
+  <div class="ord-search-bar">
+    <app-input-search
+      placeholder="Buscar por nome, telefone ou ID…"
+      [(value)]="busca"
+    />
+  </div>
+
+  <app-table
+    [columns]="columns"
+    [rows]="filtered()"
+    [loading]="loading()"
+    [clickableRows]="true"
+    [rowClassFn]="rowClass"
+    [page]="curPage()"
+    [pageSize]="pageSize"
+    [totalElements]="totalElements()"
+    [totalPages]="totalPages()"
+    emptyMessage="Nenhum pedido encontrado."
+    (rowClick)="openDrawer($event)"
+    (pageChange)="onPageChange($event)"
+  >
+    <ng-template #cell let-row let-col="col">
+
+      @switch (col.key) {
+
+        @case ('cliente') {
+          <div class="ord-cliente" (click)="openDrawer(row)">
+            <span class="ord-cliente__nome">{{ row.cliente.nome || '—' }}</span>
+            @if (row.cliente.telefone) {
+              <span class="ord-cliente__tel">{{ row.cliente.telefone | phoneMask }}</span>
+            }
+          </div>
+        }
+
+        @case ('criadoEm') {
+          <div class="ord-date" (click)="openDrawer(row)">
+            <span class="ord-date__day">{{ formatDate(row.criadoEm) }}</span>
+            <span class="ord-date__time">{{ formatTime(row.criadoEm) }}</span>
+          </div>
+        }
+
+        @case ('status') {
+          <app-status-menu
+            [status]="row.status"
+            [config]="STATUS_CONFIG"
+            [saving]="savingId() === row.id"
+            (statusChange)="moverStatusInline(row, $event)"
+          />
+        }
+
+        @case ('acoes') {
+          <a [routerLink]="['/merchant/orders/pedidos', row.id]" class="ord-detail-btn">
+            Ver detalhes →
+          </a>
+        }
+
+      }
+
+    </ng-template>
+  </app-table>
+
+</main>
+
+<!-- ── Drawer de detalhe ──────────────────────────────────────────────────── -->
+@if (selected()) {
+  @let p = selected()!;
+
+  <div class="ord-drawer__backdrop" (click)="closeDrawer()"></div>
+
+  <aside class="ord-drawer" [class.ord-drawer--open]="drawerOpen()">
+
+    <div class="ord-drawer__header">
+      <div class="ord-drawer__header-info">
+        <span class="ord-drawer__short-id">#{{ shortId(p.id) }}</span>
+        <app-status-menu
+          [status]="p.status"
+          [config]="STATUS_CONFIG"
+          [saving]="saving()"
+          (statusChange)="moverStatus($event)"
+        />
+      </div>
+      <button class="ord-drawer__close" type="button" (click)="closeDrawer()" aria-label="Fechar">✕</button>
+    </div>
+
+    <div class="ord-drawer__body">
+
+      @if (saveError()) {
+        <p class="ord-drawer__error" role="alert">{{ saveError() }}</p>
+      }
+
+      <!-- Cliente -->
+      <section class="ord-drawer__section">
+        <h3 class="ord-drawer__section-title">Cliente</h3>
+        <dl class="ord-drawer__dl">
+          <dt>Nome</dt><dd>{{ p.cliente.nome || '—' }}</dd>
+          <dt>Telefone</dt><dd>{{ p.cliente.telefone | phoneMask }}</dd>
+          @if (p.cliente.cpfCnpj) { <dt>CPF / CNPJ</dt><dd>{{ p.cliente.cpfCnpj }}</dd> }
+          @if (p.cliente.observacoes) { <dt>Obs.</dt><dd>{{ p.cliente.observacoes }}</dd> }
+        </dl>
+      </section>
+
+      <!-- Entrega -->
+      <section class="ord-drawer__section">
+        <h3 class="ord-drawer__section-title">Entrega</h3>
+        <dl class="ord-drawer__dl">
+          <dt>Modo</dt><dd>{{ p.entrega.modo || '—' }}</dd>
+          @if (p.entrega.logradouro) {
+            <dt>Endereço</dt>
+            <dd>{{ p.entrega.logradouro }}, {{ p.entrega.numero }}
+              @if (p.entrega.complemento) { – {{ p.entrega.complemento }} }
+            </dd>
+            @if (p.entrega.bairro) { <dt>Bairro</dt><dd>{{ p.entrega.bairro }}</dd> }
+            <dt>Cidade / UF</dt><dd>{{ p.entrega.cidade }} / {{ p.entrega.uf }}</dd>
+          }
+        </dl>
+      </section>
+
+      <!-- Pagamento -->
+      <section class="ord-drawer__section">
+        <h3 class="ord-drawer__section-title">Pagamento</h3>
+        <dl class="ord-drawer__dl">
+          <dt>Forma</dt><dd>{{ p.pagamento.forma || '—' }}</dd>
+          @if (p.pagamento.bandeira) { <dt>Bandeira</dt><dd>{{ p.pagamento.bandeira }}</dd> }
+          @if (p.pagamento.parcelas) { <dt>Parcelas</dt><dd>{{ p.pagamento.parcelas }}×</dd> }
+          @if (p.pagamento.trocoPara) { <dt>Troco para</dt><dd>{{ formatCurrency(p.pagamento.trocoPara!) }}</dd> }
+        </dl>
+      </section>
+
+      <!-- Itens -->
+      <section class="ord-drawer__section">
+        <h3 class="ord-drawer__section-title">Itens</h3>
+        <ul class="ord-drawer__items">
+          @for (linha of p.linhas; track linha.id) {
+            <li class="ord-drawer__item">
+              <span class="ord-drawer__item-qty">{{ linha.quantidade }}×</span>
+              <span class="ord-drawer__item-nome">{{ linha.titulo }}</span>
+              <span class="ord-drawer__item-valor">{{ formatCurrency(linha.quantidade * linha.precoUnit) }}</span>
+            </li>
+          }
+        </ul>
+        <div class="ord-drawer__total">
+          <span>Total</span>
+          <strong>{{ formatCurrency(p.subtotal) }}</strong>
+        </div>
+      </section>
+
+      <a class="ord-drawer__full-link" [routerLink]="['/merchant/orders/pedidos', p.id]">
+        Abrir página completa →
+      </a>
+    </div>
+  </aside>
+}

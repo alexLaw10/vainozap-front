@@ -1,0 +1,161 @@
+<div class="merchant-shell" [class.merchant-shell--light]="panelTheme.theme() === 'light'">
+  <header class="mx-header">
+    <div class="mx-header__bar container">
+      <a routerLink="/merchant" class="mx-header__brand" aria-label="Início do painel">
+        <span class="mx-header__brand-mark" aria-hidden="true"></span>
+        <span class="mx-header__brand-text">
+          <span class="mx-header__brand-name">{{ ctx.shopLabel() }}</span>
+          <span class="mx-header__brand-tag">Painel</span>
+        </span>
+      </a>
+
+      <nav class="mx-header__main" aria-label="Áreas principais">
+        <div class="mx-seg">
+          <a
+            routerLink="/merchant/loja/vitrine"
+            class="mx-seg__btn"
+            [class.mx-seg__btn--active]="isTab('loja')"
+          >
+            <span class="mx-seg__ico" aria-hidden="true">
+              <app-icon name="home" [size]="20"></app-icon>
+            </span>
+            <span class="mx-seg__label">Loja</span>
+          </a>
+          <a
+            routerLink="/merchant/orders"
+            class="mx-seg__btn"
+            [class.mx-seg__btn--active]="isTab('pedidos')"
+          >
+            <span class="mx-seg__ico" aria-hidden="true">
+              <app-icon name="file-text" [size]="20"></app-icon>
+              @if (pedidosPendentes() > 0) {
+                <span class="mx-badge" aria-label="{{ pedidosPendentes() }} pedidos pendentes">
+                  {{ pedidosPendentes() > 99 ? '99+' : pedidosPendentes() }}
+                </span>
+              }
+            </span>
+            <span class="mx-seg__label">Pedido</span>
+          </a>
+          <a
+            routerLink="/merchant/contas"
+            class="mx-seg__btn"
+            [class.mx-seg__btn--active]="isTab('contas')"
+          >
+            <span class="mx-seg__ico" aria-hidden="true">
+              <app-icon name="user" [size]="20"></app-icon>
+            </span>
+            <span class="mx-seg__label">Contas</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="mx-header__actions">
+        <button
+          class="mx-theme-toggle"
+          (click)="panelTheme.toggle()"
+          [attr.aria-label]="panelTheme.theme() === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'"
+          [attr.title]="panelTheme.theme() === 'dark' ? 'Modo claro' : 'Modo escuro'"
+        >
+          @if (panelTheme.theme() === 'dark') {
+            <app-icon name="sun" [size]="18"></app-icon>
+          } @else {
+            <app-icon name="moon" [size]="18"></app-icon>
+          }
+        </button>
+        <app-notification-bell />
+        @if (vitrineUrl()) {
+          <a [href]="vitrineUrl()" target="_blank" rel="noopener noreferrer" class="mx-header__store">
+            <span>Ver loja</span>
+            <app-icon name="external-link" [size]="16"></app-icon>
+          </a>
+        }
+      </div>
+    </div>
+
+    @if (showLojaSubPrimary()) {
+      <div class="mx-rail">
+        <div class="container mx-rail__inner">
+          <p class="mx-rail__hint">
+            <span class="mx-rail__pulse" aria-hidden="true"></span>
+            O que você quer fazer na loja?
+          </p>
+          <div class="mx-rail__scroll" role="tablist" aria-label="Módulos da loja">
+            @for (item of lojaSubNavPrimary(); track item.path) {
+              <a
+                [routerLink]="item.path"
+                role="tab"
+                class="mx-pill"
+                [class.mx-pill--active]="lojaPrimaryActive(item.path)"
+                >{{ item.label }}</a
+              >
+            }
+          </div>
+
+          @if (showLojaSubSecondary()) {
+            <div class="mx-rail__nest">
+              <span class="mx-rail__nest-label">{{ lojaDetailSectionTitle() }}</span>
+              <div class="mx-rail__scroll mx-rail__scroll--nest">
+                @for (item of lojaSubNavSecondary(); track item.path) {
+                  <a
+                    [routerLink]="item.path"
+                    class="mx-pill mx-pill--compact"
+                    [class.mx-pill--active]="lojaSecondaryActive(item)"
+                    >{{ item.label }}</a
+                  >
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </header>
+
+  <!-- ── Banner de trial ─────────────────────────────────────────────────── -->
+  <app-trial-banner />
+
+  <main class="merchant-shell__body merchant-shell__body--with-bottom-nav">
+    <router-outlet />
+  </main>
+
+  <!-- ── Bottom navigation bar — visível apenas em mobile ─────────────────── -->
+  <nav class="mx-bottom-nav" aria-label="Navegação principal">
+    <a
+      routerLink="/merchant/loja/vitrine"
+      class="mx-bottom-nav__item"
+      [class.mx-bottom-nav__item--active]="isTab('loja')"
+      aria-label="Loja"
+    >
+      <span class="mx-bottom-nav__ico"><app-icon name="home" [size]="22"></app-icon></span>
+      <span class="mx-bottom-nav__label">Loja</span>
+    </a>
+    <a
+      routerLink="/merchant/orders"
+      class="mx-bottom-nav__item"
+      [class.mx-bottom-nav__item--active]="isTab('pedidos')"
+      aria-label="Pedidos"
+    >
+      <span class="mx-bottom-nav__ico" style="position:relative">
+        <app-icon name="file-text" [size]="22"></app-icon>
+        @if (pedidosPendentes() > 0) {
+          <span class="mx-badge" aria-hidden="true">
+            {{ pedidosPendentes() > 99 ? '99+' : pedidosPendentes() }}
+          </span>
+        }
+      </span>
+      <span class="mx-bottom-nav__label">Pedidos</span>
+    </a>
+    <a
+      routerLink="/merchant/contas"
+      class="mx-bottom-nav__item"
+      [class.mx-bottom-nav__item--active]="isTab('contas')"
+      aria-label="Conta"
+    >
+      <span class="mx-bottom-nav__ico"><app-icon name="user" [size]="22"></app-icon></span>
+      <span class="mx-bottom-nav__label">Conta</span>
+    </a>
+  </nav>
+</div>
+
+<ui-toast />
+<app-upgrade-modal />

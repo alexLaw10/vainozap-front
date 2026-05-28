@@ -1,4 +1,4 @@
-import type { Produto } from '../../../shared/models/produto.model';
+import type { Produto } from '../../../core/models/produto.model';
 import type { CartLine } from '../services/storefront-cart.service';
 import { sortVariacoesParaFicha } from './variacao-ui.util';
 

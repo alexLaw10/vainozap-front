@@ -1,0 +1,42 @@
+@if (label()) {
+  <span class="ui-label">{{ label() }}</span>
+}
+
+@if (aspect() === 'wide') {
+
+  @if (preview()) {
+    <div class="ui-banner">
+      <img class="ui-banner__img" [src]="preview()!" [alt]="label() || 'Preview'" />
+      <div class="ui-banner__actions">
+        <button type="button" class="ui-btn ui-btn--sm"        [disabled]="disabled()" (click)="pick()">Trocar imagem</button>
+        <button type="button" class="ui-btn ui-btn--sm ui-btn--danger" [disabled]="disabled()" (click)="remove($event)">Remover</button>
+      </div>
+    </div>
+  } @else {
+    <button type="button" class="ui-empty-wide" [disabled]="disabled()" (click)="pick()">
+      <span class="ui-empty-wide__plus">+</span>
+      <span>{{ placeholder() }}</span>
+      @if (hint()) { <span class="ui-empty-wide__hint">{{ hint() }}</span> }
+    </button>
+  }
+
+  @if (hint() && preview()) {
+    <span class="ui-hint">{{ hint() }}</span>
+  }
+
+} @else {
+
+  <div class="ui-slot" [class.ui-slot--filled]="preview()" (click)="pick()">
+    @if (preview()) {
+      <img class="ui-slot__img" [src]="preview()!" [alt]="label() || 'Preview'" />
+      <button type="button" class="ui-slot__remove" (click)="remove($event)" title="Remover">✕</button>
+    } @else {
+      <span class="ui-slot__placeholder">{{ placeholder() }}</span>
+    }
+  </div>
+
+  @if (hint()) {
+    <span class="ui-hint">{{ hint() }}</span>
+  }
+
+}

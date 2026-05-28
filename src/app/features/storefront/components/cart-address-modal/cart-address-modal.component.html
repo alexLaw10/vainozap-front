@@ -23,7 +23,13 @@
             [value]="formatCepMask(addrCepDigits())"
             (input)="onAddrCep($event)"
           />
+          @if (cepLoading()) {
+            <span class="cart-endereco__cep-spinner" aria-label="Buscando CEP…"></span>
+          }
         </div>
+        @if (cepErro()) {
+          <p class="cart-endereco__cep-erro" role="alert">{{ cepErro() }}</p>
+        }
         <div class="cart-endereco__cep-help">
           <span class="cart-endereco__cep-icon" aria-hidden="true">
             <app-icon name="home" [size]="12"></app-icon>
@@ -85,14 +91,12 @@
 
       <div class="cart-endereco__grid2">
         <div class="cart-endereco__field">
-          <div class="sf-select-wrap">
-            <select id="cart-end-uf" class="sf-pill-select" [value]="addrUf()" (change)="onAddrUf($event)">
-              <option value="">UF</option>
-              @for (uf of ufsBr; track uf) {
-                <option [value]="uf">{{ uf }}</option>
-              }
-            </select>
-          </div>
+          <app-select [pill]="true" inputId="cart-end-uf"
+            placeholder="UF"
+            [options]="ufOptions"
+            [value]="addrUf()"
+            (valueChange)="onAddrUf($event)"
+          />
         </div>
         <div class="cart-endereco__field">
           <div class="sf-pill-wrap">

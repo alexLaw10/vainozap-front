@@ -1,0 +1,258 @@
+// Altura estimada do header (sticky) — usada para posicionar o painel fixo no mobile
+$header-h: 3.5rem;
+
+.nb {
+  position: relative;
+
+  // ── Botão do sino ─────────────────────────────────────────────────────────
+
+  &__btn {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover,
+    &--active {
+      background: var(--color-neutral-200);
+      color: var(--color-text-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus-ring);
+      outline-offset: 2px;
+    }
+  }
+
+  // ── Badge de contagem ─────────────────────────────────────────────────────
+
+  &__badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: var(--color-danger);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    line-height: 1;
+    animation: nb-pulse 2s infinite;
+    pointer-events: none;
+  }
+
+  // ── Backdrop (mobile) — fecha ao tocar fora ───────────────────────────────
+
+  &__backdrop {
+    display: none;                       // oculto no desktop
+
+    @media (max-width: 540px) {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 998;                      // abaixo do dropdown
+      background: rgb(0 0 0 / 0.35);
+      backdrop-filter: blur(2px);
+      animation: nb-fade-in 0.15s ease;
+    }
+  }
+
+  // ── Dropdown ──────────────────────────────────────────────────────────────
+
+  &__dropdown {
+    // ── Desktop (padrão) ─────────────────────────────────────────────────
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 360px;
+    max-width: calc(100vw - 1.5rem);    // evita overflow em telas ≤ 360px
+    max-height: min(70vh, 520px);
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface-base);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.10),
+      0 16px 40px -4px rgb(0 0 0 / 0.20);
+    z-index: 999;
+    overflow: hidden;
+    animation: nb-drop-in 0.15s ease;
+
+    // ── Mobile: painel fixo full-width ────────────────────────────────────
+    @media (max-width: 540px) {
+      position: fixed;
+      top: $header-h;
+      left: var(--space-3, 0.75rem);
+      right: var(--space-3, 0.75rem);
+      width: auto;
+      max-height: calc(100dvh - #{$header-h} - 1rem);
+      border-radius: var(--radius-xl);
+      z-index: 999;
+    }
+  }
+
+  // ── Cabeçalho ─────────────────────────────────────────────────────────────
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border-subtle);
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+  }
+
+  &__mark-all {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    font-weight: 600;
+    padding: 0;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  // ── Lista de notificações ─────────────────────────────────────────────────
+
+  &__list {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-10) var(--space-4);
+    color: var(--color-text-disabled);
+    font-size: var(--font-size-sm);
+    text-align: center;
+
+    &::before {
+      content: '🔔';
+      font-size: 2rem;
+      opacity: 0.4;
+    }
+  }
+
+  // ── Item individual ───────────────────────────────────────────────────────
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    cursor: pointer;
+    transition: background 0.12s;
+    border-bottom: 1px solid var(--color-border-subtle);
+    position: relative;
+
+    &:last-child { border-bottom: none; }
+    &:hover      { background: var(--color-surface-subtle); }
+
+    &--unread {
+      background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface-base));
+
+      &:hover {
+        background: color-mix(in srgb, var(--color-primary) 13%, var(--color-surface-base));
+      }
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    background: var(--color-neutral-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-top: 1px;
+
+    &--novo-pedido {
+      background: color-mix(in srgb, var(--color-primary) 18%, var(--color-surface-base));
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__item-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__item-msg {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__time {
+    font-size: 11px;
+    color: var(--color-text-disabled);
+    margin: 0;
+  }
+
+  &__dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    margin-top: 5px;
+  }
+}
+
+// ── Animações ──────────────────────────────────────────────────────────────────
+
+@keyframes nb-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+
+@keyframes nb-drop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);     }
+}
+
+@keyframes nb-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

@@ -259,6 +259,13 @@
   margin: 0 0 var(--space-1);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+
+  &--hint {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
 }
 
 .cart-confirm__hint {

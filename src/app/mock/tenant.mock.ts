@@ -1,4 +1,4 @@
-import { Tenant } from '../shared/models/tenant.model';
+import { Tenant } from '../core/models/tenant.model';
 import { TENANT_BRAND_MEDIA } from './tenant-brand.mock';
 
 export const TENANT_MOCK: Tenant = {
@@ -13,6 +13,7 @@ export const TENANT_MOCK: Tenant = {
   corDestaqueCatalogo: '#e8b923',
   whatsapp: '5511999999999',
   planoTipo: 'profissional',
+  assinaturaStatus: 'ativa',
   telefoneContato: '(11) 99999-9999',
   horarioAtendimentoLinha: 'Segunda a sexta 08:00 às 18:00',
   horarioAtendimentoDetalhes:
@@ -20,6 +21,8 @@ export const TENANT_MOCK: Tenant = {
   cnpj: '12.345.678/0001-90',
   ativo: true,
   slogan: 'DE QUEMdsad CORRE PARA QUEM CORRE',
+  mensagemTopo: '🏃 Frete grátis para compras acima de R$ 199! Use o cupom PACE10 e ganhe 10% de desconto.',
+  politicaEntregaLinha: 'Entrega em 3 a 7 dias úteis para todo o Brasil 🚚',
   emailContato: 'mypacefitnesss@gmail.com',
   nomeProprietario: 'Law',
   enderecoLinha: 'Rua das Flores, 123, Centro, São Paulo, SP',

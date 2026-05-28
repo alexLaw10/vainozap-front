@@ -1,0 +1,44 @@
+@use '../../../../../styles/mixins/ui-field' as f;
+
+:host { @include f.host; }
+
+.label   { @include f.label; }
+.control { @include f.control; }
+
+/* ── Clearable wrapper ───────────────────────────────────────────────────── */
+.wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .control { padding-right: 2.25rem; }
+}
+
+.clear {
+  position: absolute;
+  right: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  line-height: 1;
+
+  &:hover { color: var(--color-text-primary); }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Mensagens ───────────────────────────────────────────────────────────── */
+.msg {
+  @include f.hint;
+
+  &--error { @include f.error; }
+}

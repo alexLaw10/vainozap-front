@@ -1,0 +1,56 @@
+// ── Feature Lock — overlay visual para features bloqueadas por plano ──────────
+//
+// Aplicado automaticamente pela diretiva *appFeature quando showLocked: true
+// Uso: qualquer elemento com [data-feature-locked] ou .feature-locked
+
+.feature-locked {
+  position: relative;
+  pointer-events: none;
+  user-select: none;
+
+  // Fundo desfocado
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
+    border-radius: inherit;
+    z-index: 10;
+  }
+
+  // Badge de upgrade
+  &::before {
+    content: attr(data-feature-locked-label, '🔒 Fazer upgrade');
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 11;
+    background: #7c3aed;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  // Versão com hint de plano via atributo data-feature-locked
+  &[data-feature-locked="videos"]::before    { content: '🔒 Plano Profissional'; }
+  &[data-feature-locked="pixel"]::before     { content: '🔒 Plano Profissional'; }
+  &[data-feature-locked="instagramShopping"]::before { content: '🔒 Plano Profissional'; }
+  &[data-feature-locked="calculoFrete"]::before      { content: '🔒 Plano Profissional'; }
+  &[data-feature-locked="dominioProprio"]::before    { content: '🔒 Plano Profissional'; }
+  &[data-feature-locked="templatesWhatsapp"]::before { content: '🔒 Plano Profissional'; }
+  &[data-feature-locked="agendamentoPromocoes"]::before { content: '🔒 Plano Profissional'; }
+  &[data-feature-locked="aviseMe"]::before            { content: '🔒 Plano Profissional'; }
+  &[data-feature-locked="recuperacaoCarrinho"]::before { content: '🔒 Plano Business'; }
+  &[data-feature-locked="loginCliente"]::before       { content: '🔒 Plano Business'; }
+  &[data-feature-locked="apiWebhook"]::before         { content: '🔒 Plano Business'; }
+  &[data-feature-locked="avaliacaoProduto"]::before   { content: '🔒 Plano Business'; }
+  &[data-feature-locked="multiplasLojas"]::before     { content: '🔒 Plano Business'; }
+}

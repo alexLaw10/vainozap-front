@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { IconComponent } from '../../../../shared/ui/icon/icon.component';
+import { IconComponent } from '@app/shared/ui';
 
 @Component({
   selector: 'app-cart-share-modal',

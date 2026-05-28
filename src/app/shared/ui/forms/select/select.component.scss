@@ -1,0 +1,50 @@
+@use '../../../../../styles/mixins/ui-field' as f;
+
+:host { @include f.host; }
+
+.label { @include f.label; }
+
+.wrap {
+  position: relative;
+
+  &.is-error .control {
+    border-color: var(--color-danger);
+
+    &:focus {
+      box-shadow: 0 0 0 var(--focus-ring-width, 3px)
+        color-mix(in srgb, var(--color-danger) 20%, transparent);
+    }
+  }
+}
+
+.control {
+  @include f.control;
+  appearance: none;
+  padding-right: var(--space-8);
+  cursor: pointer;
+
+  // Variante pill — usada na vitrine (border-radius full, fundo neutro)
+  &--pill {
+    border-radius: var(--radius-full);
+    background: var(--color-neutral-100);
+    border-color: var(--color-border-subtle);
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-3);
+  }
+}
+
+.arrow {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.msg {
+  @include f.hint;
+
+  &--error { @include f.error; }
+}

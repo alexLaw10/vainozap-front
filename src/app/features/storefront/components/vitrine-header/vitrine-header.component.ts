@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { fromEvent } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { IconComponent } from '../../../../shared/ui/icon/icon.component';
+import { IconComponent, InputSearchComponent } from '@app/shared/ui';
 import { StorefrontCartService } from '../../services/storefront-cart.service';
 import { StorefrontCatalogService } from '../../services/storefront-catalog.service';
 import { StorefrontCatalogUiService } from '../../services/storefront-catalog-ui.service';
@@ -15,7 +15,7 @@ import { StorefrontFiltersService } from '../../services/storefront-filters.serv
 @Component({
   selector: 'app-vitrine-header',
   standalone: true,
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, InputSearchComponent],
   templateUrl: './vitrine-header.component.html',
   styleUrl: './vitrine-header.component.scss',
   host: {
@@ -39,6 +39,7 @@ export class VitrineHeaderComponent {
   );
   /** Header colado no topo com fundo mais claro após rolar um pouco. */
   protected readonly elevated = signal(false);
+  protected readonly searchQuery = this.catalogUi.searchQuery;
 
   private readonly doc = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
@@ -89,5 +90,9 @@ export class VitrineHeaderComponent {
 
   protected isAllCategoriesRowActive(): boolean {
     return this.catalogUi.selectedCategoryId() === null;
+  }
+
+  protected onSearch(q: string): void {
+    this.catalogUi.searchQuery.set(q);
   }
 }

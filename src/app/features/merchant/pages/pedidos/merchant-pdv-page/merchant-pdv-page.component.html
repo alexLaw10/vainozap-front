@@ -1,0 +1,189 @@
+<div class="pdv container">
+
+  <div class="pdv__head">
+    <a routerLink="/merchant/orders/pedidos" class="pdv__back">
+      <app-icon name="arrow-left" [size]="16"></app-icon>
+      Voltar
+    </a>
+    <h1 class="pdv__title">
+      <app-icon name="cart" [size]="22"></app-icon>
+      Venda Presencial
+    </h1>
+  </div>
+
+  <!-- ── Confirmação de sucesso ──────────────────────────────────────────── -->
+  @if (done()) {
+    <div class="pdv__success">
+      <span class="pdv__success-icon" aria-hidden="true">✅</span>
+      <h2 class="pdv__success-title">Venda registrada!</h2>
+      <p class="pdv__success-text">
+        Estoque atualizado. A venda aparece em
+        <a routerLink="/merchant/orders/pedidos">Pedidos</a> e
+        <a routerLink="/merchant/orders/vendas">Vendas</a>.
+      </p>
+      <button type="button" class="pdv__btn pdv__btn--primary" (click)="novaVenda()">
+        Nova venda
+      </button>
+    </div>
+  } @else {
+
+  <div class="pdv__layout">
+
+    <!-- ── Col 1: busca + carrinho ──────────────────────────────────────── -->
+    <section class="pdv__card pdv__card--cart">
+
+      <!-- Busca -->
+      <div class="pdv__search-wrap">
+        <app-input-search
+          label="Adicionar produto"
+          placeholder="Buscar por nome…"
+          [(value)]="searchQuery"
+          [loading]="searching()"
+          (search)="onSearchInput($event)"
+          (blur)="closeDropdown()"
+        />
+
+        @if (showDropdown() && searchResults().length > 0) {
+          <ul class="pdv__dropdown" role="listbox">
+            @for (opt of searchResults(); track opt.label) {
+              <li
+                class="pdv__dropdown-item"
+                role="option"
+                (mousedown)="selectOption(opt)"
+              >
+                <span class="pdv__dropdown-nome">{{ opt.label }}</span>
+                <span class="pdv__dropdown-preco">{{ opt.precoUnit | currency: 'BRL':'symbol':'1.2-2' }}</span>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (showDropdown() && searchResults().length === 0 && !searching()) {
+          <p class="pdv__dropdown-empty">Nenhum produto encontrado.</p>
+        }
+      </div>
+
+      <!-- Carrinho -->
+      <div class="pdv__cart">
+        @if (isEmpty()) {
+          <p class="pdv__cart-empty">
+            <app-icon name="cart" [size]="32" [strokeWidth]="1.5"></app-icon>
+            <span>Nenhum item adicionado</span>
+          </p>
+        } @else {
+          <ul class="pdv__items" role="list">
+            @for (item of cart(); track $index; let idx = $index) {
+              <li class="pdv__item">
+                <div class="pdv__item-info">
+                  <span class="pdv__item-titulo">{{ item.titulo }}</span>
+                  <span class="pdv__item-subtotal">
+                    {{ item.precoUnit * item.quantidade | currency: 'BRL':'symbol':'1.2-2' }}
+                  </span>
+                </div>
+                <div class="pdv__item-controls">
+                  <button type="button" class="pdv__qty-btn" (click)="decQty(idx)" aria-label="Diminuir">−</button>
+                  <span class="pdv__qty-val">{{ item.quantidade }}</span>
+                  <button type="button" class="pdv__qty-btn" (click)="incQty(idx)" aria-label="Aumentar">+</button>
+                  <button type="button" class="pdv__remove-btn" (click)="removeItem(idx)" aria-label="Remover item">
+                    <app-icon name="close" [size]="14"></app-icon>
+                  </button>
+                </div>
+              </li>
+            }
+          </ul>
+
+          <div class="pdv__total">
+            <span>Total</span>
+            <strong>{{ total() | currency: 'BRL':'symbol':'1.2-2' }}</strong>
+          </div>
+        }
+      </div>
+
+    </section>
+
+    <!-- ── Col 2: pagamento + cliente + confirmar ─────────────────────── -->
+    <section class="pdv__card pdv__card--payment">
+      <h2 class="pdv__card-title">Pagamento</h2>
+
+      <!-- Forma de pagamento -->
+      <div class="pdv__formas" role="group" aria-label="Forma de pagamento">
+        @for (f of FORMAS; track f.value) {
+          <button
+            type="button"
+            class="pdv__forma-btn"
+            [class.pdv__forma-btn--active]="forma() === f.value"
+            (click)="setForma(f.value)"
+          >{{ f.label }}</button>
+        }
+      </div>
+
+      <!-- Troco (só para dinheiro) -->
+      @if (forma() === 'DINHEIRO') {
+        <div class="pdv__field">
+          <app-input
+            label="Troco para (R$)"
+            type="number"
+            placeholder="Ex: 50,00"
+            [(value)]="trocoStr"
+          />
+          @if (trocoPara() !== null) {
+            <span class="pdv__troco-hint">Troco: {{ (trocoPara()! - total()) | currency: 'BRL':'symbol':'1.2-2' }}</span>
+          }
+        </div>
+      }
+
+      <!-- Parcelas (só para crédito) -->
+      @if (forma() === 'CREDITO') {
+        <div class="pdv__field">
+          <app-select label="Parcelas"
+            [options]="parcelasOptions()"
+            [(value)]="parcelasStr"
+          />
+        </div>
+      }
+
+      <hr class="pdv__divider" />
+
+      <!-- Cliente (opcional) -->
+      <h2 class="pdv__card-title">Cliente <span class="pdv__optional">(opcional)</span></h2>
+
+      <app-input
+        label="Nome"
+        placeholder="Nome do cliente"
+        [(value)]="nomeCliente"
+      />
+
+      <app-input-phone
+        label="Telefone"
+        [(value)]="telefone"
+      />
+
+      <hr class="pdv__divider" />
+
+      <!-- Erro -->
+      @if (error()) {
+        <p class="pdv__error" role="alert">
+          <app-icon name="alert" [size]="14"></app-icon>
+          {{ error() }}
+        </p>
+      }
+
+      <!-- Botão confirmar -->
+      <app-button
+        type="button"
+        variant="primary"
+        [disabled]="isEmpty() || saving()"
+        [loading]="saving()"
+        (click)="confirmar()"
+      >
+        <app-icon name="check" [size]="18" />
+        Confirmar venda — {{ total() | currency: 'BRL':'symbol':'1.2-2' }}
+      </app-button>
+
+    </section>
+
+  </div>
+
+  } <!-- /else done -->
+
+</div>

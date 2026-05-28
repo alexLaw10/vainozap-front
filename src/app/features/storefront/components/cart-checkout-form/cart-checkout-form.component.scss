@@ -48,6 +48,7 @@
   font-size: var(--font-size-sm);
   font-family: inherit;
   color: var(--color-text-primary);
+  transition: border-color 0.15s ease;
 
   &::placeholder {
     color: var(--color-text-muted);
@@ -56,6 +57,29 @@
   &:focus-visible {
     outline: var(--focus-ring-width) solid var(--color-focus-ring);
     outline-offset: var(--focus-ring-offset);
+  }
+
+  &--error {
+    border-color: var(--color-error, #dc2626);
+
+    &:focus-visible {
+      outline-color: var(--color-error, #dc2626);
+    }
+  }
+}
+
+.cart-modal__field-error {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-error, #dc2626);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  &::before {
+    content: '⚠';
+    font-size: 0.65rem;
+    line-height: 1;
   }
 }
 

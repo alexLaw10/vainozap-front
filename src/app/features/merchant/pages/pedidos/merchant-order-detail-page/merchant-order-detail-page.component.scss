@@ -1,0 +1,205 @@
+@use 'objects/merchant-crud' as *;
+
+// ── Reutiliza badges da lista ─────────────────────────────────────────────────
+// (importadas via merchant-crud que não define badges, então declaramos aqui)
+
+.ord-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  white-space: nowrap;
+
+  &--waiting   { background: var(--color-amber-muted); color: var(--color-on-amber-muted); }
+  &--not-paid  { background: var(--color-danger-muted); color: var(--color-on-danger-muted); }
+  &--new       { background: var(--color-blue-muted); color: var(--color-on-blue-muted); }
+  &--preparing { background: var(--color-violet-muted); color: var(--color-on-violet-muted); }
+  &--sent      { background: var(--color-info-muted); color: var(--color-info-emphasis); }
+  &--delivered { background: var(--color-success-muted); color: var(--color-on-success-muted); }
+  &--cancelled { background: var(--color-chip-neutral-bg); color: var(--color-chip-neutral-fg); }
+}
+
+// ── Layout principal ──────────────────────────────────────────────────────────
+
+.ord-det {
+  padding-block: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+
+  &__back {
+    margin: 0;
+  }
+
+  &__back-link {
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+
+  &__loading {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    padding: var(--space-12) 0;
+  }
+
+  // Cabeçalho
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__id {
+    font-size: var(--font-size-xs);
+    font-family: monospace;
+    color: var(--color-text-muted);
+  }
+
+  &__date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  &__status-badge {
+    font-size: var(--font-size-sm);
+    padding: var(--space-1) var(--space-3);
+    margin-top: var(--space-1);
+  }
+
+  // Ações
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    padding: var(--space-4);
+    background: var(--color-surface-subtle);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  &__actions-label {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  &__actions-btns {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  &__terminal {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-subtle);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  &__terminal-msg {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  &__error {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-danger-muted);
+    color: var(--color-danger);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    margin: 0;
+  }
+
+  // Grid de cards
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-4);
+  }
+
+  // Card individual
+  &__card {
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  &__card-title {
+    margin: 0 0 var(--space-3);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  // Itens
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  &__tfoot td {
+    border-top: 2px solid var(--color-border-subtle) !important;
+  }
+
+  &__total {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+}
+
+// ── Definition list ───────────────────────────────────────────────────────────
+
+.ord-det__dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-4);
+  font-size: var(--font-size-sm);
+
+  dt {
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-text-primary);
+    word-break: break-word;
+  }
+}
+
+.ord-det__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6) 0;
+}

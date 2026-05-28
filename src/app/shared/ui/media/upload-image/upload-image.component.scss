@@ -1,0 +1,166 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* ── Label / hint ────────────────────────────────────────────────────────── */
+.ui-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.ui-hint {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted);
+}
+
+/* ── Square slot (logo / favicon) ────────────────────────────────────────── */
+.ui-slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 7rem;
+  border: 1.5px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  background: var(--color-surface-raised, var(--color-neutral-50));
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover { border-color: var(--color-primary); }
+
+  &--filled {
+    border-style: solid;
+    border-color: var(--color-border-strong);
+  }
+}
+
+.ui-slot__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ui-slot__placeholder {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: var(--space-2);
+  pointer-events: none;
+}
+
+.ui-slot__remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 1.375rem;
+  height: 1.375rem;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 1;
+
+  .ui-slot--filled:hover & { opacity: 1; }
+}
+
+/* ── Wide banner ─────────────────────────────────────────────────────────── */
+.ui-banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+}
+
+.ui-banner__img {
+  width: 100%;
+  max-height: 12rem;
+  object-fit: cover;
+  display: block;
+}
+
+.ui-banner__actions {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-3);
+}
+
+/* Empty wide button */
+.ui-empty-wide {
+  width: 100%;
+  min-height: 7rem;
+  border: 1.5px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised, var(--color-neutral-50));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 4%, transparent);
+  }
+
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.ui-empty-wide__plus {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+
+.ui-empty-wide__hint {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted);
+}
+
+/* ── Shared small buttons ────────────────────────────────────────────────── */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-base);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) { background: var(--color-neutral-100); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  &--sm { padding: var(--space-1) var(--space-2); font-size: var(--font-size-xs, 0.75rem); }
+
+  &--danger {
+    color: var(--color-danger);
+    border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+    }
+  }
+}

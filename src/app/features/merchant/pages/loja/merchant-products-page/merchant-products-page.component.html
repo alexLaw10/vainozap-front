@@ -1,0 +1,106 @@
+<main class="mp-page container">
+  <app-page-header title="Produtos" subtitle="Gerencie os produtos da sua loja">
+    <a routerLink="/merchant/loja/cadastrar/produtos" class="mcat-btn mcat-btn--primary">
+      <app-icon name="plus" [size]="16" [strokeWidth]="2.5"></app-icon>
+      Novo produto
+    </a>
+  </app-page-header>
+
+  <div class="mcat-filters">
+    <div class="mcat-filters__search">
+      <app-input-search
+        placeholder="Buscar produto…"
+        [(value)]="searchQ"
+        (search)="onSearch($event)"
+      />
+    </div>
+    <span class="mcat-filters__count">
+      {{ totalElements() }} produto{{ totalElements() !== 1 ? 's' : '' }}
+    </span>
+  </div>
+
+  @if (error()) {
+    <p class="mp-page__error">{{ error() }}</p>
+  }
+
+  @if (!loading() && totalElements() === 0 && !searchQ()) {
+    <div class="mcat-empty-state">
+      <app-icon name="package" [size]="44" [strokeWidth]="1.2"></app-icon>
+      <p class="mcat-empty-state__title">Nenhum produto ainda</p>
+      <p class="mcat-empty-state__desc">Adicione seu primeiro produto e ele aparecerá na vitrine para os clientes.</p>
+      <a routerLink="/merchant/loja/cadastrar/produtos" class="mcat-btn mcat-btn--primary">
+        <app-icon name="plus" [size]="16" [strokeWidth]="2.5"></app-icon>
+        Adicionar primeiro produto
+      </a>
+    </div>
+  } @else {
+
+  <app-table
+    [columns]="columns"
+    [rows]="products()"
+    [loading]="loading()"
+    [page]="curPage()"
+    [pageSize]="pageSize"
+    [totalElements]="totalElements()"
+    [totalPages]="totalPages()"
+    emptyMessage="Nenhum produto encontrado."
+    (pageChange)="onPageChange($event)"
+  >
+    <ng-template #cell let-row let-col="col">
+
+      @switch (col.key) {
+
+        @case ('foto') {
+          @if (row.fotos.length) {
+            <img class="ui-thumb" [src]="row.fotos[0]" [alt]="row.nome" />
+          } @else {
+            <div class="ui-thumb ui-thumb--placeholder">
+              <app-icon name="image" [size]="18" [strokeWidth]="1.5" />
+            </div>
+          }
+        }
+
+        @case ('fotos') {
+          {{ row.fotos.length }}/10
+        }
+
+        @case ('estoque') {
+          <app-status-badge
+            [variant]="estoqueBadgeVariant(row)"
+            [label]="estoqueBadgeLabel(row)"
+          />
+        }
+
+        @case ('ativo') {
+          <span class="ui-table-badge"
+            [class.ui-table-badge--active]="row.ativo"
+            [class.ui-table-badge--inactive]="!row.ativo">
+            {{ row.ativo ? 'Ativo' : 'Inativo' }}
+          </span>
+        }
+
+        @case ('acoes') {
+          <a [routerLink]="['/merchant/loja/gerenciar/produtos', row.id, 'editar']"
+             class="mcat-btn mcat-btn--ghost">Editar</a>
+          <app-button type="button" variant="danger-ghost" [inline]="true"
+             (click)="askDelete(row.id)">Excluir</app-button>
+        }
+
+      }
+
+    </ng-template>
+  </app-table>
+
+  } <!-- /@else -->
+
+</main>
+
+@if (confirmDeleteId()) {
+  <app-confirm-dialog
+    [open]="!!confirmDeleteId()"
+    message="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
+    confirmLabel="Excluir"
+    (cancel)="cancelDelete()"
+    (confirm)="confirmDelete()"
+  />
+}

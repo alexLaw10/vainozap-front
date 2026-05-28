@@ -3,8 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import type { AjusteEstoqueApi, CategoriaApi, ProdutoApi, VariacaoTemplateApi } from '../../../shared/models/catalog-api.model';
-import type { PageResult } from '../../../shared/models/page-result.model';
+import type { AjusteEstoqueApi, CategoriaApi, ProdutoApi, VariacaoTemplateApi } from '../../../core/models/catalog-api.model';
+import type { PageResult } from '../models/page-result.model';
+import { SelectOption } from '@app/shared/ui';
 
 @Injectable()
 export class MerchantCatalogService {
@@ -15,6 +16,10 @@ export class MerchantCatalogService {
 
   listCategories(): Observable<CategoriaApi[]> {
     return this.http.get<CategoriaApi[]>(`${this.base}/categories`);
+  }
+
+  listCategoryOptions(): Observable<SelectOption[]> {
+    return this.http.get<SelectOption[]>(`${this.base}/categories/options`);
   }
 
   createCategory(cat: Omit<CategoriaApi, 'id' | 'tenantId'>, file?: File): Observable<CategoriaApi> {

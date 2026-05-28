@@ -24,6 +24,15 @@ describe('Auth — rotas públicas e formulários', () => {
     cy.get('#merchant-dash-resumo').should('contain', 'Resumo de hoje');
   });
 
+  it('usuário autenticado visitando /auth/login é redirecionado para /merchant', () => {
+    registerMerchantApiStubs();
+    cy.intercept('POST', '**/api/v1/auth/login', { fixture: 'login-response.json' }).as('login');
+    cy.loginMerchant();
+
+    cy.visit('/auth/login');
+    cy.url().should('include', '/merchant');
+  });
+
   it('envia fluxo de esqueci a senha e mostra confirmação', () => {
     cy.intercept('POST', '**/api/v1/auth/forgot-password', { statusCode: 204 }).as('forgot');
     cy.visit('/auth/forgot-password');

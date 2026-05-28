@@ -1,6 +1,8 @@
 {
-  "token": "e2e-access-token",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1LWUyZS0xIiwidGVuYW50SWQiOiJ0LWUyZSIsInJvbGUiOiJNRVJDSEFOVCIsIm5vbWVMb2phIjoiTG9qYSBFMkUiLCJzbHVnIjoiZTJlLWxvamEiLCJpYXQiOjEwMDAwMDAwMDAsImV4cCI6OTk5OTk5OTk5OX0.fakesig",
   "refreshToken": "e2e-refresh-token",
   "role": "MERCHANT",
-  "tenantId": "t-e2e"
+  "tenantId": "t-e2e",
+  "nomeLoja": "Loja E2E",
+  "slug": "e2e-loja"
 }

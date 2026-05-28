@@ -1,0 +1,48 @@
+{
+  "content": [
+    {
+      "id": "order-e2e-1",
+      "tenantId": "t-e2e",
+      "status": "AGUARDANDO_PAGAMENTO",
+      "subtotal": 150.00,
+      "criadoEm": "2026-05-25T10:00:00Z",
+      "cliente": {
+        "nome": "Maria Pedido",
+        "cpfCnpj": "123.456.789-00",
+        "telefone": "11999990001",
+        "observacoes": null
+      },
+      "pagamento": {
+        "forma": "pix",
+        "bandeira": null,
+        "parcelas": null,
+        "modoCartao": null,
+        "trocoPara": null
+      },
+      "entrega": {
+        "modo": "retirada",
+        "cep": null,
+        "logradouro": null,
+        "numero": null,
+        "bairro": null,
+        "uf": null,
+        "cidade": null,
+        "complemento": null
+      },
+      "linhas": [
+        {
+          "id": "linha-e2e-1",
+          "productId": "p-1",
+          "titulo": "Produto E2E",
+          "quantidade": 2,
+          "precoUnit": 75.00
+        }
+      ]
+    }
+  ],
+  "page": 0,
+  "size": 20,
+  "totalElements": 1,
+  "totalPages": 1,
+  "last": true
+}

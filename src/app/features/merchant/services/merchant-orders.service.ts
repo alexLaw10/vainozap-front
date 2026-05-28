@@ -3,8 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import type { AtualizarStatusApi, PedidoApi, StatusPedido } from '../../../shared/models/order-api.model';
-import type { PageResult } from '../../../shared/models/page-result.model';
+import type { AtualizarStatusApi, PedidoApi, StatusPedido } from '../models/order-api.model';
+import type { PageResult } from '../models/page-result.model';
 
 @Injectable()
 export class MerchantOrdersService {

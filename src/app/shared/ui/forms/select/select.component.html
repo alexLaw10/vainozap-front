@@ -1,0 +1,26 @@
+@if (label()) {
+  <label class="label" [for]="resolvedId">{{ label() }}</label>
+}
+<div class="wrap" [class.is-error]="error()">
+  <select
+    class="control"
+    [class.control--pill]="pill()"
+    [id]="resolvedId"
+    [disabled]="disabled()"
+    [value]="value()"
+    (change)="onChange($event)"
+  >
+    @if (placeholder()) {
+      <option value="">{{ placeholder() }}</option>
+    }
+    @for (opt of options(); track opt.value) {
+      <option [value]="opt.value">{{ opt.label }}</option>
+    }
+  </select>
+  <span class="arrow" aria-hidden="true">▾</span>
+</div>
+@if (error()) {
+  <span class="msg msg--error" role="alert">{{ error() }}</span>
+} @else if (hint()) {
+  <span class="msg">{{ hint() }}</span>
+}

@@ -1,0 +1,278 @@
+<main class="merchant-contas">
+  <div class="merchant-contas__inner container container--narrow">
+    <h1 class="merchant-contas__page-title visually-hidden">Contas</h1>
+
+    <!-- ── Minha conta ──────────────────────────────────────────────────── -->
+    <section class="merchant-contas__block" aria-labelledby="contas-minha-conta">
+      <h2 id="contas-minha-conta" class="merchant-contas__section-title">Minha conta</h2>
+      <div class="merchant-contas__account-card">
+        <div class="merchant-contas__avatar" aria-hidden="true">
+          <span class="merchant-contas__avatar-hint">Adicione uma foto</span>
+        </div>
+        <div class="merchant-contas__account-body">
+          <p class="merchant-contas__account-name">{{ nomeExibicao() }}</p>
+          <p class="merchant-contas__account-meta">{{ emailExibicao() }}</p>
+          <p class="merchant-contas__account-meta">{{ telefoneExibicao() }}</p>
+          <p class="merchant-contas__account-shop">{{ ctx.shopLabel() }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Assinatura ───────────────────────────────────────────────────── -->
+    <section class="merchant-contas__block" aria-labelledby="contas-assinatura">
+      <h2 id="contas-assinatura" class="merchant-contas__section-title">Assinatura</h2>
+      <div class="merchant-contas__subscription-card">
+        <div class="merchant-contas__subscription-top">
+          <div class="merchant-contas__subscription-info">
+            <p class="merchant-contas__plan-name">
+              <span class="merchant-contas__plan-prefix">Plano</span>
+              {{ planoNome() }}
+            </p>
+            @if (plano.isTrial()) {
+              <p class="merchant-contas__trial-label">Período de avaliação gratuito</p>
+              <p class="merchant-contas__valid-until">Válido até {{ validoAteFormatado() }}</p>
+              @if (diasGratuitosRestantes() > 0) {
+                <p class="merchant-contas__trial-remaining">
+                  Restam <strong>{{ diasGratuitosRestantes() }}</strong>
+                  {{ diasGratuitosRestantes() === 1 ? 'dia' : 'dias' }} de avaliação gratuita
+                </p>
+              } @else {
+                <p class="merchant-contas__trial-remaining merchant-contas__trial-remaining--ended">
+                  Período gratuito encerrado
+                </p>
+              }
+            } @else if (plano.isAtiva()) {
+              <p class="merchant-contas__trial-label">Assinatura ativa</p>
+            } @else if (plano.isInadimplente()) {
+              <p class="merchant-contas__trial-remaining merchant-contas__trial-remaining--ended">
+                Pagamento pendente — regularize para continuar
+              </p>
+            }
+          </div>
+
+          @if (plano.isTrial()) {
+            <div
+              class="merchant-contas__trial-pill"
+              [attr.aria-label]="diasGratuitosRestantes() + ' dias restantes'"
+            >
+              <span class="merchant-contas__trial-pill-value">{{ diasGratuitosRestantes() }}</span>
+              <span class="merchant-contas__trial-pill-unit">dias</span>
+            </div>
+          } @else if (plano.isAtiva()) {
+            <span class="merchant-contas__status-badge merchant-contas__status-badge--ativa">Ativa</span>
+          }
+        </div>
+
+        <!-- Botão alterar plano -->
+        <button
+          type="button"
+          class="merchant-contas__btn-alterar-plano"
+          [disabled]="!billingEnabled"
+          (click)="showAlterarPlano() ? fecharAlterarPlano() : abrirAlterarPlano()"
+        >
+          @if (showAlterarPlano()) {
+            <app-icon name="chevron-up" [size]="14"></app-icon>
+            Fechar
+          } @else {
+            <app-icon name="external-link" [size]="14"></app-icon>
+            {{ billingEnabled ? (plano.isTrial() ? 'Escolher plano' : 'Alterar plano') : 'Planos bloqueados (trial)' }}
+          }
+        </button>
+      </div>
+
+      <!-- Painel expansível de planos ──────────────────────────────────── -->
+      @if (showAlterarPlano()) {
+        <div class="contas-planos-panel">
+
+          <!-- Skeletons -->
+          @if (planoCardsLoading()) {
+            @for (_ of [1,2,3]; track $index) {
+              <div class="contas-plano-card contas-plano-card--skeleton"></div>
+            }
+          }
+
+          <!-- Cards de plano -->
+          @for (p of planoCards(); track p.tipo) {
+            <button
+              type="button"
+              class="contas-plano-card"
+              [class.contas-plano-card--selected]="planoSelecionado() === p.tipo"
+              [class.contas-plano-card--atual]="isPlanoAtual(p.tipo)"
+              [class.contas-plano-card--destaque]="p.destaque"
+              [disabled]="!billingEnabled || isPlanoAtual(p.tipo)"
+              (click)="billingEnabled && planoSelecionado.set(p.tipo)"
+            >
+              <div class="contas-plano-card__top">
+                @if (p.destaque && !isPlanoAtual(p.tipo)) {
+                  <span class="contas-plano-card__badge-destaque">⭐ Mais escolhido</span>
+                }
+                @if (isPlanoAtual(p.tipo)) {
+                  <span class="contas-plano-card__badge-atual">✓ Plano atual</span>
+                }
+              </div>
+              <div class="contas-plano-card__row">
+                <div class="contas-plano-card__info">
+                  <p class="contas-plano-card__nome">{{ p.nome }}</p>
+                  <p class="contas-plano-card__bullets">
+                    @for (b of p.destaquesBullets.slice(0, 3); track b; let last = $last) {
+                      {{ b }}@if (!last) { &nbsp;·&nbsp; }
+                    }
+                  </p>
+                </div>
+                <div class="contas-plano-card__right">
+                  <p class="contas-plano-card__preco">
+                    {{ precoCard(p) | currency:'BRL':'symbol':'1.2-2' }}<span>/mês</span>
+                  </p>
+                  <div
+                    class="contas-radio"
+                    [class.contas-radio--on]="planoSelecionado() === p.tipo"
+                    aria-hidden="true"
+                  ></div>
+                </div>
+              </div>
+            </button>
+          }
+
+          <!-- Erro -->
+          @if (alterarPlanoErro()) {
+            <p class="contas-planos-panel__erro" role="alert">{{ alterarPlanoErro() }}</p>
+          }
+
+          <!-- CTA -->
+          <app-button
+            type="button"
+            [disabled]="!billingEnabled || !planoSelecionado() || ctaLoading()"
+            [loading]="ctaLoading()"
+            (click)="confirmarTrocaPlano()"
+          >
+            @if (ctaLoading()) { Aguarde… }
+            @else if (!billingEnabled) { Disponível em breve }
+            @else if (planoSelecionado()) { Continuar para pagamento }
+            @else { Selecione um plano }
+          </app-button>
+        </div>
+      }
+    </section>
+
+    <!-- ── Minhas lojas ─────────────────────────────────────────────────── -->
+    <section class="merchant-contas__block" aria-labelledby="contas-lojas">
+      <h2 id="contas-lojas" class="merchant-contas__section-title">Minhas lojas</h2>
+
+      @if (lojasLoading()) {
+        <p class="merchant-contas__lojas-loading">Carregando lojas…</p>
+      } @else {
+        <ul class="merchant-contas__lojas-list" role="list">
+          @for (loja of lojas(); track loja.tenantId) {
+            <li
+              class="merchant-contas__loja-card"
+              [class.merchant-contas__loja-card--active]="loja.isPrimary"
+            >
+              <!-- Logo ou inicial -->
+              <div class="merchant-contas__loja-logo" aria-hidden="true">
+                @if (loja.logoUrl) {
+                  <img [src]="loja.logoUrl" [alt]="loja.nomeLoja" />
+                } @else {
+                  <span>{{ loja.nomeLoja.charAt(0).toUpperCase() }}</span>
+                }
+              </div>
+
+              <!-- Info -->
+              <div class="merchant-contas__loja-info">
+                <p class="merchant-contas__loja-nome">{{ loja.nomeLoja }}</p>
+                <p class="merchant-contas__loja-slug">{{ loja.slug }}</p>
+                <p class="merchant-contas__loja-papel">{{ loja.papel }}</p>
+              </div>
+
+              <!-- Ação -->
+              <div class="merchant-contas__loja-action">
+                @if (loja.isPrimary) {
+                  <span class="merchant-contas__loja-badge-ativa">Ativa</span>
+                } @else {
+                  <app-button
+                    type="button"
+                    variant="ghost"
+                    [inline]="true"
+                    class="merchant-contas__loja-btn-switch"
+                    [disabled]="!!switching()"
+                    [loading]="switching() === loja.tenantId"
+                    (click)="switchLoja(loja)"
+                  >
+                    {{ switching() === loja.tenantId ? 'Trocando…' : 'Trocar' }}
+                  </app-button>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+
+        @if (storeError()) {
+          <p class="merchant-contas__store-error" role="alert">{{ storeError() }}</p>
+        }
+
+        @if (plano.temMultiplasLojas()) {
+          <app-button
+            type="button"
+            variant="ghost"
+            class="merchant-contas__btn-nova-loja"
+            (click)="abrirModalNovaLoja()"
+          >
+            <app-icon name="plus" [size]="16" [strokeWidth]="2.5"></app-icon>
+            Nova loja
+          </app-button>
+        } @else {
+          <button type="button" class="merchant-contas__btn-upgrade-lojas" (click)="abrirAlterarPlano()">
+            <app-icon name="plus" [size]="14" [strokeWidth]="2.5"></app-icon>
+            Nova loja
+            <span class="merchant-contas__btn-upgrade-lojas__badge">Business</span>
+          </button>
+        }
+      }
+    </section>
+
+    <!-- ── Rodapé ──────────────────────────────────────────────────────────── -->
+    <div class="merchant-contas__footer">
+      <app-button type="button" variant="primary" (click)="sair()">Sair</app-button>
+    </div>
+  </div>
+</main>
+
+<!-- ── Modal: nova loja ──────────────────────────────────────────────────── -->
+@if (showNovaLoja()) {
+  <app-modal [open]="showNovaLoja()" title="Nova loja" (closed)="fecharModalNovaLoja()">
+    <form class="contas-modal__form" (ngSubmit)="confirmarNovaLoja()">
+
+      <app-input
+        label="Nome da loja"
+        placeholder="Ex.: Minha Loja 2"
+        [(value)]="novaLojaNome"
+        (input)="onNomeChange($any($event.target).value)"
+      />
+
+      <app-input
+        label="Slug (URL)"
+        placeholder="Ex.: minha-loja-2"
+        [(value)]="novaLojaSlug"
+        hint="Somente letras minúsculas, números e hífens."
+      />
+
+      <app-input
+        label="WhatsApp"
+        type="tel"
+        placeholder="Ex.: 5511999999999"
+        [(value)]="novaLojaWpp"
+        hint="DDI + DDD + número (ex: 5511999999999)"
+      />
+
+      @if (novaLojaError()) {
+        <p class="contas-modal__error" role="alert">{{ novaLojaError() }}</p>
+      }
+
+      <div class="contas-modal__footer">
+        <app-button type="button" variant="ghost" [inline]="true" (click)="fecharModalNovaLoja()">Cancelar</app-button>
+        <app-button type="submit" [inline]="true" [disabled]="criando()" [loading]="criando()">
+          {{ criando() ? 'Criando…' : 'Criar loja' }}
+        </app-button>
+      </div>
+    </form>
+  </app-modal>
+}

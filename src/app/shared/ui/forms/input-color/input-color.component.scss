@@ -1,0 +1,37 @@
+@use '../../../../../styles/mixins/ui-field' as f;
+
+:host { @include f.host; }
+
+.label { @include f.label; }
+
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.picker {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 2px;
+  border: 1px solid var(--color-border-strong, #d1d5db);
+  border-radius: var(--radius-md, 0.5rem);
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.control {
+  @include f.control;
+  flex: 1;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.msg {
+  @include f.hint;
+  &--error { @include f.error; }
+}

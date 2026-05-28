@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 
 import { STOREFRONT_FILTERS_PANEL_MOCK } from '../../../mock/storefront-filters.mock';
-import type { StorefrontFilterGroup } from '../../../shared/models/storefront-filters.model';
-import type { Produto } from '../../../shared/models/produto.model';
+import type { StorefrontFilterGroup } from '../../../core/models/storefront-filters.model';
+import type { Produto } from '../../../core/models/produto.model';
 
 export interface StorefrontAppliedFilters {
   /** groupId → ids de opções selecionadas */
@@ -100,6 +100,60 @@ export class StorefrontFiltersService {
   apply(): void {
     this.applied.set(structuredClone(this.draft()));
     this.closePanel();
+  }
+
+  /** Chips de filtros atualmente aplicados (para exibição na UI). */
+  activeChips(): Array<{ label: string; groupId: string; optionId?: string; kind: 'choice' | 'priceMin' | 'priceMax' }> {
+    const { choices, priceMin, priceMax } = this.applied();
+    const chips: Array<{ label: string; groupId: string; optionId?: string; kind: 'choice' | 'priceMin' | 'priceMax' }> = [];
+
+    for (const g of this.groups()) {
+      if (g.kind !== 'choice') continue;
+      const selected = choices[g.id];
+      if (!selected?.length) continue;
+      for (const optId of selected) {
+        const opt = g.options?.find(o => o.id === optId);
+        if (opt) chips.push({ label: opt.label, groupId: g.id, optionId: optId, kind: 'choice' });
+      }
+    }
+    if (priceMin !== null) chips.push({ label: `Mín. R$ ${priceMin}`, groupId: 'preco', kind: 'priceMin' });
+    if (priceMax !== null) chips.push({ label: `Máx. R$ ${priceMax}`, groupId: 'preco', kind: 'priceMax' });
+
+    return chips;
+  }
+
+  removeChoice(groupId: string, optionId: string): void {
+    const remove = (f: StorefrontAppliedFilters): StorefrontAppliedFilters => {
+      const choices = { ...f.choices };
+      const arr = (choices[groupId] ?? []).filter(id => id !== optionId);
+      if (arr.length === 0) delete choices[groupId]; else choices[groupId] = arr;
+      return { ...f, choices };
+    };
+    this.applied.update(remove);
+    this.draft.update(remove);
+  }
+
+  removePriceMin(): void {
+    this.applied.update(f => ({ ...f, priceMin: null }));
+    this.draft.update(f => ({ ...f, priceMin: null }));
+  }
+
+  removePriceMax(): void {
+    this.applied.update(f => ({ ...f, priceMax: null }));
+    this.draft.update(f => ({ ...f, priceMax: null }));
+  }
+
+  /** Limpa todos os filtros aplicados e o draft. */
+  clearAll(): void {
+    const empty = emptyApplied();
+    this.applied.set(empty);
+    this.draft.set(structuredClone(empty));
+  }
+
+  /** Verifica se há algum filtro ativo. */
+  hasActiveFilters(): boolean {
+    const { choices, priceMin, priceMax } = this.applied();
+    return priceMin !== null || priceMax !== null || Object.values(choices).some(v => v.length > 0);
   }
 
   /** Produto visível com os filtros atualmente aplicados. */

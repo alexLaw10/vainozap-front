@@ -1,0 +1,17 @@
+@use '../../../../../styles/mixins/button' as btn;
+
+.ui-button {
+  @include btn.base(
+    $size:          'md',
+    $primary-color: var(--color-auth-accent),
+    $full-width:    true,
+  );
+
+  margin-top: var(--space-1);
+
+  &--inline { width: auto; }
+}
+
+.ui-button__spinner {
+  @include btn.spinner(1rem, 2px);
+}

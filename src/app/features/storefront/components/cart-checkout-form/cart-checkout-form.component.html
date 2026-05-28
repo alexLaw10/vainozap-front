@@ -7,12 +7,19 @@
     <input
       id="cart-nome"
       class="cart-modal__input"
+      [class.cart-modal__input--error]="erroNome()"
       type="text"
       autocomplete="name"
       placeholder="Nome Completo"
       [value]="nome()"
       (input)="nomeChange.emit($any($event.target).value)"
+      (blur)="onNomeBlur()"
+      [attr.aria-invalid]="erroNome() ? 'true' : null"
+      aria-describedby="erro-nome"
     />
+    @if (erroNome()) {
+      <p id="erro-nome" class="cart-modal__field-error" role="alert">{{ erroNome() }}</p>
+    }
   </div>
 
   <div class="cart-modal__field">
@@ -20,13 +27,20 @@
     <input
       id="cart-doc"
       class="cart-modal__input"
+      [class.cart-modal__input--error]="erroCpf()"
       type="text"
       inputmode="numeric"
       autocomplete="off"
-      placeholder="Informe seu CPF/CNPJ"
+      placeholder="000.000.000-00"
       [value]="cpfCnpj()"
-      (input)="cpfChange.emit($any($event.target).value)"
+      (input)="onCpfInput($event)"
+      (blur)="onCpfBlur()"
+      [attr.aria-invalid]="erroCpf() ? 'true' : null"
+      aria-describedby="erro-cpf"
     />
+    @if (erroCpf()) {
+      <p id="erro-cpf" class="cart-modal__field-error" role="alert">{{ erroCpf() }}</p>
+    }
   </div>
 
   <div class="cart-modal__field">
@@ -34,30 +48,30 @@
     <input
       id="cart-tel"
       class="cart-modal__input"
+      [class.cart-modal__input--error]="erroTel()"
       type="tel"
       autocomplete="tel"
-      placeholder="DDD e número"
+      placeholder="(00) 00000-0000"
       [value]="telefone()"
-      (input)="telChange.emit($any($event.target).value)"
+      (input)="onTelInput($event)"
+      (blur)="onTelBlur()"
+      [attr.aria-invalid]="erroTel() ? 'true' : null"
+      aria-describedby="erro-tel"
     />
+    @if (erroTel()) {
+      <p id="erro-tel" class="cart-modal__field-error" role="alert">{{ erroTel() }}</p>
+    }
   </div>
 
   <h3 class="cart-modal__form-subtitle" [style.color]="corSecundaria()">Pagamento</h3>
 
   <div class="cart-modal__field cart-modal__field--pay-pill">
     <label class="cart-modal__label" for="cart-pay">Forma de pagamento <span aria-hidden="true">*</span></label>
-    <div class="sf-select-wrap">
-      <select
-        id="cart-pay"
-        class="sf-pill-select"
-        [value]="formaPagamento()"
-        (change)="pagamentoChange.emit($event)"
-      >
-        @for (opt of pagamentoOpcoes; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
-    </div>
+    <app-select [pill]="true" inputId="cart-pay"
+      [options]="pagamentoOpcoes"
+      [value]="formaPagamento()"
+      (valueChange)="pagamentoChange.emit($event)"
+    />
   </div>
 
   @if (formaPagamento() === 'dinheiro') {
@@ -79,54 +93,33 @@
   @if (isCartaoForma()) {
     <div class="cart-modal__field cart-modal__field--pay-pill">
       <label class="cart-modal__label" for="cart-modo-cartao">Modalidade</label>
-      <div class="sf-select-wrap">
-        <select
-          id="cart-modo-cartao"
-          class="sf-pill-select"
-          [value]="cartModoCartao()"
-          (change)="modoCartaoChange.emit($event)"
-        >
-          @for (opt of cartModoOpcoes; track opt.value) {
-            <option [value]="opt.value">{{ opt.label }}</option>
-          }
-        </select>
-      </div>
+      <app-select [pill]="true" inputId="cart-modo-cartao"
+        [options]="cartModoOpcoes"
+        [value]="cartModoCartao()"
+        (valueChange)="modoCartaoChange.emit($event)"
+      />
     </div>
   }
 
   @if (formaPagamento() === 'cartao_credito') {
     <div class="cart-modal__field cart-modal__field--pay-pill">
       <label class="cart-modal__label" for="cart-parcelas">Parcelamento</label>
-      <div class="sf-select-wrap">
-        <select
-          id="cart-parcelas"
-          class="sf-pill-select"
-          [value]="cartParcelas()"
-          (change)="parcelasChange.emit($event)"
-        >
-          @for (opt of parcelasOpcoes; track opt.value) {
-            <option [value]="opt.value">{{ opt.label }}</option>
-          }
-        </select>
-      </div>
+      <app-select [pill]="true" inputId="cart-parcelas"
+        [options]="parcelasOpcoes"
+        [value]="cartParcelas()"
+        (valueChange)="parcelasChange.emit($event)"
+      />
     </div>
   }
 
   @if (isCartaoForma()) {
     <div class="cart-modal__field cart-modal__field--pay-pill">
       <label class="cart-modal__label" for="cart-bandeira">Bandeira do cartão</label>
-      <div class="sf-select-wrap">
-        <select
-          id="cart-bandeira"
-          class="sf-pill-select"
-          [value]="cartBandeira()"
-          (change)="bandeiraChange.emit($event)"
-        >
-          @for (opt of bandeiraOpcoes; track opt.value) {
-            <option [value]="opt.value">{{ opt.label }}</option>
-          }
-        </select>
-      </div>
+      <app-select [pill]="true" inputId="cart-bandeira"
+        [options]="bandeiraOpcoes"
+        [value]="cartBandeira()"
+        (valueChange)="bandeiraChange.emit($event)"
+      />
     </div>
   }
 </div>

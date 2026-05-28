@@ -1,0 +1,22 @@
+@if (toast.state().visible) {
+  <div class="ui-toast" role="status" aria-live="polite">
+    <span class="ui-toast__icon" aria-hidden="true">✓</span>
+
+    <span class="ui-toast__msg">{{ toast.state().message }}</span>
+
+    @if (toast.state().actionRoute && toast.state().actionLabel) {
+      <a
+        [routerLink]="toast.state().actionRoute"
+        class="ui-toast__cta"
+        (click)="toast.dismiss()"
+      >{{ toast.state().actionLabel }}</a>
+    }
+
+    <button
+      type="button"
+      class="ui-toast__close"
+      aria-label="Fechar"
+      (click)="toast.dismiss()"
+    >×</button>
+  </div>
+}

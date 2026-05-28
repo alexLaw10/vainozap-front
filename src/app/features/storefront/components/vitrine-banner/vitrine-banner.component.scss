@@ -95,3 +95,16 @@
     font-size: 1.1rem;
   }
 }
+
+// ─── Fallback sem banner ──────────────────────────────────────────────────────
+.vitrine-banner-fallback {
+  padding: var(--space-3) 0 var(--space-5);
+  text-align: center;
+
+  &__slogan {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+}

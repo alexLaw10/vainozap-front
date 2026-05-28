@@ -35,12 +35,61 @@
   </ul>
 
   @if (cart.lines().length === 0) {
-    <p class="cart-modal__empty">Seu carrinho está vazio. Adicione produtos no catálogo.</p>
+    <div class="cart-modal__empty-state">
+      <span class="cart-modal__empty-icon" aria-hidden="true">
+        <app-icon name="cart" [size]="36" [strokeWidth]="1.5"></app-icon>
+      </span>
+      <p class="cart-modal__empty-title">Seu carrinho está vazio</p>
+      <p class="cart-modal__empty-desc">Adicione produtos da loja para começar seu pedido.</p>
+      <a routerLink="/" class="cart-modal__empty-cta">Ver produtos</a>
+    </div>
   }
 
   <div class="cart-modal__subtotal">
     <span>Subtotal:</span>
     <span>{{ cart.subtotal() | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+  </div>
+
+  <!-- Campo de cupom -->
+  <div class="cart-coupon">
+    @if (!coupon.applied()) {
+      <div class="cart-coupon__form">
+        <input
+          class="cart-coupon__input"
+          type="text"
+          placeholder="Código do cupom"
+          [value]="couponInput()"
+          (input)="couponInput.set($any($event.target).value)"
+          (keydown.enter)="aplicarCupom()"
+          maxlength="30"
+          autocomplete="off"
+          aria-label="Código do cupom"
+        />
+        <button
+          type="button"
+          class="cart-coupon__btn"
+          [disabled]="coupon.loading()"
+          (click)="aplicarCupom()"
+        >
+          @if (coupon.loading()) { ... } @else { Aplicar }
+        </button>
+      </div>
+      @if (coupon.error()) {
+        <p class="cart-coupon__error" role="alert">{{ coupon.error() }}</p>
+      }
+    } @else {
+      <div class="cart-coupon__applied">
+        <span class="cart-coupon__tag">
+          🏷️ {{ coupon.applied()!.codigo }}
+          @if (coupon.applied()!.tipo === 'PERCENTUAL') {
+            — {{ coupon.applied()!.valor }}% off
+          } @else {
+            — {{ coupon.applied()!.desconto | currency:'BRL':'symbol':'1.2-2' }} off
+          }
+        </span>
+        <button type="button" class="cart-coupon__remove" aria-label="Remover cupom" (click)="coupon.remover()">×</button>
+      </div>
+    }
   </div>
 
   <a routerLink="/" class="cart-modal__btn-more">Adicionar mais itens</a>
@@ -75,18 +124,37 @@
 
   <div class="cart-modal__total">
     <span>Total:</span>
-    <span>{{ cart.subtotal() | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+    <span>
+      @if (coupon.desconto() > 0) {
+        <span class="cart-modal__total-original">{{ cart.subtotal() | currency:'BRL':'symbol':'1.2-2' }}</span>
+        {{ totalComDesconto() | currency:'BRL':'symbol':'1.2-2' }}
+      } @else {
+        {{ cart.subtotal() | currency: 'BRL' : 'symbol' : '1.2-2' }}
+      }
+      @if (entrega() === 'endereco') {
+        <span class="cart-modal__frete-hint">+ frete</span>
+      }
+    </span>
   </div>
+  @if (coupon.desconto() > 0) {
+    <p class="cart-modal__desconto-hint">
+      Desconto de {{ coupon.desconto() | currency:'BRL':'symbol':'1.2-2' }} aplicado 🎉
+    </p>
+  }
+  @if (entrega() === 'endereco') {
+    <p class="cart-modal__frete-aviso">
+      🚚 O valor do frete será combinado com o vendedor via WhatsApp.
+    </p>
+  }
 
-  <label class="cart-modal__obs-label" for="cart-obs">Observações</label>
-  <textarea
-    id="cart-obs"
-    class="cart-modal__textarea"
-    rows="4"
+  <app-textarea
+    inputId="cart-obs"
+    label="Observações"
     placeholder="Detalhes do seu pedido"
+    [rows]="4"
     [value]="observacoes()"
-    (input)="onObs($event)"
-  ></textarea>
+    (valueChange)="observacoesChange.emit($event)"
+  />
 
   <button type="button" class="cart-modal__submit" [disabled]="!podeFinalizar()" (click)="finalizarClick.emit()">
     Finalizar o Pedido

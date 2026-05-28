@@ -4,8 +4,8 @@ import { Observable, catchError, map, of } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { CATEGORIAS_MOCK, PRODUTOS_MOCK } from '../../../mock/produtos.mock';
-import type { CategoriaApi, OpcaoVariacaoApi, ProdutoApi, VariacaoApi } from '../../../shared/models/catalog-api.model';
-import type { Categoria, OpcaoVariacao, Produto, Variacao } from '../../../shared/models/produto.model';
+import type { CategoriaApi, OpcaoVariacaoApi, ProdutoApi, VariacaoApi } from '../../../core/models/catalog-api.model';
+import type { Categoria, OpcaoVariacao, Produto, Variacao } from '../../../core/models/produto.model';
 
 @Injectable()
 export class StorefrontCatalogService {

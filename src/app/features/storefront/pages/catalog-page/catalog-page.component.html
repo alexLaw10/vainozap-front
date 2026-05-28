@@ -34,6 +34,9 @@
             }}</span>
           }
           <span class="category-pill__label">{{ c.nome }}</span>
+          @if (productCountByCategory().get(c.id); as count) {
+            <span class="category-pill__count" aria-label="{{ count }} produtos">{{ count }}</span>
+          }
         </button>
       } @empty {
         @if (!catalog.loading()) {
@@ -54,6 +57,11 @@
       class="catalog-search__input"
       placeholder="Faça sua busca"
       autocomplete="off"
+      [value]="catalogUi.searchQuery()"
+      (input)="onSearchInput($any($event.target).value)"
+      (focus)="onSearchFocus()"
+      (blur)="onSearchBlur()"
+      (keydown)="onSearchKeydown($event)"
     />
     <button
       type="button"
@@ -64,12 +72,91 @@
     >
       <app-icon name="filter" [size]="18"></app-icon>
     </button>
+
+    @if (showSearchDropdown()) {
+      <div class="search-dropdown" role="listbox" aria-label="Buscas recentes">
+        <div class="search-dropdown__header">
+          <span class="search-dropdown__label">
+            <app-icon name="clock" [size]="13"></app-icon>
+            Buscas recentes
+          </span>
+          <button
+            type="button"
+            class="search-dropdown__clear"
+            (mousedown)="$event.preventDefault()"
+            (click)="recentSearches.clear()"
+          >
+            Limpar
+          </button>
+        </div>
+        @for (s of searchSuggestions(); track s) {
+          <button
+            type="button"
+            class="search-dropdown__item"
+            role="option"
+            (mousedown)="$event.preventDefault()"
+            (click)="applySuggestion(s)"
+          >
+            <app-icon name="clock" [size]="14" class="search-dropdown__item-icon"></app-icon>
+            <span class="search-dropdown__item-text">{{ s }}</span>
+            <button
+              type="button"
+              class="search-dropdown__item-remove"
+              [attr.aria-label]="'Remover ' + s"
+              (mousedown)="$event.preventDefault()"
+              (click)="removeSuggestion($event, s)"
+            >
+              <app-icon name="close" [size]="12"></app-icon>
+            </button>
+          </button>
+        }
+      </div>
+    }
   </div>
 
   <section id="produtos" class="vitrine-section vitrine-section--products" aria-labelledby="produtos-heading">
+    @if (activeChips().length) {
+      <div class="catalog-filter-chips" role="list" aria-label="Filtros ativos">
+        @for (chip of activeChips(); track chip.groupId + (chip.optionId ?? chip.kind)) {
+          <button
+            type="button"
+            class="catalog-filter-chip"
+            role="listitem"
+            [attr.aria-label]="'Remover filtro: ' + chip.label"
+            (click)="removeChip(chip)"
+          >
+            {{ chip.label }} <span aria-hidden="true">×</span>
+          </button>
+        }
+        <button type="button" class="catalog-filter-chip catalog-filter-chip--clear" (click)="clearAllFilters()">
+          Limpar tudo
+        </button>
+      </div>
+    }
+
     <div class="vitrine-section__row vitrine-section__row--products">
       <h2 id="produtos-heading" class="vitrine-section__title vitrine-section__title--inline">Produtos</h2>
       <div class="catalog-product-tools">
+        @if (!catalog.loading()) {
+          <span class="catalog-results-count">
+            @if (canClearFilters()) {
+              {{ filteredProducts().length }}<span class="catalog-results-count__sep"> de </span>{{ totalActiveProducts() }}
+            } @else {
+              {{ filteredProducts().length }}
+            }
+            produto{{ filteredProducts().length !== 1 ? 's' : '' }}
+          </span>
+        }
+        <!-- Toggle grade / lista -->
+        <button
+          type="button"
+          class="catalog-product-tools__view"
+          [attr.aria-label]="viewMode() === 'grid' ? 'Mudar para lista' : 'Mudar para grade'"
+          (click)="toggleViewMode()"
+        >
+          <app-icon [name]="viewMode() === 'grid' ? 'list' : 'grid'" [size]="18"></app-icon>
+        </button>
+        <!-- Ordenar -->
         <button
           type="button"
           class="catalog-product-tools__sort"
@@ -77,30 +164,59 @@
           [attr.aria-expanded]="sortPanelOpen()"
           (click)="openSortPanel()"
         >
-          <app-icon name="grid" [size]="18"></app-icon>
+          <app-icon name="arrows-sort" [size]="18"></app-icon>
         </button>
       </div>
     </div>
 
     @if (catalog.loading()) {
-      <p class="catalog-empty-grid" aria-live="polite">Carregando produtos…</p>
+      <ul class="product-grid product-grid--skeleton" aria-hidden="true" aria-label="Carregando produtos">
+        @for (i of skeletonItems; track $index) {
+          <li class="product-grid__cell">
+            <div class="product-card-skel">
+              <div class="product-card-skel__media"></div>
+              <div class="product-card-skel__line product-card-skel__line--title"></div>
+              <div class="product-card-skel__line product-card-skel__line--price"></div>
+              <div class="product-card-skel__line product-card-skel__line--btn"></div>
+            </div>
+          </li>
+        }
+      </ul>
     } @else if (emptyProductsMsg()) {
       <div class="catalog-empty-grid" aria-live="polite">
         <span class="catalog-empty-grid__icon" aria-hidden="true">
-          <app-icon name="package" [size]="40" [strokeWidth]="1.5"></app-icon>
+          <app-icon name="search" [size]="40" [strokeWidth]="1.5"></app-icon>
         </span>
         <p class="catalog-empty-grid__text">{{ emptyProductsMsg() }}</p>
+        @if (canClearFilters()) {
+          <button type="button" class="catalog-empty-grid__clear" (click)="clearAllFilters()">
+            Limpar filtros
+          </button>
+        }
       </div>
     } @else {
-      <ul class="product-grid" role="list">
+      <ul class="product-grid" [class.product-grid--list]="viewMode() === 'list'" role="list">
         @for (p of filteredProducts(); track p.id) {
           <li class="product-grid__cell" role="listitem">
-            <app-product-card [product]="p" />
+            <app-product-card [product]="p" [listMode]="viewMode() === 'list'" />
           </li>
         }
       </ul>
     }
   </section>
+
+  @if (recentProducts().length > 0) {
+    <section class="vitrine-section vitrine-section--recentes" aria-labelledby="recentes-heading">
+      <h2 id="recentes-heading" class="vitrine-section__title">Vistos recentemente</h2>
+      <div class="recentes-strip" role="list" aria-label="Produtos vistos recentemente">
+        @for (p of recentProducts(); track p.id) {
+          <div class="recentes-strip__item" role="listitem">
+            <app-product-card [product]="p" />
+          </div>
+        }
+      </div>
+    </section>
+  }
 </main>
 
 <!-- Painel de ordenação -->

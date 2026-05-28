@@ -1,0 +1,11 @@
+@use 'objects/merchant-crud';
+
+.mcupons-page {
+  padding-block: var(--space-6);
+
+  &__error {
+    margin-bottom: var(--space-4);
+    color: var(--color-danger, #dc2626);
+    font-size: var(--font-size-sm);
+  }
+}

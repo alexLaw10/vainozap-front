@@ -1,0 +1,12 @@
+@use '../../../../../styles/mixins/ui-field' as f;
+
+:host { @include f.host; }
+
+.label   { @include f.label; }
+.control { @include f.control; }
+
+.msg {
+  @include f.hint;
+
+  &--error { @include f.error; }
+}

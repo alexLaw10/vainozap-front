@@ -3,7 +3,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { merge, timer } from 'rxjs';
 import { debounceTime, filter, take } from 'rxjs/operators';
 
-import { CartIconComponent } from './shared/ui/cart-icon/cart-icon.component';
+import { CartIconComponent } from '@app/shared/ui';
 
 @Component({
   selector: 'app-root',

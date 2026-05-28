@@ -1,1 +1,18 @@
-
+[
+  {
+    "id": "t-e2e",
+    "slug": "e2e-loja",
+    "nomeLoja": "Loja E2E",
+    "logoUrl": null,
+    "ativo": true,
+    "planoTipo": "beta"
+  },
+  {
+    "id": "t-e2e-2",
+    "slug": "filial-e2e",
+    "nomeLoja": "Filial E2E",
+    "logoUrl": null,
+    "ativo": true,
+    "planoTipo": "beta"
+  }
+]

@@ -1,4 +1,4 @@
-import { Categoria, Produto } from '../shared/models/produto.model';
+import { Categoria, Produto } from '../core/models/produto.model';
 import { ROUPAS_MOCK_MEDIA } from './roupas-mock-media';
 
 const cat = ROUPAS_MOCK_MEDIA.categorias;
@@ -53,6 +53,7 @@ export const PRODUTOS_MOCK: Produto[] = [
       },
     ],
     ativo: true,
+    destaque: true,
   },
   {
     id: '2',
@@ -74,6 +75,7 @@ export const PRODUTOS_MOCK: Produto[] = [
       },
     ],
     ativo: true,
+    novo: true,
   },
   {
     id: '3',

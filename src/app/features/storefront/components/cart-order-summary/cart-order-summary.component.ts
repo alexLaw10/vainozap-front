@@ -1,20 +1,24 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { StorefrontCartService, type CartLine } from '../../services/storefront-cart.service';
+import { StorefrontCouponService } from '../../services/storefront-coupon.service';
 import type { EntregaModo } from '../../models/entrega-checkout.model';
-import { IconComponent } from '../../../../shared/ui/icon/icon.component';
+import { IconComponent, TextareaComponent } from '@app/shared/ui';
 
 @Component({
   selector: 'app-cart-order-summary',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, IconComponent],
+  imports: [RouterLink, CurrencyPipe, FormsModule, IconComponent, TextareaComponent],
   templateUrl: './cart-order-summary.component.html',
   styleUrl: './cart-order-summary.component.scss',
 })
 export class CartOrderSummaryComponent {
-  protected readonly cart = inject(StorefrontCartService);
+  protected readonly cart   = inject(StorefrontCartService);
+  protected readonly coupon = inject(StorefrontCouponService);
+
   entrega = input.required<EntregaModo>();
   observacoes = input.required<string>();
   podeFinalizar = input.required<boolean>();
@@ -27,15 +31,22 @@ export class CartOrderSummaryComponent {
   finalizarClick = output<void>();
   falarVendedorClick = output<void>();
 
+  protected readonly couponInput = signal('');
+
+  protected readonly totalComDesconto = computed(() =>
+    Math.max(0, this.cart.subtotal() - this.coupon.desconto())
+  );
+
   protected onEscolherEntrega(m: EntregaModo): void {
     this.entregaChange.emit(m);
   }
 
-  protected onObs(ev: Event): void {
-    this.observacoesChange.emit((ev.target as HTMLTextAreaElement).value);
-  }
-
   protected abrirMenuItem(l: CartLine, ev: Event): void {
     this.itemMenuOpen.emit({ line: l, event: ev });
+  }
+
+  protected aplicarCupom(): void {
+    if (!this.couponInput().trim()) return;
+    this.coupon.validar(this.couponInput().trim(), this.cart.subtotal());
   }
 }

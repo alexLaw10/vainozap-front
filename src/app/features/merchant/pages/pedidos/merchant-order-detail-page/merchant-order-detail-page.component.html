@@ -1,0 +1,121 @@
+<main class="ord-det container">
+
+  <nav class="ord-det__back">
+    <a class="ord-det__back-link" routerLink="/merchant/orders/pedidos">← Voltar para pedidos</a>
+  </nav>
+
+  @if (loading()) {
+    <div class="ord-det__skeleton">
+      <ui-skeleton height="2rem" [widths]="['40%']" />
+      <ui-skeleton height="1rem" [widths]="['60%', '45%', '30%']" />
+      <ui-skeleton height="8rem" />
+    </div>
+  } @else if (!pedido()) {
+    <p class="ord-det__loading">{{ error() ?? 'Pedido não encontrado.' }}</p>
+  } @else {
+
+    @let p = pedido()!;
+
+    <!-- Cabeçalho -->
+    <div class="ord-det__head">
+      <div class="ord-det__meta">
+        <h1 class="ord-det__title">Pedido</h1>
+        <span class="ord-det__id">{{ p.id }}</span>
+        <span class="ord-det__date">{{ formatDate(p.criadoEm) }}</span>
+      </div>
+      <span class="ord-badge ord-det__status-badge" [ngClass]="badgeClass(p.status)">
+        {{ statusLabel(p.status) }}
+      </span>
+    </div>
+
+    @if (error()) {
+      <p class="ord-det__error" role="alert">{{ error() }}</p>
+    }
+
+    <!-- Ações de status -->
+    <div class="ord-det__actions">
+      <p class="ord-det__actions-label">Status:</p>
+      <app-status-menu
+        [status]="p.status"
+        [config]="STATUS_CONFIG"
+        [saving]="saving()"
+        (statusChange)="moverStatus($event)"
+      />
+    </div>
+
+    <div class="ord-det__grid">
+
+      <!-- Cliente -->
+      <section class="ord-det__card">
+        <h2 class="ord-det__card-title">Cliente</h2>
+        <dl class="ord-det__dl">
+          <dt>Nome</dt><dd>{{ p.cliente.nome || '—' }}</dd>
+          <dt>Telefone</dt><dd>{{ p.cliente.telefone || '—' }}</dd>
+          @if (p.cliente.cpfCnpj) {
+            <dt>CPF / CNPJ</dt><dd>{{ p.cliente.cpfCnpj }}</dd>
+          }
+          @if (p.cliente.observacoes) {
+            <dt>Observações</dt><dd>{{ p.cliente.observacoes }}</dd>
+          }
+        </dl>
+      </section>
+
+      <!-- Pagamento -->
+      <section class="ord-det__card">
+        <h2 class="ord-det__card-title">Pagamento</h2>
+        <dl class="ord-det__dl">
+          <dt>Forma</dt><dd>{{ p.pagamento.forma || '—' }}</dd>
+          @if (p.pagamento.bandeira) {
+            <dt>Bandeira</dt><dd>{{ p.pagamento.bandeira }}</dd>
+          }
+          @if (p.pagamento.parcelas) {
+            <dt>Parcelas</dt><dd>{{ p.pagamento.parcelas }}×</dd>
+          }
+          @if (p.pagamento.modoCartao) {
+            <dt>Modo</dt><dd>{{ p.pagamento.modoCartao }}</dd>
+          }
+          @if (p.pagamento.trocoPara) {
+            <dt>Troco para</dt><dd>{{ formatCurrency(p.pagamento.trocoPara!) }}</dd>
+          }
+        </dl>
+      </section>
+
+      <!-- Entrega -->
+      <section class="ord-det__card">
+        <h2 class="ord-det__card-title">Entrega</h2>
+        <dl class="ord-det__dl">
+          <dt>Modo</dt><dd>{{ p.entrega.modo || '—' }}</dd>
+          @if (p.entrega.logradouro) {
+            <dt>Endereço</dt>
+            <dd>
+              {{ p.entrega.logradouro }}, {{ p.entrega.numero }}
+              @if (p.entrega.complemento) { – {{ p.entrega.complemento }} }
+            </dd>
+            @if (p.entrega.bairro) {
+              <dt>Bairro</dt><dd>{{ p.entrega.bairro }}</dd>
+            }
+            <dt>Cidade / UF</dt><dd>{{ p.entrega.cidade }} / {{ p.entrega.uf }}</dd>
+            @if (p.entrega.cep) {
+              <dt>CEP</dt><dd>{{ p.entrega.cep }}</dd>
+            }
+          }
+        </dl>
+      </section>
+
+    </div>
+
+    <!-- Itens do pedido -->
+    <section class="ord-det__items">
+      <h2 class="ord-det__card-title">Itens</h2>
+      <app-table [columns]="linhaColumns" [rows]="p.linhas">
+        <tfoot>
+          <tr class="ord-det__tfoot">
+            <td class="ui-td" colspan="3"><strong>Total</strong></td>
+            <td class="ui-td ord-det__total">{{ formatCurrency(p.subtotal) }}</td>
+          </tr>
+        </tfoot>
+      </app-table>
+    </section>
+
+  }
+</main>

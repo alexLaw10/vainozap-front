@@ -3,14 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
+import type { MerchantProfile } from '../models/merchant-profile.model';
 
-export interface MerchantProfile {
-  email: string;
-  nomeProprietario: string | null;
-  telefone: string | null;
-  planoTipo: string;
-  trialEndsAt: string | null;  // ISO-8601 LocalDateTime from backend
-}
+export type { MerchantProfile };
 
 @Injectable({ providedIn: 'root' })
 export class MerchantMeService {

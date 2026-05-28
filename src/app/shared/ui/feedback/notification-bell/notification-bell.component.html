@@ -1,0 +1,47 @@
+<div class="nb">
+  <button class="nb__btn" (click)="toggle()" [class.nb__btn--active]="open()" aria-label="Notificações">
+    <app-icon name="bell" [size]="22" />
+    @if (unreadCount() > 0) {
+      <span class="nb__badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+    }
+  </button>
+
+  @if (open()) {
+    <div class="nb__backdrop" aria-hidden="true" (click)="close()"></div>
+    <div class="nb__dropdown" role="dialog" aria-label="Painel de notificações">
+      <div class="nb__header">
+        <span class="nb__title">Notificações</span>
+        @if (unreadCount() > 0) {
+          <button class="nb__mark-all" (click)="onMarkAllRead()">Marcar todas como lidas</button>
+        }
+      </div>
+
+      <div class="nb__list">
+        @if (notifications().length === 0) {
+          <div class="nb__empty">Nenhuma notificação</div>
+        }
+
+        @for (n of notifications(); track n.id) {
+          <div
+            class="nb__item"
+            [class.nb__item--unread]="!n.lida"
+            (click)="onItemClick(n)"
+            [routerLink]="n.pedidoId ? ['/merchant/orders'] : null"
+          >
+            <div class="nb__icon" [class.nb__icon--novo-pedido]="n.tipo === 'NOVO_PEDIDO'">🛍</div>
+            <div class="nb__body">
+              <p class="nb__item-title">{{ n.titulo }}</p>
+              @if (n.mensagem) {
+                <p class="nb__item-msg">{{ n.mensagem }}</p>
+              }
+              <p class="nb__time">{{ timeAgo(n.criadoEm) }}</p>
+            </div>
+            @if (!n.lida) {
+              <span class="nb__dot" aria-hidden="true"></span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit, OnDestroy, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-import { IconComponent } from '../../../../shared/ui/icon/icon.component';
+import { IconComponent } from '@app/shared/ui';
 import { StorefrontContextService } from '../../services/storefront-context.service';
 
 @Component({

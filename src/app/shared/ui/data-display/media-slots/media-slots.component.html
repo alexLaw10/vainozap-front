@@ -1,0 +1,95 @@
+@if (label()) {
+  <span class="ms-label">{{ label() }}</span>
+}
+
+<!-- Pending hint -->
+@if (pendingCount() > 0) {
+  <p class="ms-hint ms-hint--pending">
+    <app-icon name="alert" [size]="13" [strokeWidth]="2.5"></app-icon>
+    {{ pendingCount() }} {{ type() === 'video' ? 'vídeo' : 'foto' }}{{ pendingCount() > 1 ? (type() === 'video' ? 's' : 's') : '' }} {{ pendingCount() > 1 ? 'serão enviados' : 'será enviado' }} ao salvar
+  </p>
+} @else {
+  <p class="ms-hint">
+    @if (type() === 'image') {
+      Clique num slot para adicionar (JPEG, PNG ou WebP · máx. 10 MB cada)
+    } @else {
+      Clique para adicionar (MP4, WebM ou MOV · máx. 200 MB cada)
+    }
+  </p>
+}
+
+<!-- Badge -->
+<span class="ms-badge">{{ count() }}/{{ maxSlots() }}</span>
+
+<!-- Slot grid (images) or list (videos) -->
+<div [class]="type() === 'image' ? 'ms-grid' : 'ms-list'">
+  @for (i of allSlots(); track i) {
+    @if (slotAt(i); as slot) {
+
+      @if (type() === 'image') {
+        <!-- Filled image slot -->
+        <div class="ms-slot ms-slot--filled" [class.ms-slot--pending]="slot.file">
+          <img [src]="slot.preview" [alt]="'Foto ' + (i + 1)" class="ms-slot__img" loading="lazy" />
+          <div class="ms-slot__actions">
+            <button type="button" class="ms-slot__act" (click)="openReplace(i)" title="Trocar">
+              <app-icon name="share" [size]="14"></app-icon>
+            </button>
+            <button type="button" class="ms-slot__act ms-slot__act--danger" (click)="removeSlot(i, $event)" title="Remover">
+              <app-icon name="close" [size]="14" [strokeWidth]="2.5"></app-icon>
+            </button>
+          </div>
+          @if (slot.file) { <span class="ms-slot__tag">Pendente</span> }
+        </div>
+      } @else {
+        <!-- Filled video slot -->
+        <div class="ms-vslot ms-vslot--filled" [class.ms-vslot--pending]="slot.file">
+          <video class="ms-vslot__video" [src]="slot.preview" muted playsinline preload="metadata"></video>
+          <div class="ms-vslot__overlay">
+            <app-icon name="play" [size]="20" [strokeWidth]="1.5"></app-icon>
+          </div>
+          <button type="button" class="ms-vslot__remove" (click)="removeSlot(i, $event)" title="Remover vídeo" aria-label="Remover vídeo">
+            <app-icon name="close" [size]="13" [strokeWidth]="2.5"></app-icon>
+          </button>
+          @if (slot.file) { <span class="ms-vslot__tag">Pendente</span> }
+        </div>
+      }
+
+    } @else if (i === count()) {
+
+      @if (type() === 'image') {
+        <!-- Add image button -->
+        <button type="button" class="ms-slot ms-slot--add"
+          [disabled]="count() >= maxSlots()"
+          (click)="openAdd()"
+          aria-label="Adicionar foto">
+          <app-icon name="image" [size]="22" [strokeWidth]="1.5"></app-icon>
+          <span>Adicionar</span>
+        </button>
+      } @else {
+        <!-- Add video button -->
+        <button type="button" class="ms-vslot ms-vslot--add"
+          [disabled]="count() >= maxSlots()"
+          (click)="openAdd()"
+          aria-label="Adicionar vídeo">
+          <app-icon name="video" [size]="20" [strokeWidth]="1.5"></app-icon>
+          <span>Adicionar</span>
+        </button>
+      }
+
+    } @else {
+
+      @if (type() === 'image') {
+        <!-- Empty image placeholder -->
+        <div class="ms-slot ms-slot--empty">
+          <span class="ms-slot__num">{{ i + 1 }}</span>
+        </div>
+      } @else {
+        <!-- Empty video placeholder -->
+        <div class="ms-vslot ms-vslot--empty">
+          <span class="ms-slot__num">{{ i + 1 }}</span>
+        </div>
+      }
+
+    }
+  }
+</div>

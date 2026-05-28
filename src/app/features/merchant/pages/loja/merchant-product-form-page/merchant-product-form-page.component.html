@@ -1,0 +1,228 @@
+<div class="pf-page container">
+
+  <div class="pf-page__head">
+    <a routerLink="/merchant/loja/gerenciar/produtos" class="pf-page__back">
+      <app-icon name="arrow-left" [size]="16"></app-icon>
+      Voltar para produtos
+    </a>
+    <h1 class="pf-page__title">{{ isEdit() ? 'Editar produto' : 'Novo produto' }}</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="pf-loading" aria-busy="true">
+      <span class="pf-spinner pf-spinner--lg"></span>
+      Carregando produto…
+    </div>
+  } @else {
+
+  <form (ngSubmit)="save()" novalidate>
+    <div class="pf-layout">
+
+      <!-- ── Col 1: Informações ──────────────────────────────────────────── -->
+      <section class="pf-card">
+        <h2 class="pf-card__title">Informações</h2>
+
+        <app-input
+          label="Nome *"
+          inputId="pf-nome"
+          placeholder="Ex: Camiseta Básica"
+          [(value)]="nome"
+          [error]="nomeError()"
+        />
+
+        <div class="pf-row">
+          <app-input
+            label="Preço (R$) *"
+            inputId="pf-preco"
+            type="number"
+            placeholder="0,00"
+            [(value)]="preco"
+            [error]="precoError()"
+          />
+          <app-select label="Categoria" inputId="pf-cat"
+            placeholder="Sem categoria"
+            [options]="categoryOptions()"
+            [(value)]="categoryId"
+          />
+        </div>
+
+        <app-textarea
+          label="Descrição"
+          inputId="pf-desc"
+          placeholder="Descreva o produto…"
+          [(value)]="descricao"
+          [maxlength]="2000"
+          [rows]="4"
+        />
+
+        <!-- Toggle: sem estoque / serviço -->
+        <app-toggle
+          label="Sem controle de estoque"
+          hint="(serviço, consultoria — botão WhatsApp na loja)"
+          [(value)]="semEstoque"
+        />
+
+        @if (semVariacoes()) {
+          <app-input
+            label="Estoque disponível"
+            inputId="pf-estoque"
+            type="number"
+            placeholder="0"
+            [(value)]="estoque"
+          />
+        } @else if (!semEstoque()) {
+          <p class="pf-estoque-info">
+            <app-icon name="info" [size]="13"></app-icon>
+            Estoque gerenciado por variação (defina em cada opção →)
+          </p>
+        }
+
+        <app-toggle
+          label="Produto ativo na loja"
+          [(value)]="ativo"
+        />
+      </section>
+
+      <!-- ── Col 2: Fotos ──────────────────────────────────────────── -->
+      <section class="pf-card">
+        <h2 class="pf-card__title">Fotos</h2>
+        <app-media-slots
+          type="image"
+          [maxSlots]="MAX_FOTOS"
+          [(slots)]="photos"
+        />
+      </section>
+
+      <!-- ── Col 3: Vídeos ───────────────────────────────────────────── -->
+      <section class="pf-card">
+        <h2 class="pf-card__title">Vídeos</h2>
+        <app-media-slots
+          type="video"
+          [maxSlots]="MAX_VIDEOS"
+          [(slots)]="videos"
+        />
+      </section>
+
+      <!-- ── Col 4: Variações + Ações ───────────────────────────────────── -->
+      <section class="pf-card">
+        <div class="pf-card__head">
+          <h2 class="pf-card__title">Variações</h2>
+          <div class="pf-var-actions">
+            @if (templates().length > 0) {
+              <div class="pf-template-wrap">
+                <button type="button" class="mcat-btn mcat-btn--ghost pf-card__add-btn"
+                        (click)="toggleTemplateDropdown()">
+                  <app-icon name="file-text" [size]="13"></app-icon>
+                  Usar modelo
+                </button>
+                @if (templateDropdown()) {
+                  <div class="pf-template-dropdown">
+                    @for (t of templates(); track t.id) {
+                      <button type="button" class="pf-template-item" (click)="applyTemplate(t)">
+                        <span class="pf-template-item__nome">{{ t.nome }}</span>
+                        <span class="pf-template-item__resumo">
+                          {{ t.variacoes.length }} variação{{ t.variacoes.length !== 1 ? 'ões' : '' }}
+                        </span>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+            <button type="button" class="mcat-btn mcat-btn--ghost pf-card__add-btn" (click)="addVariacao()">
+              <app-icon name="plus" [size]="14" [strokeWidth]="2.5"></app-icon>
+              Adicionar
+            </button>
+          </div>
+        </div>
+
+        <div class="pf-vars">
+          @for (v of variacoes(); track $index; let vi = $index) {
+            <div class="mcat-variacao">
+              <div class="mcat-variacao__head">
+                <div class="mcat-variacao__fields">
+                  <app-input
+                    style="flex:1;min-width:100px"
+                    label="Nome"
+                    placeholder="Ex: Cor"
+                    [value]="v.nome"
+                    (valueChange)="updateVariacaoNome(vi, $event)"
+                  />
+                  <app-select label="Tipo" style="min-width:96px"
+                    [options]="TIPOS"
+                    [value]="v.tipo"
+                    (valueChange)="updateVariacaoTipo(vi, $event)"
+                  />
+                </div>
+                <button type="button" class="mcat-variacao__remove" (click)="removeVariacao(vi)" aria-label="Remover variação">✕</button>
+              </div>
+
+              <div class="mcat-variacao__opcoes">
+                @for (o of v.opcoes; track $index; let oi = $index) {
+                  <div class="mcat-variacao__opcao-row">
+                    @if (isCor(vi)) {
+                      <input class="mcat-variacao__swatch" type="color"
+                             [value]="o.swatch || '#000000'"
+                             (input)="updateOpcaoSwatch(vi, oi, $event)"
+                             title="Cor" />
+                    }
+                    <app-input
+                      style="flex:1;min-width:60px"
+                      placeholder="Valor"
+                      [value]="o.valor"
+                      (valueChange)="updateOpcaoValor(vi, oi, $event)"
+                    />
+                    <div class="mcat-field" style="width:64px">
+                      <input class="mcat-field__input" type="number" min="0"
+                             [value]="o.estoque"
+                             (input)="updateOpcaoEstoque(vi, oi, $event)"
+                             placeholder="Estq." title="Estoque" />
+                    </div>
+                    <div class="mcat-field" style="width:76px">
+                      <input class="mcat-field__input" type="number" min="0" step="0.01"
+                             [value]="o.precoExtra"
+                             (input)="updateOpcaoPrecoExtra(vi, oi, $event)"
+                             placeholder="+R$" title="Acréscimo" />
+                    </div>
+                    <button type="button" class="mcat-list-item__remove" (click)="removeOpcao(vi, oi)" aria-label="Remover opção">✕</button>
+                  </div>
+                }
+                <button type="button" class="mcat-add-btn" (click)="addOpcao(vi)">+ Adicionar opção</button>
+              </div>
+            </div>
+          }
+
+          @if (variacoes().length === 0) {
+            <p class="pf-vars__empty">Nenhuma variação. Adicione tamanhos, cores ou outras opções.</p>
+          }
+        </div>
+
+        <!-- Ações -->
+        <div class="pf-actions">
+          @if (error()) {
+            <p class="pf-actions__error" role="alert">
+              <app-icon name="alert" [size]="14"></app-icon>
+              {{ error() }}
+            </p>
+          }
+
+          <button type="submit" class="mcat-btn mcat-btn--primary pf-actions__primary" [disabled]="saving()">
+            @if (saving()) {
+              <span class="pf-spinner" aria-hidden="true"></span>
+              Salvando…
+            } @else {
+              Salvar produto
+            }
+          </button>
+
+          <a routerLink="/merchant/loja/gerenciar/produtos"
+             class="mcat-btn mcat-btn--ghost pf-actions__secondary">
+            Cancelar
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </form>
+  }
+</div>

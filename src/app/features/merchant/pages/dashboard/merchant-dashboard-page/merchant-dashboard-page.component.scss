@@ -1,0 +1,443 @@
+.merchant-dash {
+  --dash-radius: 1.125rem;
+  --dash-shadow: 0 1px 3px rgb(15 23 42 / 0.06), 0 6px 20px rgb(15 23 42 / 0.05);
+
+  padding-block: var(--space-6) var(--space-10);
+  min-height: calc(100vh - 4.5rem);
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  /* Hero — gradiente dark da marca */
+  &__hero {
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-7) var(--space-6);
+    border-radius: var(--dash-radius);
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-primary) 22%, var(--color-app-dark-surface)) 0%,
+      var(--color-app-dark-surface) 55%,
+      color-mix(in srgb, var(--color-success) 16%, var(--color-app-dark-surface)) 100%
+    );
+    border: 1px solid color-mix(in srgb, var(--color-primary) 30%, var(--color-app-dark-border));
+    box-shadow:
+      var(--dash-shadow),
+      0 0 0 1px color-mix(in srgb, var(--color-primary) 12%, transparent);
+
+    /* Orbe decorativo roxo */
+    &::before {
+      content: '';
+      position: absolute;
+      top: -4rem;
+      right: -4rem;
+      width: 14rem;
+      height: 14rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 28%, transparent) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* Orbe verde pequeno */
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2rem;
+      left: 40%;
+      width: 8rem;
+      height: 8rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--color-success) 20%, transparent) 0%, transparent 70%);
+      pointer-events: none;
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 var(--space-1);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: color-mix(in srgb, var(--color-primary) 80%, white);
+    letter-spacing: 0.02em;
+  }
+
+  &__title {
+    margin: 0 0 var(--space-2);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--color-text-primary);
+    line-height: 1.15;
+  }
+
+  &__lead {
+    margin: 0;
+    max-width: 36rem;
+    font-size: var(--font-size-base);
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  &__section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  &__h2 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  /* Stats */
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__stat {
+    padding: var(--space-4);
+    background: var(--color-surface-base);
+    border-radius: calc(var(--dash-radius) - 0.25rem);
+    border: 1px solid var(--color-border-subtle);
+    border-top: 3px solid var(--color-primary);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.18);
+
+    /* Vendas (mês) — destaque verde */
+    &--money {
+      border-top-color: var(--color-success);
+    }
+  }
+
+  &__stat-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: var(--space-2);
+  }
+
+  &__stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: -0.03em;
+
+    &--money {
+      color: var(--color-success);
+    }
+
+    &--muted {
+      color: var(--color-text-disabled);
+      font-weight: 600;
+    }
+
+    &--alert {
+      color: var(--color-warning);
+    }
+  }
+
+  /* Atalhos */
+  &__actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 4.25rem;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--dash-radius);
+    background: var(--color-surface-base);
+    border: 1px solid var(--color-border-subtle);
+    box-shadow: var(--dash-shadow);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-border-subtle));
+      box-shadow:
+        0 1px 3px rgb(15 23 42 / 0.06),
+        0 12px 28px color-mix(in srgb, var(--color-primary) 12%, transparent);
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    /* Ações secundárias (vitrine, configurar, contas) */
+    &--outline {
+      background: var(--color-surface-subtle);
+      box-shadow: none;
+
+      &:hover {
+        background: var(--color-surface-base);
+      }
+    }
+
+    &--soon {
+      opacity: 0.65;
+      cursor: default;
+      box-shadow: none;
+
+      &:hover {
+        transform: none;
+        border-color: var(--color-border-subtle);
+        box-shadow: none;
+      }
+    }
+  }
+
+  /* Ícones: verde para ações de negócio, roxo para ações de loja/config */
+  &__action-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.875rem;
+    background: color-mix(in srgb, var(--color-success) 14%, white);
+    color: var(--color-success);
+  }
+
+  &__action--outline &__action-icon {
+    background: color-mix(in srgb, var(--color-primary) 12%, white);
+    color: var(--color-primary);
+  }
+
+  &__action--soon &__action-icon {
+    background: var(--color-neutral-100);
+    color: var(--color-text-disabled);
+  }
+
+  &__action-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  &__action-title {
+    font-weight: 700;
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+  }
+
+  &__action-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.35;
+  }
+
+  &__action-chev {
+    flex-shrink: 0;
+    color: var(--color-text-disabled);
+    display: flex;
+  }
+
+  &__panel {
+    padding: var(--space-5);
+    border-radius: var(--dash-radius);
+    background: var(--color-surface-base);
+    border: 1px dashed var(--color-border-strong);
+  }
+
+  &__panel-title {
+    margin: 0 0 var(--space-2);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__panel-empty {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+    max-width: 40rem;
+  }
+
+  // ── Link "Vitrine ao vivo" no hero ─────────────────────────────────────────
+  &__vitrine-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: var(--space-4);
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+  }
+
+  &__vitrine-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #4ade80; // verde pulsante
+    box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.3);
+    flex-shrink: 0;
+  }
+
+  // ── Checklist de onboarding ────────────────────────────────────────────────
+  &__onboarding {
+    padding: var(--space-6);
+    border-radius: var(--dash-radius);
+    background: var(--color-surface-base);
+    border: 1px solid var(--color-border-default);
+    box-shadow: var(--dash-shadow);
+  }
+
+  &__onboarding-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  &__progress-pct {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-success));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    flex-shrink: 0;
+    padding-top: 0.15rem;
+  }
+
+  &__progress-bar {
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: var(--color-border-default);
+    overflow: hidden;
+    margin-top: var(--space-4);
+  }
+
+  &__progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-success) 100%);
+    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 0.5rem; // sempre visível
+  }
+
+  &__progress-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin: var(--space-1) 0 0;
+  }
+
+  &__checklist {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  &__check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: 0.625rem;
+    border: 1px solid var(--color-border-default);
+    background: var(--color-surface-subtle);
+
+    &--done {
+      opacity: 0.55;
+
+      .merchant-dash__check-icon {
+        background: var(--color-success);
+        color: #fff;
+      }
+    }
+  }
+
+  &__check-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  &__check-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__check-text {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  &__check-link {
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover { text-decoration: underline; }
+  }
+}

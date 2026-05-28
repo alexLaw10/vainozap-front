@@ -2,7 +2,7 @@
   <div class="auth-page__card">
     <div class="auth-page__brand" aria-hidden="true">
       <span class="auth-page__brand-dot"></span>
-      <span class="auth-page__brand-name">Saas</span>
+      <span class="auth-page__brand-name">VainoZap</span>
     </div>
 
     <div class="login-heading">
@@ -11,33 +11,22 @@
     </div>
 
     <form class="auth-form" (ngSubmit)="submit()" novalidate>
-      <div class="auth-form__field">
-        <label class="auth-form__label" for="login-email">E-mail</label>
-        <input
-          id="login-email"
-          type="email"
-          class="auth-form__input"
-          [(ngModel)]="email"
-          name="email"
-          autocomplete="email"
-          placeholder="seu@email.com"
-          required
-        />
-      </div>
+      <app-input
+        label="E-mail"
+        type="email"
+        placeholder="seu@email.com"
+        autocomplete="email"
+        inputId="login-email"
+        [required]="true"
+        [(value)]="email"
+      />
 
-      <div class="auth-form__field">
-        <label class="auth-form__label" for="login-senha">Senha</label>
-        <input
-          id="login-senha"
-          type="password"
-          class="auth-form__input"
-          [(ngModel)]="senha"
-          name="senha"
-          autocomplete="current-password"
-          placeholder="••••••••"
-          required
-        />
-      </div>
+      <app-input-password
+        label="Senha"
+        autocomplete="current-password"
+        inputId="login-senha"
+        [(value)]="senha"
+      />
 
       @if (erro()) {
         <p class="auth-form__erro" role="alert">{{ erro() }}</p>
@@ -46,7 +35,7 @@
       <button
         type="submit"
         class="auth-form__btn"
-        [disabled]="loading() || !email || !senha"
+        [disabled]="loading()"
       >
         @if (loading()) {
           <span class="auth-form__spinner" aria-hidden="true"></span>

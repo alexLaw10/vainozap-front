@@ -3,12 +3,9 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
+import type { DashboardResumoApi } from '../models/dashboard.model';
 
-export interface DashboardResumoApi {
-  pedidosHoje: number;
-  pedidosPendentes: number;
-  vendasMes: number;
-}
+export type { DashboardResumoApi };
 
 @Injectable()
 export class MerchantDashboardService {

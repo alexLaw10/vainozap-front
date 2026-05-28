@@ -2,7 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 
 import type { OrderConfirmSnapshot } from '../../models/order-confirm-snapshot.model';
-import { IconComponent } from '../../../../shared/ui/icon/icon.component';
+import { IconComponent } from '@app/shared/ui';
 
 @Component({
   selector: 'app-cart-order-confirm-modal',

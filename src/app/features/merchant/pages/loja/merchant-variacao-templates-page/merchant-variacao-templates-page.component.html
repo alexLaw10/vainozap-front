@@ -1,0 +1,151 @@
+<main class="mcat-page container">
+  <div class="mcat-page__head">
+    <div class="vt-head-info">
+      <h1 class="mcat-page__title">Modelos de Variação</h1>
+      <p class="vt-head-desc">Crie modelos reutilizáveis (tamanhos, cores…) e aplique em qualquer produto.</p>
+    </div>
+    <app-button type="button" [inline]="true" (click)="openCreate()">+ Novo modelo</app-button>
+  </div>
+
+  @if (loading()) {
+    <p class="mcat-page__empty">Carregando…</p>
+  } @else if (templates().length === 0) {
+    <div class="vt-empty">
+      <app-icon name="file-text" [size]="40" [strokeWidth]="1.2"></app-icon>
+      <p>Nenhum modelo cadastrado.</p>
+      <app-button type="button" [inline]="true" (click)="openCreate()">Criar primeiro modelo</app-button>
+    </div>
+  } @else {
+    <div class="vt-list">
+      @for (t of templates(); track t.id) {
+        <div class="vt-card">
+          <div class="vt-card__main">
+            <span class="vt-card__nome">{{ t.nome }}</span>
+            <span class="vt-card__resumo">{{ resumo(t) }}</span>
+          </div>
+          <div class="vt-card__meta">
+            <span class="vt-badge">{{ t.variacoes.length }} variação{{ t.variacoes.length !== 1 ? 'ões' : '' }}</span>
+            <span class="vt-badge vt-badge--light">{{ totalOpcoes(t) }} opções</span>
+          </div>
+          <div class="vt-card__actions">
+            <app-button type="button" variant="ghost" [inline]="true" (click)="openEdit(t)">Editar</app-button>
+            <app-button type="button" variant="danger-ghost" [inline]="true" (click)="askDelete(t.id)">Remover</app-button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</main>
+
+<!-- Modal criar / editar -->
+@if (modalOpen()) {
+  <app-modal
+    [open]="modalOpen()"
+    [title]="editingId() ? 'Editar modelo' : 'Novo modelo de variação'"
+    (closed)="closeModal()"
+  >
+    <form class="mcat-modal__form" (ngSubmit)="save()">
+
+      <app-input
+        label="Nome do modelo *"
+        placeholder="Ex: Tênis BR, Tamanhos Roupa, Cores Básicas"
+        [(value)]="nome"
+        [error]="nomeError()"
+      />
+
+      <!-- Variações -->
+      <div class="vt-section-head">
+        <span class="vt-section-label">Variações</span>
+        <app-button type="button" variant="ghost" [inline]="true" (click)="addVariacao()">
+          + Adicionar variação
+        </app-button>
+      </div>
+
+      <div class="vt-variacoes">
+        @for (v of variacoes(); track $index; let vi = $index) {
+          <div class="mcat-variacao">
+
+            <div class="mcat-variacao__head">
+              <div class="mcat-variacao__fields">
+                <app-input
+                  style="flex:1;min-width:120px"
+                  label="Nome"
+                  placeholder="Ex: Tamanho, Cor…"
+                  [value]="v.nome"
+                  (valueChange)="updateVariacaoNome(vi, $event)"
+                />
+                <app-select label="Tipo" style="min-width:100px"
+                  [options]="TIPOS"
+                  [value]="v.tipo"
+                  (valueChange)="updateVariacaoTipo(vi, $event)"
+                />
+              </div>
+              <button type="button" class="mcat-variacao__remove"
+                      (click)="removeVariacao(vi)" aria-label="Remover variação">✕</button>
+            </div>
+
+            <!-- Opções -->
+            <div class="vt-opcoes-wrap">
+              @if (v.opcoes.length > 0) {
+                <div class="vt-opcoes-header">
+                  @if (isCor(vi)) { <span>Cor</span> }
+                  <span class="vt-col-valor">Valor</span>
+                  <span></span>
+                </div>
+              }
+              <div class="vt-opcoes">
+                @for (o of v.opcoes; track $index; let oi = $index) {
+                  <div class="vt-opcao-row">
+                    @if (isCor(vi)) {
+                      <input class="mcat-variacao__swatch" type="color"
+                             [value]="o.swatch || '#000000'"
+                             (input)="updateOpcaoSwatch(vi, oi, $event)"
+                             title="Cor" />
+                    }
+                    <app-input
+                      style="flex:1"
+                      placeholder="Ex: P, M, 38, Azul…"
+                      [value]="o.valor"
+                      (valueChange)="updateOpcaoValor(vi, oi, $event)"
+                    />
+                    <button type="button" class="mcat-list-item__remove"
+                            (click)="removeOpcao(vi, oi)" aria-label="Remover opção">✕</button>
+                  </div>
+                }
+              </div>
+              <button type="button" class="mcat-add-btn" (click)="addOpcao(vi)">+ Opção</button>
+            </div>
+
+          </div>
+        }
+
+        @if (variacoes().length === 0) {
+          <p class="vt-variacoes-empty">Nenhuma variação. Adicione pelo menos uma.</p>
+        }
+      </div>
+
+      @if (error()) {
+        <p class="mcat-page__error" role="alert">{{ error() }}</p>
+      }
+
+      <div class="mcat-modal__footer">
+        <app-button type="button" variant="ghost" [inline]="true" (click)="closeModal()">Cancelar</app-button>
+        <app-button type="submit" [inline]="true" [disabled]="saving()" [loading]="saving()">
+          {{ saving() ? 'Salvando…' : (editingId() ? 'Salvar' : 'Criar modelo') }}
+        </app-button>
+      </div>
+    </form>
+  </app-modal>
+}
+
+<!-- Confirmar exclusão -->
+@if (confirmDeleteId()) {
+  <app-confirm-dialog
+    [open]="!!confirmDeleteId()"
+    title="Confirmar remoção"
+    message="Remover este modelo? Produtos que o usaram não são afetados."
+    confirmLabel="Remover"
+    (cancel)="cancelDelete()"
+    (confirm)="confirmDelete()"
+  ></app-confirm-dialog>
+}

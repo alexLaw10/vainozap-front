@@ -27,4 +27,8 @@
       </div>
     </div>
   </section>
+} @else if (context.tenant().slogan) {
+  <div class="vitrine-banner-fallback" aria-hidden="true">
+    <p class="vitrine-banner-fallback__slogan">{{ context.tenant().slogan }}</p>
+  </div>
 }

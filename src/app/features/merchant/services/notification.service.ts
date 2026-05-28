@@ -1,6 +1,6 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { NotificationModel } from '../../../shared/models/notification.model';
+import { NotificationModel } from '../models/notification.model';
 import { AuthService } from '../../auth/services/auth.service';
 import { environment } from '../../../../environments/environment';
 
@@ -19,6 +19,37 @@ export class NotificationService {
   private readonly MAX_RECONNECT_DELAY = 60_000;
   private destroyed = false;
 
+  /**
+   * Rastreia o token com o qual o EventSource foi aberto.
+   * Quando o token muda (ex: refresh), o SSE é reconectado automaticamente
+   * com o novo token sem precisar esperar o backoff de reconexão.
+   */
+  private connectedWithToken: string | null = null;
+
+  constructor() {
+    // Reage a mudanças no token de acesso:
+    // - Token → null  : usuário deslogado, para o SSE imediatamente
+    // - Token mudou   : refresh bem-sucedido, reconecta com novo token para parar o loop de 401
+    effect(() => {
+      const token = this.auth.token();
+
+      if (!token) {
+        // Logout ou token limpo — para tudo
+        this.clearReconnectTimer();
+        this.eventSource?.close();
+        this.eventSource = null;
+        this.connectedWithToken = null;
+        return;
+      }
+
+      // Token mudou e o SSE estava falhando (sem conexão ativa) → reconecta agora
+      if (token !== this.connectedWithToken && !this.eventSource) {
+        this.clearReconnectTimer();
+        this.connectSse();
+      }
+    });
+  }
+
   load(): void {
     this.http.get<NotificationModel[]>(this.base).subscribe(list => {
       this.notifications.set(list);
@@ -32,6 +63,7 @@ export class NotificationService {
 
     const es = new EventSource(`${this.base}/stream?token=${token}`);
     this.eventSource = es;
+    this.connectedWithToken = token;
 
     es.addEventListener('notification', (event: MessageEvent) => {
       const notif: NotificationModel = JSON.parse(event.data);
@@ -47,7 +79,10 @@ export class NotificationService {
     es.onerror = () => {
       // Fecha o EventSource com erro e agenda reconexão com backoff exponencial
       es.close();
-      if (this.eventSource === es) this.eventSource = null;
+      if (this.eventSource === es) {
+        this.eventSource = null;
+        this.connectedWithToken = null;
+      }
       this.scheduleReconnect();
     };
   }
@@ -57,6 +92,7 @@ export class NotificationService {
     this.clearReconnectTimer();
     this.eventSource?.close();
     this.eventSource = null;
+    this.connectedWithToken = null;
   }
 
   /** Reinicia a conexão SSE (ex: após login em nova aba). */
@@ -65,6 +101,7 @@ export class NotificationService {
     this.clearReconnectTimer();
     this.eventSource?.close();
     this.eventSource = null;
+    this.connectedWithToken = null;
     this.reconnectDelay = 3_000;
     this.connectSse();
   }
@@ -72,6 +109,7 @@ export class NotificationService {
   private scheduleReconnect(): void {
     if (this.destroyed || this.reconnectTimer) return;
     const token = this.auth.token();
+    // Se não há token (usuário deslogado), não agenda reconexão
     if (!token) return;
 
     this.reconnectTimer = setTimeout(() => {

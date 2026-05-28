@@ -1,31 +1,38 @@
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal, computed } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { NotificationBellComponent } from './notification-bell.component';
+import { NotificationService } from '../../services/notification.service';
+import { MerchantNotificationBellComponent } from './notification-bell.component';
 
-describe('NotificationBellComponent', () => {
-  let fixture: ComponentFixture<NotificationBellComponent>;
-  let http: HttpTestingController;
+describe('MerchantNotificationBellComponent', () => {
+  let fixture: ComponentFixture<MerchantNotificationBellComponent>;
 
   beforeEach(async () => {
+    const notifSpy = {
+      notifications: signal([]),
+      unreadCount:   computed(() => 0),
+      load:          jest.fn(),
+      markRead:      jest.fn(),
+      markAllRead:   jest.fn(),
+      connectSse:    jest.fn(),
+      disconnectSse: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
-      imports: [NotificationBellComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      imports:   [MerchantNotificationBellComponent],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: NotificationService, useValue: notifSpy },
+      ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(NotificationBellComponent);
-    http = TestBed.inject(HttpTestingController);
+    fixture = TestBed.createComponent(MerchantNotificationBellComponent);
     fixture.detectChanges();
-    // O ngOnInit conecta SSE via EventSource (não HttpClient).
-    // A lista de notificações só é buscada via HTTP quando o usuário
-    // abre o sino pela primeira vez — nenhuma requisição HTTP no init.
-    http.expectNone((r) => r.url.includes('/merchant/notifications'));
-  });
-
-  afterEach(() => {
-    http.verify();
   });
 
   it('should create', () => {

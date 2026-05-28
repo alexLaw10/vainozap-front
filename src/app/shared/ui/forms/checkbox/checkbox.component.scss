@@ -1,0 +1,70 @@
+:host { display: inline-flex; }
+
+.wrap {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+
+  &--disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+/* Hide native checkbox but keep it focusable */
+.native {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Visual box */
+.box {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  margin-top: 1px; /* optical alignment with text */
+}
+
+.native:checked + .box {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.native:focus-visible + .box {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Check icon */
+.check {
+  width: 0.75rem;
+  height: 0.625rem;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.native:checked + .box .check {
+  opacity: 1;
+}
+
+/* Label text */
+.text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}

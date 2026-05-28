@@ -1,0 +1,117 @@
+<main class="mcat-page container">
+  <app-page-header title="Categorias">
+    <app-button type="button" [inline]="true" (click)="openCreate()">+ Nova categoria</app-button>
+  </app-page-header>
+
+  @if (error()) {
+    <p class="mcat-page__error" role="alert">{{ error() }}</p>
+  }
+
+  @if (!loading() && categories().length === 0) {
+    <div class="mcat-empty-state">
+      <app-icon name="grid" [size]="44" [strokeWidth]="1.2"></app-icon>
+      <p class="mcat-empty-state__title">Nenhuma categoria ainda</p>
+      <p class="mcat-empty-state__desc">Organize seus produtos em categorias para facilitar a navegação na vitrine.</p>
+      <app-button type="button" [inline]="true" (click)="openCreate()">+ Criar primeira categoria</app-button>
+    </div>
+  } @else {
+
+  <app-table
+    [columns]="columns"
+    [rows]="categories()"
+    [loading]="loading()"
+    emptyMessage="Nenhuma categoria cadastrada."
+  >
+    <ng-template #cell let-row let-col="col">
+
+      @switch (col.key) {
+
+        @case ('imagemUrl') {
+          @if (row.imagemUrl) {
+            <img class="ui-table-thumb" [src]="row.imagemUrl" [alt]="row.nome" width="40" height="40" />
+          } @else {
+            <span class="ui-table-thumb ui-table-thumb--placeholder">{{ row.nome.charAt(0) }}</span>
+          }
+        }
+
+        @case ('acoes') {
+          <app-button type="button" variant="ghost" [inline]="true" (click)="openEdit(row)">Editar</app-button>
+          <app-button type="button" variant="danger-ghost" [inline]="true" (click)="askDelete(row.id)">Remover</app-button>
+        }
+
+      }
+
+    </ng-template>
+  </app-table>
+
+  } <!-- /@else -->
+
+</main>
+
+<!-- Modal criar / editar -->
+@if (modalOpen()) {
+  <app-modal
+    [open]="modalOpen()"
+    [title]="editingId() ? 'Editar categoria' : 'Nova categoria'"
+    (closed)="closeModal()"
+  >
+    <form class="mcat-modal__form" (ngSubmit)="save()">
+      <app-input
+        label="Nome *"
+        placeholder="ex.: Camisetas"
+        [(value)]="nome"
+        [error]="nomeError()"
+      />
+      <app-input
+        label="Slug *"
+        placeholder="ex.: camisetas"
+        [(value)]="slug"
+        [error]="slugError()"
+      />
+      <label class="mcat-field">
+        <span class="mcat-field__label">Imagem da categoria</span>
+        <div class="mcat-field__upload-wrap">
+          @if (imagePreview()) {
+            <img class="mcat-field__img-preview" [src]="imagePreview()" alt="Prévia da imagem" />
+          }
+          <input
+            #fileInput
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            class="mcat-field__file-input"
+            (change)="onFileSelected($event)"
+          />
+          <button type="button" class="mcat-field__upload-btn" (click)="fileInput.click()">
+            {{ imagePreview() ? 'Trocar imagem' : 'Selecionar imagem' }}
+          </button>
+          @if (imagePreview()) {
+            <button type="button" class="mcat-field__remove-btn" (click)="removeImage()">Remover</button>
+          }
+        </div>
+      </label>
+      <app-input
+        class="mcat-field--short"
+        label="Ordem"
+        type="number"
+        [(value)]="ordem"
+      />
+      <div class="mcat-modal__footer">
+        <app-button type="button" variant="ghost" [inline]="true" (click)="closeModal()">Cancelar</app-button>
+        <app-button type="submit" [inline]="true" [disabled]="saving()" [loading]="saving()">
+          {{ saving() ? 'Salvando…' : (editingId() ? 'Salvar' : 'Criar') }}
+        </app-button>
+      </div>
+    </form>
+  </app-modal>
+}
+
+@if (confirmDeleteId()) {
+  <app-confirm-dialog
+    [open]="!!confirmDeleteId()"
+    title="Confirmar remoção"
+    message="Remover esta categoria? Produtos associados perderão o vínculo."
+    confirmLabel="Remover"
+    (cancel)="cancelDelete()"
+    (confirm)="confirmDelete()"
+  ></app-confirm-dialog>
+}

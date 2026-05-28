@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import type { VendasResumoApi } from '../../../shared/models/vendas-api.model';
+import type { VendasResumoApi } from '../models/vendas-api.model';
 
 @Injectable()
 export class MerchantVendasService {

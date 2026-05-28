@@ -5,8 +5,8 @@ import { Observable, catchError, map, of, tap } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { TENANT_MOCK } from '../../../mock/tenant.mock';
-import type { Tenant, TenantRodape } from '../../../shared/models/tenant.model';
-import type { TenantApi } from '../../../shared/models/tenant-api.model';
+import type { Tenant, TenantRodape } from '../../../core/models/tenant.model';
+import type { TenantApi } from '../../../core/models/tenant-api.model';
 
 /** Tenant neutro usado como valor inicial — evita que dados mock (PaceFit) apareçam
  *  antes da resposta real da API. */
@@ -19,7 +19,8 @@ const TENANT_EMPTY: Tenant = {
   corPrimaria: '#7c3aed',
   corSecundaria: '#22c55e',
   whatsapp: '',
-  planoTipo: 'beta',
+  planoTipo: 'basico',
+  assinaturaStatus: 'ativa',
   ativo: true,
   rodape: {
     textoLinkWhatsapp: 'Falar no WhatsApp',
@@ -127,6 +128,7 @@ export class StorefrontContextService {
       corDestaqueCatalogo:        t.corDestaqueCatalogo   ?? undefined,
       whatsapp:                   t.whatsapp              ?? '',
       planoTipo:                  t.planoTipo             as Tenant['planoTipo'],
+      assinaturaStatus:           (t.assinaturaStatus     as Tenant['assinaturaStatus']) ?? 'ativa',
       ativo:                      t.ativo,
       slogan:                     t.slogan                ?? undefined,
       emailContato:               t.emailContato          ?? undefined,
@@ -136,6 +138,9 @@ export class StorefrontContextService {
       cnpj:                       t.cnpj                  ?? undefined,
       nomeProprietario:           t.nomeProprietario      ?? undefined,
       enderecoLinha:              t.enderecoLinha         ?? undefined,
+      mensagemTopo:               t.mensagemTopo          ?? null,
+      corFundoTopo:               t.corFundoTopo          ?? null,
+      politicaEntregaLinha:       t.politicaEntregaLinha  ?? null,
       rodape,
     });
     this.loaded.set(true);

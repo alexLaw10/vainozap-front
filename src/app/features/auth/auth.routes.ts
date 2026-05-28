@@ -1,9 +1,12 @@
 import { Routes } from '@angular/router';
 
+import { noAuthGuard } from '../../core/guards/no-auth.guard';
+
 export const AUTH_ROUTES: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
     path: 'login',
+    canActivate: [noAuthGuard],
     loadComponent: () =>
       import('./pages/login/auth-login-page.component').then(
         (m) => m.AuthLoginPageComponent,
@@ -11,6 +14,7 @@ export const AUTH_ROUTES: Routes = [
   },
   {
     path: 'cadastro',
+    canActivate: [noAuthGuard],
     loadComponent: () =>
       import('./pages/cadastro/auth-cadastro-page.component').then(
         (m) => m.AuthCadastroPageComponent,

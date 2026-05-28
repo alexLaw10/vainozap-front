@@ -1,7 +1,7 @@
-import type { VendasResumoApi } from '../shared/models/vendas-api.model';
-import type { PageResult } from '../shared/models/page-result.model';
-import type { PedidoApi, StatusPedido } from '../shared/models/order-api.model';
-import type { TenantApi } from '../shared/models/tenant-api.model';
+import type { VendasResumoApi } from '../features/merchant/models/vendas-api.model';
+import type { PageResult } from '../features/merchant/models/page-result.model';
+import type { PedidoApi, StatusPedido } from '../features/merchant/models/order-api.model';
+import type { TenantApi } from '../core/models/tenant-api.model';
 
 export function stubTenantApi(over: Partial<TenantApi> = {}): TenantApi {
   return {
@@ -16,7 +16,8 @@ export function stubTenantApi(over: Partial<TenantApi> = {}): TenantApi {
     corSecundaria: '#222222',
     corDestaqueCatalogo: '#333333',
     whatsapp: null,
-    planoTipo: 'FREE',
+    planoTipo: 'basico',
+    assinaturaStatus: 'ativa',
     ativo: true,
     slogan: null,
     emailContato: null,
@@ -26,6 +27,9 @@ export function stubTenantApi(over: Partial<TenantApi> = {}): TenantApi {
     cnpj: null,
     nomeProprietario: null,
     enderecoLinha: null,
+    mensagemTopo: null,
+    corFundoTopo: null,
+    politicaEntregaLinha: null,
     rodape: null,
     trialEndsAt: null,
     ...over,

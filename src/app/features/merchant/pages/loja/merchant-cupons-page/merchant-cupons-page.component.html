@@ -1,0 +1,141 @@
+<main class="mcupons-page container">
+  <app-page-header title="Cupons de desconto">
+    <app-button type="button" [inline]="true" (click)="openCreate()">+ Novo cupom</app-button>
+  </app-page-header>
+
+  @if (error()) {
+    <p class="mcupons-page__error" role="alert">{{ error() }}</p>
+  }
+
+  @if (!loading() && cupons().length === 0) {
+    <div class="mcat-empty-state">
+      <app-icon name="copy" [size]="44" [strokeWidth]="1.2"></app-icon>
+      <p class="mcat-empty-state__title">Nenhum cupom cadastrado ainda</p>
+      <p class="mcat-empty-state__desc">Crie cupons de desconto para compartilhar com seus clientes.</p>
+      <app-button type="button" [inline]="true" (click)="openCreate()">+ Criar primeiro cupom</app-button>
+    </div>
+  } @else {
+
+    <app-table
+      [columns]="columns"
+      [rows]="cupons()"
+      [loading]="loading()"
+      emptyMessage="Nenhum cupom cadastrado."
+    >
+      <ng-template #cell let-row let-col="col">
+
+        @switch (col.key) {
+
+          @case ('desconto') {
+            <strong>{{ descontoLabel(row) }}</strong>
+          }
+
+          @case ('valorMinimoPedido') {
+            {{ row.valorMinimoPedido ? (row.valorMinimoPedido | currency:'BRL':'symbol':'1.2-2') : '—' }}
+          }
+
+          @case ('usos') {
+            {{ row.totalUsado ?? 0 }}{{ row.limiteUsos ? ' / ' + row.limiteUsos : '' }}
+          }
+
+          @case ('dataExpiracao') {
+            {{ row.dataExpiracao ? (row.dataExpiracao | date:'dd/MM/yy HH:mm') : '—' }}
+          }
+
+          @case ('ativo') {
+            <app-toggle [value]="row.ativo" (valueChange)="toggleAtivo(row)"></app-toggle>
+          }
+
+          @case ('acoes') {
+            <app-button type="button" variant="ghost" [inline]="true" (click)="openEdit(row)">Editar</app-button>
+            <app-button type="button" variant="danger-ghost" [inline]="true" (click)="askDelete(row.id)">Remover</app-button>
+          }
+
+        }
+
+      </ng-template>
+    </app-table>
+
+  }
+</main>
+
+<!-- ── Modal criar / editar ────────────────────────────────────────────────── -->
+@if (modalOpen()) {
+  <app-modal
+    [open]="modalOpen()"
+    [title]="editingId() ? 'Editar cupom' : 'Novo cupom'"
+    (closed)="closeModal()"
+  >
+    <form class="mcat-modal__form" (ngSubmit)="save()">
+
+      <app-input
+        label="Código *"
+        placeholder="ex.: NATAL20"
+        [value]="codigo()"
+        (valueChange)="codigo.set($event.toUpperCase())"
+        [error]="codigoError()"
+        autocomplete="off"
+      />
+
+      <app-select
+        label="Tipo de desconto *"
+        [options]="tipoOptions"
+        [value]="tipo()"
+        (valueChange)="tipo.set($any($event))"
+      />
+
+      <app-input
+        [label]="tipo() === 'PERCENTUAL' ? 'Valor (%) *' : 'Valor em R$ *'"
+        type="number"
+        [placeholder]="tipo() === 'PERCENTUAL' ? 'ex.: 10' : 'ex.: 25.00'"
+        [(value)]="valor"
+        [error]="valorError()"
+      />
+
+      <app-input
+        label="Pedido mínimo (R$)"
+        hint="Opcional — ex.: 100.00"
+        type="number"
+        placeholder="Sem mínimo"
+        [(value)]="valorMinimoPedido"
+      />
+
+      <app-input
+        label="Limite de usos"
+        hint="Opcional — deixe em branco para ilimitado"
+        type="number"
+        placeholder="Ilimitado"
+        [(value)]="limiteUsos"
+      />
+
+      <app-input
+        label="Data de expiração"
+        hint="Opcional"
+        type="datetime-local"
+        [(value)]="dataExpiracao"
+      />
+
+      <app-toggle label="Cupom ativo" [(value)]="ativo" />
+
+      <div class="mcat-modal__footer">
+        <app-button type="button" variant="ghost" [inline]="true" (click)="closeModal()">Cancelar</app-button>
+        <app-button type="submit" [inline]="true" [disabled]="saving()" [loading]="saving()">
+          {{ saving() ? 'Salvando…' : (editingId() ? 'Salvar' : 'Criar') }}
+        </app-button>
+      </div>
+
+    </form>
+  </app-modal>
+}
+
+<!-- ── Confirm delete ──────────────────────────────────────────────────────── -->
+@if (confirmDeleteId()) {
+  <app-confirm-dialog
+    [open]="!!confirmDeleteId()"
+    title="Remover cupom"
+    message="Tem certeza que deseja remover este cupom? Esta ação não pode ser desfeita."
+    confirmLabel="Remover"
+    (cancel)="cancelDelete()"
+    (confirm)="confirmDelete()"
+  ></app-confirm-dialog>
+}

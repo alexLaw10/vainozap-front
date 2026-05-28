@@ -7,8 +7,9 @@ import type { Router } from '@angular/router';
  */
 @Injectable()
 export class StorefrontCatalogUiService {
-  readonly categoryMenuOpen = signal(false);
+  readonly categoryMenuOpen   = signal(false);
   readonly selectedCategoryId = signal<string | null>(null);
+  readonly searchQuery        = signal('');
 
   openCategoryMenu(): void {
     this.categoryMenuOpen.set(true);

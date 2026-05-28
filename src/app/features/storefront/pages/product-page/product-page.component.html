@@ -16,6 +16,17 @@
     }
 
     @if (product(); as p) {
+      <nav class="product-breadcrumb" aria-label="Navegação de contexto">
+        <a routerLink="/" class="product-breadcrumb__link">Início</a>
+        <span class="product-breadcrumb__sep" aria-hidden="true">›</span>
+        @if (category(); as cat) {
+          <a routerLink="/" [fragment]="'categorias'" class="product-breadcrumb__link"
+            (click)="$event.preventDefault(); router.navigate(['/'])">{{ cat.nome }}</a>
+          <span class="product-breadcrumb__sep" aria-hidden="true">›</span>
+        }
+        <span class="product-breadcrumb__current" aria-current="page">{{ p.nome }}</span>
+      </nav>
+
       <div class="product__layout">
         <div class="product__gallery" [class.product__gallery--single]="p.fotos.length <= 1" aria-label="Galeria de imagens">
           @if (p.fotos.length > 1) {
@@ -37,7 +48,11 @@
           }
 
           <div class="product__hero-wrap">
-            <div class="product__hero">
+            <div
+              class="product__hero"
+              (touchstart)="onHeroTouchStart($event)"
+              (touchend)="onHeroTouchEnd($event)"
+            >
               <img
                 class="product__hero-img"
                 [src]="mainImageSrc()"
@@ -45,8 +60,24 @@
                 width="800"
                 height="1000"
                 decoding="async"
+                (click)="openPhotoLightbox()"
+                style="cursor:zoom-in"
               />
+              <button type="button" class="product__zoom-btn" aria-label="Ver imagem ampliada" (click)="openPhotoLightbox()">
+                <app-icon name="zoom-in" [size]="18" [strokeWidth]="2"></app-icon>
+              </button>
             </div>
+
+            @if (p.fotos.length > 1) {
+              <div class="product__swipe-dots" aria-hidden="true">
+                @for (f of p.fotos; track $index) {
+                  <span
+                    class="product__swipe-dot"
+                    [class.product__swipe-dot--active]="mainPhotoIndex() === $index"
+                  ></span>
+                }
+              </div>
+            }
             <button type="button" class="product__share" aria-label="Partilhar produto" (click)="share()">
               <app-icon name="share" [size]="20"></app-icon>
             </button>
@@ -166,7 +197,14 @@
             </label>
           }
 
-          <div class="product__actions">
+          @if (context.tenant().politicaEntregaLinha) {
+            <div class="product__delivery-policy" role="note">
+              <app-icon name="package" [size]="16" [strokeWidth]="1.75"></app-icon>
+              <span>{{ context.tenant().politicaEntregaLinha }}</span>
+            </div>
+          }
+
+          <div class="product__actions" #ctaAnchor>
             @if (p.semEstoque) {
               <!-- Serviço / consultoria: sem carrinho, botão WhatsApp principal -->
               @if (whatsappUrl(); as url) {
@@ -197,6 +235,18 @@
               </button>
             }
             <a routerLink="/" class="product__btn-outline"> Voltar para a loja </a>
+
+            <div class="product__share-row">
+              <button type="button" class="product__btn-wpp-share" (click)="shareWhatsApp()">
+                <app-icon name="brand-whatsapp" [size]="18" [strokeWidth]="1.75"></app-icon>
+                WhatsApp
+              </button>
+              <button type="button" class="product__btn-qr" (click)="openQrModal()">
+                <app-icon name="qr-code" [size]="16" [strokeWidth]="1.75"></app-icon>
+                QR Code
+              </button>
+            </div>
+
             <div class="product__help">
               <p class="product__help-text">Ficou com alguma dúvida?</p>
               @if (whatsappSellerUrl(); as sellerUrl) {
@@ -211,6 +261,65 @@
               }
             </div>
           </div>
+        </div>
+      </div>
+    }
+
+    @if (photoLightboxOpen() && product(); as p) {
+      <div class="photo-lightbox" role="dialog" aria-modal="true" [attr.aria-label]="'Ampliar foto de ' + p.nome" (click)="closePhotoLightbox()">
+        <button type="button" class="photo-lightbox__close" aria-label="Fechar imagem" (click)="closePhotoLightbox()">
+          <app-icon name="close" [size]="22" [strokeWidth]="2.5"></app-icon>
+        </button>
+        <img
+          class="photo-lightbox__img"
+          [src]="mainImageSrc()"
+          [alt]="'Foto ampliada de ' + p.nome"
+          (click)="$event.stopPropagation()"
+        />
+        @if (p.fotos.length > 1) {
+          <button type="button" class="photo-lightbox__nav photo-lightbox__nav--prev" aria-label="Foto anterior" (click)="$event.stopPropagation(); prevPhoto()">
+            <app-icon name="chevron-left" [size]="28" [strokeWidth]="2.5"></app-icon>
+          </button>
+          <button type="button" class="photo-lightbox__nav photo-lightbox__nav--next" aria-label="Próxima foto" (click)="$event.stopPropagation(); nextPhoto()">
+            <app-icon name="chevron-right" [size]="28" [strokeWidth]="2.5"></app-icon>
+          </button>
+          <div class="photo-lightbox__dots" aria-hidden="true">
+            @for (f of p.fotos; track $index) {
+              <span class="photo-lightbox__dot" [class.photo-lightbox__dot--active]="mainPhotoIndex() === $index"></span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (qrModalOpen()) {
+      <div class="qr-modal" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title" (click)="closeQrModal()">
+        <div class="qr-modal__card" (click)="$event.stopPropagation()">
+          <button type="button" class="qr-modal__close" aria-label="Fechar QR Code" (click)="closeQrModal()">
+            <app-icon name="close" [size]="16" [strokeWidth]="2.5"></app-icon>
+          </button>
+          <h2 id="qr-modal-title" class="qr-modal__title">QR Code deste produto</h2>
+          <div class="qr-modal__img-wrap">
+            <img
+              class="qr-modal__img"
+              [src]="qrImageUrl()"
+              alt="QR Code do produto"
+              width="200"
+              height="200"
+              decoding="async"
+            />
+          </div>
+          <p class="qr-modal__hint">Aponte a câmera do celular para abrir este produto.</p>
+          <a
+            class="qr-modal__download"
+            [href]="qrImageUrl()"
+            download="qrcode-produto.png"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <app-icon name="qr-code" [size]="14" [strokeWidth]="2"></app-icon>
+            Baixar imagem
+          </a>
         </div>
       </div>
     }
@@ -256,6 +365,21 @@
       }
     }
 
+    @if (product(); as p) {
+      @if (relatedProducts().length) {
+        <section class="product-related" aria-labelledby="product-related-heading">
+          <h2 id="product-related-heading" class="product-related__title">Você também pode gostar</h2>
+          <ul class="product-related__grid" role="list">
+            @for (rp of relatedProducts(); track rp.id) {
+              <li class="product-related__cell" role="listitem">
+                <app-product-card [product]="rp" />
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    }
+
     @if (state()?.status === 'not-found') {
       <nav class="breadcrumb" aria-label="Navegação secundária">
         <a routerLink="/" class="breadcrumb__link">Voltar ao catálogo</a>
@@ -270,3 +394,16 @@
     }
   </article>
 </main>
+
+@if (!ctaInView() && product(); as p) {
+  @if (!p.semEstoque && selectionHasStock()) {
+    <div class="product-sticky-cta" role="complementary" aria-label="Compra rápida">
+      <div class="product-sticky-cta__inner container">
+        <span class="product-sticky-cta__name">{{ p.nome }}</span>
+        <button type="button" class="product-sticky-cta__btn" (click)="addToCart()">
+          Adicionar — {{ lineTotal() | currency: 'BRL' : 'symbol' : '1.2-2' }}
+        </button>
+      </div>
+    </div>
+  }
+}

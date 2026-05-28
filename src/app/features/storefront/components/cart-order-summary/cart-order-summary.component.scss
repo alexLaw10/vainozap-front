@@ -146,10 +146,52 @@
   }
 }
 
-.cart-modal__empty {
-  margin: 0 0 var(--space-4);
+.cart-modal__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.cart-modal__empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-100);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.cart-modal__empty-title {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.cart-modal__empty-desc {
+  margin: 0;
   font-size: var(--font-size-sm);
-  opacity: 0.95;
+  color: var(--color-text-muted);
+}
+
+.cart-modal__empty-cta {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+
+  &:hover { background: color-mix(in srgb, var(--color-primary) 88%, black); }
 }
 
 .cart-modal__subtotal,
@@ -232,6 +274,24 @@
   font-size: clamp(var(--font-size-lg), 4vw, var(--font-size-xl));
 }
 
+.cart-modal__frete-hint {
+  display: inline-block;
+  margin-left: var(--space-1);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.cart-modal__frete-aviso {
+  margin: calc(var(--space-4) * -1) 0 var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 0.15);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-relaxed);
+  opacity: 0.95;
+}
+
 .cart-modal__obs-label {
   display: block;
   margin-bottom: var(--space-2);
@@ -289,6 +349,103 @@
     outline: 2px solid var(--color-neutral-0);
     outline-offset: 2px;
   }
+}
+
+.cart-coupon {
+  margin-bottom: var(--space-4);
+
+  &__form {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  &__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: var(--space-2) var(--space-3);
+    border: 1.5px solid rgb(255 255 255 / 0.4);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-family: inherit;
+    color: var(--color-neutral-0);
+    background: rgb(255 255 255 / 0.15);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &::placeholder { text-transform: none; letter-spacing: 0; color: rgb(255 255 255 / 0.6); }
+    &:focus-visible { outline: 2px solid var(--color-neutral-0); outline-offset: 2px; border-color: var(--color-neutral-0); }
+  }
+
+  &__btn {
+    flex-shrink: 0;
+    padding: var(--space-2) var(--space-4);
+    border: 1.5px solid var(--color-neutral-0);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-neutral-0);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover:not(:disabled) { background: rgb(255 255 255 / 0.2); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+
+  &__error {
+    margin: var(--space-2) 0 0;
+    font-size: var(--font-size-xs);
+    color: #fca5a5;
+  }
+
+  &__applied {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    background: rgb(255 255 255 / 0.15);
+    border: 1.5px solid rgb(255 255 255 / 0.5);
+  }
+
+  &__tag {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    color: var(--color-neutral-0);
+  }
+
+  &__remove {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--color-neutral-0);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 var(--space-1);
+    &:hover { opacity: 0.7; }
+  }
+}
+
+.cart-modal__total-original {
+  text-decoration: line-through;
+  color: rgb(255 255 255 / 0.6);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  margin-right: var(--space-2);
+}
+
+.cart-modal__desconto-hint {
+  margin: calc(var(--space-4) * -1) 0 var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 0.15);
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-0);
+  font-weight: 600;
 }
 
 .cart-modal__footer-help {

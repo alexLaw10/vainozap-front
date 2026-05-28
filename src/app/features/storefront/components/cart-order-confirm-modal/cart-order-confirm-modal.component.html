@@ -52,8 +52,8 @@
           <span>Total pedido:</span>
           <span>{{ snap.subtotal | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
         </div>
-        <p class="cart-confirm__pay">Pagamento: <strong>Online</strong></p>
         <p class="cart-confirm__pay">Forma de pagamento: <strong>{{ snap.formaPagamentoLabel }}</strong></p>
+        <p class="cart-confirm__pay cart-confirm__pay--hint">O pagamento será combinado com o vendedor via WhatsApp.</p>
       </div>
 
       <p class="cart-confirm__hint">Clique no botão abaixo para encaminhar o pedido para o WhatsApp do vendedor.</p>

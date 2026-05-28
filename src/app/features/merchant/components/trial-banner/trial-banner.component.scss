@@ -1,0 +1,91 @@
+.trial-banner {
+  width: 100%;
+  background: rgba(234, 179, 8, 0.12);
+  border-bottom: 1px solid rgba(234, 179, 8, 0.35);
+  padding: 0.55rem 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+
+  // ── Estado urgente (≤ 3 dias) ─────────────────────────────────────────────
+  &--urgente {
+    background: rgba(249, 115, 22, 0.12);
+    border-bottom-color: rgba(249, 115, 22, 0.40);
+  }
+
+  // ── Trial expirado ────────────────────────────────────────────────────────
+  &--expirado {
+    background: rgba(239, 68, 68, 0.12);
+    border-bottom-color: rgba(239, 68, 68, 0.40);
+
+    .trial-banner__msg { color: #fca5a5; }
+    .trial-banner__cta {
+      background: #ef4444;
+      color: #fff;
+
+      &:hover { background: #dc2626; }
+    }
+  }
+
+  // ── Layout interno ─────────────────────────────────────────────────────────
+  &__inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  &__msg {
+    flex: 1;
+    margin: 0;
+    color: var(--color-text-secondary, rgba(241, 245, 249, 0.65));
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  &__cta {
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    border: none;
+    background: #f59e0b;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+
+    &:hover  { background: #d97706; transform: translateY(-1px); }
+    &:active { transform: translateY(0); }
+  }
+
+  &__dismiss {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted, rgba(241, 245, 249, 0.42));
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-text-secondary, rgba(241, 245, 249, 0.65));
+    }
+  }
+}

@@ -1,0 +1,70 @@
+<main class="cpend">
+
+  <!-- ── Aguardando pagamento ─────────────────────────────────────────────── -->
+  @if (estado() === 'aguardando') {
+    <div class="cpend__card">
+      <div class="cpend__spinner" aria-hidden="true"></div>
+      <h1 class="cpend__title">Aguardando confirmação do pagamento</h1>
+      <p class="cpend__desc">
+        Após realizar o pagamento na página do Asaas, a confirmação pode levar
+        alguns minutos. Estamos verificando automaticamente.
+      </p>
+
+      <div class="cpend__progress" role="progressbar" [attr.aria-valuenow]="progressoPercent">
+        <div class="cpend__progress-bar" [style.width.%]="progressoPercent"></div>
+      </div>
+
+      <div class="cpend__actions">
+        <button
+          class="cpend__btn cpend__btn--secondary"
+          type="button"
+          [disabled]="verificando()"
+          (click)="verificarAgora()"
+        >
+          @if (verificando()) { Verificando… } @else { Verificar agora }
+        </button>
+        <a routerLink="/merchant/contas/planos" class="cpend__link">Voltar aos planos</a>
+      </div>
+
+      <p class="cpend__hint">
+        💡 Pagamentos via PIX são confirmados em segundos.
+        Boleto pode levar até 3 dias úteis.
+      </p>
+    </div>
+  }
+
+  <!-- ── Pagamento confirmado ──────────────────────────────────────────────── -->
+  @if (estado() === 'confirmado') {
+    <div class="cpend__card cpend__card--sucesso">
+      <div class="cpend__icone-sucesso" aria-hidden="true">✅</div>
+      <h1 class="cpend__title">Plano ativado com sucesso!</h1>
+      <p class="cpend__desc">
+        Seu novo plano está ativo. Redirecionando para o painel…
+      </p>
+    </div>
+  }
+
+  <!-- ── Timeout ───────────────────────────────────────────────────────────── -->
+  @if (estado() === 'timeout') {
+    <div class="cpend__card cpend__card--timeout">
+      <div class="cpend__icone-timeout" aria-hidden="true">⏳</div>
+      <h1 class="cpend__title">Ainda não confirmamos seu pagamento</h1>
+      <p class="cpend__desc">
+        Não se preocupe — se você realizou o pagamento, ele será processado
+        em breve e seu plano será ativado automaticamente.
+      </p>
+      <div class="cpend__actions">
+        <button
+          class="cpend__btn cpend__btn--primary"
+          type="button"
+          [disabled]="verificando()"
+          (click)="verificarAgora()"
+        >
+          @if (verificando()) { Verificando… } @else { Verificar novamente }
+        </button>
+        <a routerLink="/merchant" class="cpend__link">Ir para o painel</a>
+      </div>
+    </div>
+  }
+
+</main>

@@ -1,4 +1,4 @@
-import type { StorefrontEnderecoEntrega } from '../models/storefront-entrega.model';
+import type { StorefrontEnderecoEntrega } from '../../features/storefront/models/storefront-entrega.model';
 import { formatCepMask } from './cep.util';
 
 /** Texto multilinha para WhatsApp / resumo de pedido. */

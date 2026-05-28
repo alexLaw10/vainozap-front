@@ -1,0 +1,14 @@
+[
+  {
+    "id": "sf-prod-1",
+    "nome": "Camiseta E2E",
+    "preco": 59.90,
+    "descricao": "Produto de teste E2E",
+    "ativo": true,
+    "semEstoque": false,
+    "estoque": 10,
+    "fotos": [],
+    "categoriaId": null,
+    "variacoes": []
+  }
+]

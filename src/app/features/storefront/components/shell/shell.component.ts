@@ -1,8 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 
+import { ToastComponent } from '@app/shared/ui';
 import { FloatingStoreActionsComponent } from '../floating-store-actions/floating-store-actions.component';
 import { StorefrontFiltersModalComponent } from '../storefront-filters-modal/storefront-filters-modal.component';
 import { VitrineFooterComponent } from '../vitrine-footer/vitrine-footer.component';
@@ -21,6 +22,7 @@ import { StorefrontFiltersService } from '../../services/storefront-filters.serv
     VitrineFooterComponent,
     FloatingStoreActionsComponent,
     StorefrontFiltersModalComponent,
+    ToastComponent,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
@@ -35,6 +37,11 @@ export class ShellComponent {
   private readonly title = inject(Title);
   private readonly context = inject(StorefrontContextService);
   private readonly catalog = inject(StorefrontCatalogService);
+
+  protected readonly tenant = this.context.tenant;
+  protected readonly barDismissed = signal(false);
+
+  protected dismissBar(): void { this.barDismissed.set(true); }
 
   constructor() {
     this.catalog.load();

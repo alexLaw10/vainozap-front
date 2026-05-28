@@ -1,0 +1,157 @@
+<main class="est-page container">
+
+  <div class="est-page__head">
+    <div>
+      <h1 class="est-page__title">Controle de Estoque</h1>
+      <p class="est-page__sub">Gerencie entradas, saídas e ajustes de saldo</p>
+    </div>
+    <div class="est-filters">
+      <app-button type="button" [inline]="true" class="est-filter-btn" [class.est-filter-btn--active]="filtro() === 'todos'"   (click)="filtro.set('todos')">Todos</app-button>
+      <app-button type="button" [inline]="true" class="est-filter-btn" [class.est-filter-btn--active]="filtro() === 'baixo'"   (click)="filtro.set('baixo')">Baixo (≤10)</app-button>
+      <app-button type="button" [inline]="true" class="est-filter-btn est-filter-btn--danger" [class.est-filter-btn--active]="filtro() === 'zero'" (click)="filtro.set('zero')">Sem estoque</app-button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="est-skeleton">
+      <ui-skeleton height="3rem" />
+      <ui-skeleton height="3rem" />
+      <ui-skeleton height="3rem" [widths]="['100%', '85%', '70%']" />
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="est-empty-state">
+      @if (filtro() === 'todos') {
+        <app-icon name="package" [size]="44" [strokeWidth]="1.2"></app-icon>
+        <p class="est-empty-state__title">Nenhum produto cadastrado</p>
+        <p class="est-empty-state__desc">Adicione produtos para começar a controlar o estoque.</p>
+        <a routerLink="/merchant/loja/cadastrar/produtos" class="mcat-btn mcat-btn--primary">
+          <app-icon name="plus" [size]="16" [strokeWidth]="2.5"></app-icon>
+          Adicionar produto
+        </a>
+      } @else {
+        <p>Nenhum produto nessa condição.</p>
+        <app-button type="button" variant="ghost" [inline]="true" (click)="filtro.set('todos')">Ver todos</app-button>
+      }
+    </div>
+  } @else {
+    <app-table>
+        <thead>
+          <tr>
+            <th class="ui-th">Produto</th>
+            <th class="ui-th ui-th--hide-sm">Tipo</th>
+            <th class="ui-th">Estoque</th>
+            <th class="ui-th ui-th--actions">Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of filtered(); track p.id) {
+
+            @if (p.variacoes.length === 0) {
+              <!-- Produto simples -->
+              <tr class="ui-tr">
+                <td class="ui-td est-nome">
+                  <span>{{ p.nome }}</span>
+                </td>
+                <td class="ui-td ui-td--muted ui-th--hide-sm">Simples</td>
+                <td class="ui-td">
+                  <span class="est-badge" [ngClass]="badgeClass(estoqueTotal(p))">{{ estoqueTotal(p) }} un.</span>
+                </td>
+                <td class="ui-td ui-td--actions">
+                  <app-button type="button" variant="ghost" [inline]="true" class="est-btn-ajuste"
+                          (click)="openAjuste(p, null)">Ajustar</app-button>
+                </td>
+              </tr>
+            } @else {
+              <!-- Cabeçalho do produto com variações -->
+              <tr class="ui-tr est-row--product-header">
+                <td class="ui-td est-nome" colspan="2">
+                  <strong>{{ p.nome }}</strong>
+                </td>
+                <td class="ui-td">
+                  <span class="est-badge" [ngClass]="badgeClass(estoqueTotal(p))">
+                    Total: {{ estoqueTotal(p) }}
+                  </span>
+                </td>
+                <td class="ui-td"></td>
+              </tr>
+              <!-- Linha por opção de variação -->
+              @for (opcao of opcoesList(p); track opcao.id) {
+                <tr class="ui-tr est-row--opcao">
+                  <td class="ui-td est-opcao-nome">
+                    @if (opcao.swatch) {
+                      <span class="est-swatch" [style.background]="opcao.swatch"></span>
+                    }
+                    <span class="est-opcao-var">{{ opcao.variacaoNome }}</span>
+                    <span>{{ opcao.valor }}</span>
+                  </td>
+                  <td class="ui-td ui-td--muted ui-th--hide-sm">Variação</td>
+                  <td class="ui-td">
+                    <span class="est-badge" [ngClass]="badgeClass(opcao.estoque)">{{ opcao.estoque }} un.</span>
+                  </td>
+                  <td class="ui-td ui-td--actions">
+                    <app-button type="button" variant="ghost" [inline]="true" class="est-btn-ajuste"
+                            (click)="openAjuste(p, opcao)">Ajustar</app-button>
+                  </td>
+                </tr>
+              }
+            }
+
+          }
+        </tbody>
+      </app-table>
+  }
+
+</main>
+
+<!-- ── Modal de ajuste ───────────────────────────────────────────────────── -->
+@if (modal(); as m) {
+  <app-modal [open]="true" title="Ajustar estoque" (closed)="closeModal()">
+
+    <div class="est-modal-info">
+      <span class="est-modal-produto">{{ m.produto.nome }}</span>
+      @if (m.opcao) {
+        <span class="est-modal-opcao">{{ m.opcao.variacaoNome }}: {{ m.opcao.valor }}</span>
+      }
+      <span class="est-modal-saldo">
+        Saldo atual:
+        <strong [ngClass]="badgeClass(estoqueAtualModal())">{{ estoqueAtualModal() }} un.</strong>
+      </span>
+    </div>
+
+    <div class="est-modal-form">
+      <app-radio-group
+        variant="cards"
+        [options]="OPERACAO_OPTIONS"
+        [(value)]="modalOperacao"
+      />
+
+      <app-input
+        label="Quantidade"
+        type="number"
+        placeholder="0"
+        [(value)]="modalQty"
+      />
+
+      @if (modalOperacao() !== 'AJUSTE') {
+        <p class="est-preview">
+          Resultado: {{ modalResultado() }} un.
+          @if (modalResultado() < 0) {
+            <span class="est-preview--warn"> ⚠ insuficiente</span>
+          }
+        </p>
+      }
+
+      @if (error()) {
+        <p class="mcat-page__error" role="alert">{{ error() }}</p>
+      }
+    </div>
+
+    <div class="mcat-modal__footer">
+      <app-button type="button" variant="ghost" [inline]="true" (click)="closeModal()">Cancelar</app-button>
+      <app-button type="button" [inline]="true" [disabled]="saving()" [loading]="saving()" (click)="confirmarAjuste()">
+        {{ saving() ? 'Salvando…' : 'Confirmar' }}
+      </app-button>
+    </div>
+
+  </app-modal>
+}

@@ -4,22 +4,9 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import type { LoginResponse } from '../../auth/services/auth.service';
+import type { MinhaLojaDto, NovaLojaRequest } from '../models/store.model';
 
-export interface MinhaLojaDto {
-  tenantId: string;
-  slug: string;
-  nomeLoja: string;
-  logoUrl: string | null;
-  planoTipo: string;
-  papel: string;
-  isPrimary: boolean;
-}
-
-export interface NovaLojaRequest {
-  nomeLoja: string;
-  slug: string;
-  whatsapp: string;
-}
+export type { MinhaLojaDto, NovaLojaRequest };
 
 @Injectable({ providedIn: 'root' })
 export class MyStoresService {

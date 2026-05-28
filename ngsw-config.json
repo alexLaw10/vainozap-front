@@ -1,0 +1,45 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app-shell",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/manifest.json",
+          "/icon-192x192.png",
+          "/icon-512x512.png",
+          "/apple-touch-icon.png",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/img/**",
+          "/**/*.{png,jpg,jpeg,webp,svg,gif,woff,woff2,ttf,eot}"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "catalog-api",
+      "urls": ["/api/v1/storefront/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "5m",
+        "timeout": "3s"
+      }
+    }
+  ]
+}

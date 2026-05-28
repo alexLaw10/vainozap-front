@@ -10,6 +10,11 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   testMatch: ['<rootDir>/src/**/*.spec.ts'],
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
+  moduleNameMapper: {
+    // Aliases do tsconfig — Jest não lê paths do tsconfig automaticamente
+    '^@app/shared/ui$': '<rootDir>/src/app/shared/ui/index.ts',
+    '^@app/(.*)$':      '<rootDir>/src/app/$1',
+  },
   collectCoverageFrom: [
     'src/app/**/*.component.ts',
     'src/app/app.ts',

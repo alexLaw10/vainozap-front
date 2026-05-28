@@ -1,4 +1,4 @@
-import type { Produto, Variacao, VariacaoTipoUi } from '../../../shared/models/produto.model';
+import type { Produto, Variacao, VariacaoTipoUi } from '../../../core/models/produto.model';
 
 const COLOR_IDS = new Set([
   'cor',

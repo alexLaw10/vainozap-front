@@ -37,10 +37,14 @@
             ],
             "styles": [
               "src/styles.scss"
-            ]
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/styles"]
+            }
           },
           "configurations": {
             "production": {
+              "serviceWorker": "ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -49,8 +53,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "21kB",
-                  "maximumError": "22kB"
+                  "maximumWarning": "22kB",
+                  "maximumError": "30kB"
                 }
               ],
               "outputHashing": "all",

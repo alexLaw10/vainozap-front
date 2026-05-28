@@ -18,14 +18,15 @@ import {
   StorefrontOrderService,
   type StorefrontCreateOrderPayload,
 } from '../../services/storefront-order.service';
-import type { StorefrontEnderecoEntrega } from '../../../../shared/models/storefront-entrega.model';
+import type { StorefrontEnderecoEntrega } from '../../models/storefront-entrega.model';
 import { parseBrlInputToNumber } from '../../../../shared/utils/brl-parse.util';
 import { formatStorefrontEnderecoResumo } from '../../../../shared/utils/storefront-endereco-text.util';
+import { validarCpfCnpj, validarTelefone } from '../../../../shared/utils/cpf-cnpj-validate.util';
 import { environment } from '../../../../../environments/environment';
 
 export type { EntregaModo } from '../../models/entrega-checkout.model';
 export type { OrderConfirmSnapshot } from '../../models/order-confirm-snapshot.model';
-export type { StorefrontEnderecoEntrega as CartEnderecoEntrega } from '../../../../shared/models/storefront-entrega.model';
+export type { StorefrontEnderecoEntrega as CartEnderecoEntrega } from '../../models/storefront-entrega.model';
 
 @Component({
   selector: 'app-cart-page',
@@ -88,11 +89,12 @@ export class CartPageComponent {
   protected readonly shareCartOpen = signal(false);
   protected readonly submittingOrder = signal(false);
   protected readonly submitError = signal('');
+  protected readonly formTouched = signal(false);
 
   protected readonly formularioValido = computed(() => {
     const nomeOk = this.nome().trim().length >= 3;
-    const docOk = this.cpfCnpj().replace(/\D/g, '').length >= 11;
-    const telOk = this.telefone().replace(/\D/g, '').length >= 10;
+    const docOk  = validarCpfCnpj(this.cpfCnpj());
+    const telOk  = validarTelefone(this.telefone());
     const pay = this.formaPagamento();
     if (!pay) return false;
     if (pay === 'dinheiro') {
@@ -114,8 +116,7 @@ export class CartPageComponent {
     () => this.cart.lines().length > 0 && this.formularioValido(),
   );
 
-  protected onPagamento(ev: Event): void {
-    const v = (ev.target as HTMLSelectElement).value;
+  protected onPagamento(v: string): void {
     const prev = this.formaPagamento();
     this.formaPagamento.set(v);
     if (v === prev) return;
@@ -128,17 +129,16 @@ export class CartPageComponent {
     if (v !== 'cartao_credito') this.cartParcelas.set('');
   }
 
-  protected onModoCartao(ev: Event): void {
-    const v = (ev.target as HTMLSelectElement).value as 'presencial' | 'online';
+  protected onModoCartao(v: string): void {
     this.cartModoCartao.set(v === 'online' ? 'online' : 'presencial');
   }
 
-  protected onParcelas(ev: Event): void {
-    this.cartParcelas.set((ev.target as HTMLSelectElement).value);
+  protected onParcelas(v: string): void {
+    this.cartParcelas.set(v);
   }
 
-  protected onBandeira(ev: Event): void {
-    this.cartBandeira.set((ev.target as HTMLSelectElement).value);
+  protected onBandeira(v: string): void {
+    this.cartBandeira.set(v);
   }
 
   protected onEscolherEntrega(m: EntregaModo): void {
@@ -263,7 +263,11 @@ export class CartPageComponent {
   }
 
   protected async finalizar(): Promise<void> {
-    if (!this.podeFinalizar() || this.submittingOrder()) return;
+    if (!this.formularioValido()) {
+      this.formTouched.set(true);
+      return;
+    }
+    if (this.cart.lines().length === 0 || this.submittingOrder()) return;
     this.submitError.set('');
     this.submittingOrder.set(true);
     this.fecharItemMenu();
@@ -331,6 +335,7 @@ export class CartPageComponent {
     this.observacoes.set('');
     this.entrega.set('loja');
     this.enderecoConfirmado.set(null);
+    this.formTouched.set(false);
     void this.router.navigate(['/']);
   }
 

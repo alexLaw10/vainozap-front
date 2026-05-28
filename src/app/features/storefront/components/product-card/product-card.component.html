@@ -1,4 +1,4 @@
-<article class="product-card" [style.--card-buy]="corComprarCatalogo()">
+<article class="product-card" [class.product-card--list]="listMode()" [style.--card-buy]="corComprarCatalogo()">
   @if (isSoldOut()) {
     <div class="product-card__media">
       <img
@@ -9,6 +9,27 @@
         width="400"
         height="500"
       />
+      <div class="product-card__sold-out-overlay" aria-hidden="true">
+        <span class="product-card__sold-out-badge">Esgotado</span>
+      </div>
+      <div class="product-card__badges" aria-hidden="true">
+        @if (product().novo) {
+          <span class="product-card__badge product-card__badge--novo">Novo</span>
+        }
+        @if (product().destaque) {
+          <span class="product-card__badge product-card__badge--destaque">Destaque</span>
+        }
+      </div>
+      <!-- Wishlist -->
+      <button
+        type="button"
+        class="product-card__wish"
+        [class.product-card__wish--active]="isWishlisted()"
+        [attr.aria-label]="isWishlisted() ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
+        (click)="toggleWishlist($event)"
+      >
+        <app-icon [name]="isWishlisted() ? 'heart-filled' : 'heart'" [size]="16"></app-icon>
+      </button>
     </div>
   } @else {
     <a
@@ -24,56 +45,97 @@
         width="400"
         height="500"
       />
+      <div class="product-card__badges" aria-hidden="true">
+        @if (product().novo) {
+          <span class="product-card__badge product-card__badge--novo">Novo</span>
+        }
+        @if (product().destaque) {
+          <span class="product-card__badge product-card__badge--destaque">Destaque</span>
+        }
+      </div>
     </a>
-  }
-
-  <h3 class="product-card__title">{{ product().nome }}</h3>
-
-  @if (product().semEstoque) {
-    <!-- Produto sem estoque: serviço/consultoria → botão WhatsApp -->
-    <p class="product-card__price">{{ product().preco | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
-    @if (whatsappUrl(); as url) {
-      <a
-        [href]="url"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="product-card__cta product-card__cta--whatsapp"
-        (click)="$event.stopPropagation()"
-      >
-        Fale conosco
-      </a>
-    } @else {
-      <button type="button" class="product-card__cta product-card__cta--buy" disabled>
-        Consulte disponibilidade
-      </button>
-    }
-  } @else if (isSoldOut()) {
-    <p class="product-card__price">{{ product().preco | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
-    <button type="button" class="product-card__status" disabled aria-disabled="true">Esgotado</button>
-  } @else if (qtyInCart() > 0) {
-    <p class="product-card__price-cash">{{ product().preco | currency: 'BRL' : 'symbol' : '1.2-2' }} à vista</p>
-    <div
-      class="product-card__qty-bar"
-      role="group"
-      [attr.aria-label]="'Quantidade de ' + product().nome + ' no carrinho'"
-    >
-      <button type="button" class="product-card__qty-hit" (click)="onDecQty($event)" aria-label="Diminuir quantidade">
-        <span class="product-card__qty-icon" aria-hidden="true">−</span>
-      </button>
-      <span class="product-card__qty-value">{{ qtyInCart() }}</span>
-      <button type="button" class="product-card__qty-hit" (click)="onIncQty($event)" aria-label="Aumentar quantidade">
-        <span class="product-card__qty-icon" aria-hidden="true">+</span>
-      </button>
-    </div>
-  } @else {
-    <p class="product-card__price">{{ product().preco | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
+    <!-- Wishlist fora do link para não conflitar com o routerLink -->
     <button
       type="button"
-      class="product-card__cta product-card__cta--buy"
-      [disabled]="!podeComprarDireto()"
-      (click)="comprarDireto($event)"
+      class="product-card__wish"
+      [class.product-card__wish--active]="isWishlisted()"
+      [attr.aria-label]="isWishlisted() ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
+      (click)="toggleWishlist($event)"
     >
-      Comprar
+      <app-icon [name]="isWishlisted() ? 'heart-filled' : 'heart'" [size]="16"></app-icon>
     </button>
   }
+
+  <div class="product-card__info">
+    <h3 class="product-card__title">{{ product().nome }}</h3>
+
+    @if (product().descricao) {
+      <p class="product-card__desc">{{ product().descricao }}</p>
+    }
+
+    @if (colorSwatches(); as swatches) {
+      <div class="product-card__swatches" aria-hidden="true">
+        @for (s of swatches.slice(0, 4); track $index) {
+          <span class="product-card__swatch" [style.background]="s"></span>
+        }
+        @if (swatches.length > 4) {
+          <span class="product-card__swatch-more">+{{ swatches.length - 4 }}</span>
+        }
+      </div>
+    }
+
+    @if (lowStock(); as qty) {
+      <p class="product-card__low-stock" aria-label="Poucas unidades disponíveis">
+        ⚡ Últimas {{ qty }} unidade{{ qty === 1 ? '' : 's' }}
+      </p>
+    }
+
+    @if (product().semEstoque) {
+      <!-- Produto sem estoque: serviço/consultoria → botão WhatsApp -->
+      <p class="product-card__price">{{ product().preco | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
+      @if (whatsappUrl(); as url) {
+        <a
+          [href]="url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="product-card__cta product-card__cta--whatsapp"
+          (click)="$event.stopPropagation()"
+        >
+          Fale conosco
+        </a>
+      } @else {
+        <button type="button" class="product-card__cta product-card__cta--buy" disabled>
+          Consulte disponibilidade
+        </button>
+      }
+    } @else if (isSoldOut()) {
+      <p class="product-card__price">{{ product().preco | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
+      <button type="button" class="product-card__status" disabled aria-disabled="true">Esgotado</button>
+    } @else if (qtyInCart() > 0) {
+      <p class="product-card__price-cash">{{ product().preco | currency: 'BRL' : 'symbol' : '1.2-2' }} à vista</p>
+      <div
+        class="product-card__qty-bar"
+        role="group"
+        [attr.aria-label]="'Quantidade de ' + product().nome + ' no carrinho'"
+      >
+        <button type="button" class="product-card__qty-hit" (click)="onDecQty($event)" aria-label="Diminuir quantidade">
+          <span class="product-card__qty-icon" aria-hidden="true">−</span>
+        </button>
+        <span class="product-card__qty-value">{{ qtyInCart() }}</span>
+        <button type="button" class="product-card__qty-hit" (click)="onIncQty($event)" aria-label="Aumentar quantidade">
+          <span class="product-card__qty-icon" aria-hidden="true">+</span>
+        </button>
+      </div>
+    } @else {
+      <p class="product-card__price">{{ product().preco | currency: 'BRL' : 'symbol' : '1.2-2' }}</p>
+      <button
+        type="button"
+        class="product-card__cta product-card__cta--buy"
+        [disabled]="!podeComprarDireto()"
+        (click)="comprarDireto($event)"
+      >
+        Comprar
+      </button>
+    }
+  </div>
 </article>

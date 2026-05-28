@@ -1,0 +1,387 @@
+<main class="cfg-page container">
+
+  <div class="cfg-page__head">
+    <div>
+      <h1 class="cfg-page__title">Configurar loja</h1>
+      <p class="cfg-page__sub">Personalize as informações da sua loja</p>
+      <div class="cfg-status-row">
+        <span class="cfg-status-badge" [class.cfg-status-badge--ativa]="ativo()" [class.cfg-status-badge--inativa]="!ativo()">
+          <span class="cfg-status-dot" aria-hidden="true"></span>
+          {{ ativo() ? 'Vitrine publicada' : 'Vitrine inativa' }}
+        </span>
+        @if (vitrineUrl(); as url) {
+          <a [href]="url" target="_blank" rel="noopener noreferrer" class="cfg-vitrine-link">
+            Abrir vitrine
+            <app-icon name="external-link" [size]="12" [strokeWidth]="2"></app-icon>
+          </a>
+        }
+      </div>
+    </div>
+    <div class="cfg-page__actions">
+      @if (success()) {
+        <span class="cfg-success">✓ Salvo com sucesso</span>
+      }
+      <app-button type="button" [inline]="true" [disabled]="saving()" [loading]="saving()" (click)="save()">
+        {{ saving() ? 'Salvando…' : 'Salvar alterações' }}
+      </app-button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p class="cfg-loading">Carregando…</p>
+  } @else {
+
+    @if (error()) {
+      <p class="cfg-error" role="alert">{{ error() }}</p>
+    }
+
+    <div class="cfg-sections">
+
+      <!-- Identidade -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Identidade</h2>
+        <div class="cfg-grid">
+          <app-input
+            class="cfg-field--full"
+            label="Nome da loja *"
+            placeholder="Ex: Loja da Maria"
+            [(value)]="nomeLoja"
+            [error]="nomeLojaError()"
+          />
+
+          <div class="mcat-field">
+            <label class="mcat-field__label">Slug (URL pública) <span class="cfg-required">*</span></label>
+            <div class="cfg-slug-wrap">
+              <input
+                class="mcat-field__input"
+                [class.mcat-field__input--error]="slugError()"
+                [value]="slug()"
+                (input)="slug.set($any($event.target).value)"
+                placeholder="minha-loja"
+              />
+              <span class="cfg-slug-suffix">.vainozapcom.br</span>
+            </div>
+            @if (slugError()) {
+              <span class="mcat-field__error">{{ slugError() }}</span>
+            } @else {
+              <span class="mcat-field__hint">Apenas letras minúsculas, números e hífen</span>
+            }
+          </div>
+
+          <app-input
+            label="Slogan"
+            placeholder="Ex: Os melhores preços da cidade"
+            [(value)]="slogan"
+          />
+
+          <app-input
+            class="cfg-field--full"
+            label="Título do documento (SEO)"
+            placeholder="Ex: Loja da Maria — Moda feminina"
+            [(value)]="tituloDocumento"
+          />
+        </div>
+
+        <!-- Logo e Favicon -->
+        <div class="cfg-images">
+          <app-upload-image
+            label="Logo"
+            placeholder="+ Adicionar logo"
+            hint="PNG, JPG, WebP"
+            [(preview)]="logoPreview"
+            (filePicked)="onLogoPicked($event)"
+            (removed)="onLogoRemoved()"
+          />
+          <app-upload-image
+            label="Favicon"
+            placeholder="+ Favicon"
+            hint="PNG, ICO 32×32"
+            [(preview)]="faviconPreview"
+            (filePicked)="onFaviconPicked($event)"
+            (removed)="onFaviconRemoved()"
+          />
+        </div>
+      </section>
+
+      <!-- Banner -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Banner da vitrine</h2>
+        <p class="cfg-card__desc">Imagem exibida como hero acima das categorias. Recomendado: 1440 × 400 px, JPG ou WebP.</p>
+
+        <app-upload-image
+          aspect="wide"
+          placeholder="Adicionar banner"
+          hint="PNG, JPG, WebP · até 10 MB"
+          [disabled]="saving()"
+          [(preview)]="bannerPreview"
+          (filePicked)="onBannerPicked($event)"
+          (removed)="onBannerRemoved()"
+        />
+      </section>
+
+      <!-- Vitrine -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Vitrine</h2>
+        <div class="cfg-grid">
+          <div class="mcat-field cfg-field--full">
+            <div class="cfg-label-with-tip">
+              <label class="mcat-field__label" for="cfg-mensagem-topo">Mensagem do topo</label>
+              <ui-tooltip text="Faixa colorida exibida acima do header para promoções ou avisos importantes. Deixe em branco para ocultar." />
+            </div>
+            <input
+              id="cfg-mensagem-topo"
+              class="mcat-field__input"
+              type="text"
+              placeholder="Ex: 🔥 Frete grátis acima de R$ 199 · Use o cupom PROMO10"
+              [value]="mensagemTopo()"
+              (input)="mensagemTopo.set($any($event.target).value)"
+            />
+            <span class="mcat-field__hint">Máximo recomendado: 100 caracteres</span>
+          </div>
+
+          <div class="mcat-field">
+            <div class="cfg-label-with-tip">
+              <span class="mcat-field__label">Cor de fundo da barra</span>
+              <ui-tooltip text="Cor de fundo da mensagem do topo. Se não preenchida, usa a cor primária da loja." />
+            </div>
+            <app-input-color [(value)]="corFundoTopo" />
+          </div>
+
+          <div class="mcat-field cfg-field--full">
+            <div class="cfg-label-with-tip">
+              <label class="mcat-field__label" for="cfg-politica-entrega">Política de entrega</label>
+              <ui-tooltip text="Texto exibido na página de cada produto, acima dos botões de compra. Deixe em branco para ocultar." />
+            </div>
+            <input
+              id="cfg-politica-entrega"
+              class="mcat-field__input"
+              type="text"
+              placeholder="Ex: Entrega em 3 a 7 dias úteis para todo o Brasil 🚚"
+              [value]="politicaEntregaLinha()"
+              (input)="politicaEntregaLinha.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Cores -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Cores</h2>
+        <div class="cfg-grid">
+          <div class="mcat-field">
+            <div class="cfg-label-with-tip">
+              <span class="mcat-field__label">Cor primária</span>
+              <ui-tooltip text="Ícones do header (carrinho, filtros, menu), badge de quantidade do carrinho, botões de ação e foco em toda a vitrine." />
+            </div>
+            <app-input-color [(value)]="corPrimaria" />
+          </div>
+          <div class="mcat-field">
+            <div class="cfg-label-with-tip">
+              <span class="mcat-field__label">Cor secundária</span>
+              <ui-tooltip text='Texto dos botões de pedido e checkout (ex: "Enviar pedido via WhatsApp"). Use uma cor que contraste bem com a primária.' />
+            </div>
+            <app-input-color [(value)]="corSecundaria" />
+          </div>
+          <div class="mcat-field">
+            <div class="cfg-label-with-tip">
+              <span class="mcat-field__label">Destaque do catálogo</span>
+              <ui-tooltip text='Botão "Adicionar" e preço em destaque nos cards de produto. Se não preenchido, usa a cor primária automaticamente.' />
+            </div>
+            <app-input-color [(value)]="corDestaqueCatalogo" />
+          </div>
+          <div class="cfg-color-preview">
+            <p class="cfg-color-preview__label">Prévia</p>
+            <div class="cfg-color-preview__items">
+              <div class="cfg-preview-item">
+                <svg class="cfg-preview-icon" [style.color]="corPrimaria()"
+                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span class="cfg-preview-item__desc">Ícones</span>
+              </div>
+              <div class="cfg-preview-item">
+                <button type="button" class="cfg-preview-btn"
+                  [style.background]="corDestaqueCatalogo() || corPrimaria()"
+                  style="color: #ffffff">
+                  + Adicionar
+                </button>
+                <span class="cfg-preview-item__desc">Cards de produto</span>
+              </div>
+              <div class="cfg-preview-item">
+                <button type="button" class="cfg-preview-btn"
+                  [style.background]="corPrimaria()"
+                  [style.color]="corSecundaria()">
+                  Fazer pedido
+                </button>
+                <span class="cfg-preview-item__desc">Botão de pedido</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contato -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Contato e localização</h2>
+        <div class="cfg-grid">
+          <app-input
+            type="tel"
+            label="WhatsApp"
+            placeholder="5511999998888"
+            hint="DDI + DDD + número, sem espaços"
+            [inputmode]="'numeric'"
+            [(value)]="whatsapp"
+          />
+          <app-input-phone label="Telefone de contato" [(value)]="telefoneContato" />
+          <app-input label="E-mail de contato" type="email" placeholder="contato@minhaloja.com" [(value)]="emailContato" />
+          <app-input-cnpj label="CNPJ" [(value)]="cnpj" />
+          <app-input label="Nome do proprietário" placeholder="Maria Silva" [(value)]="nomeProprietario" />
+          <app-input class="cfg-field--full" label="Endereço" placeholder="Rua das Flores, 123 — Centro, São Paulo/SP" [(value)]="enderecoLinha" />
+        </div>
+      </section>
+
+      <!-- Atendimento -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Atendimento</h2>
+        <div class="cfg-grid">
+
+          <div class="cfg-field--full">
+            <app-input
+              label="Horário (resumo)"
+              placeholder="Ex: Seg–Sex 9h–18h · Sáb 9h–13h"
+              hint="Clique nos períodos para adicionar ao resumo"
+              [clearable]="true"
+              [(value)]="horarioAtendimentoLinha"
+            />
+            <div class="cfg-horario-chips">
+              @for (chip of HORARIO_CHIPS; track chip) {
+                <button type="button" class="cfg-hchip" (click)="appendHorarioChip(chip)">{{ chip }}</button>
+              }
+            </div>
+          </div>
+
+          <div class="mcat-field cfg-field--full">
+            <label class="mcat-field__label">Horário (detalhes)</label>
+            <div class="cfg-horario-templates">
+              @for (tpl of HORARIO_TEMPLATES; track tpl.label) {
+                <button type="button" class="cfg-hchip cfg-hchip--tpl" (click)="applyHorarioTemplate(tpl.texto)">{{ tpl.label }}</button>
+              }
+            </div>
+            <app-textarea
+              [rows]="4"
+              placeholder="Segunda a Sexta das 9h às 18h."
+              [(value)]="horarioAtendimentoDetalhes"
+            />
+            <span class="mcat-field__hint">Clique em um template para preencher automaticamente, ou escreva livremente</span>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Rodapé da vitrine -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Rodapé da vitrine</h2>
+        <div class="cfg-grid">
+          <app-input label="Texto do link WhatsApp" placeholder="Falar no WhatsApp" [(value)]="textoLinkWhatsapp" />
+          <app-input label="Faixa inferior" placeholder="© 2026 Loja da Maria. Todos os direitos reservados." [(value)]="faixaInferior" />
+          <app-input label="Selo — título" placeholder="Compra segura" [(value)]="seloTitulo" />
+          <app-input label="Selo — subtítulo" placeholder="Seus dados protegidos" [(value)]="seloSubtitulo" />
+          <app-input label="Reclamações — texto" placeholder="Reclamações" [(value)]="reclamacoesTexto" />
+          <app-input label="Reclamações — URL" placeholder="https://reclameaqui.com.br/..." [(value)]="reclamacoesUrl" />
+        </div>
+
+        <!-- Formas de pagamento -->
+        <div class="mcat-field">
+          <label class="mcat-field__label">Formas de pagamento aceitas</label>
+          <div class="cfg-chips">
+            @for (forma of FORMAS_PAGAMENTO; track forma) {
+              <button type="button" class="cfg-chip" [class.cfg-chip--active]="hasForma(forma)" (click)="toggleForma(forma)">
+                {{ forma }}
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Redes sociais -->
+      <section class="cfg-card">
+        <h2 class="cfg-card__title">Redes sociais</h2>
+
+        <div class="cfg-rede-chips">
+          @for (chip of REDES_CHIPS; track chip.rotulo) {
+            <button
+              type="button"
+              class="cfg-rede-chip"
+              [class.cfg-rede-chip--added]="redeChipJaAdicionada(chip.rotulo)"
+              [disabled]="redeChipJaAdicionada(chip.rotulo)"
+              (click)="addRedeByChip(chip)"
+            >
+              <span class="cfg-rede-chip__dot" [style.background]="chip.cor"></span>
+              {{ chip.rotulo }}
+              @if (redeChipJaAdicionada(chip.rotulo)) { <span class="cfg-rede-chip__check">✓</span> }
+            </button>
+          }
+        </div>
+
+        <div class="cfg-redes">
+          @if (redesLength === 0) {
+            <p class="cfg-empty-redes">Clique nas redes acima para adicionar, ou use o botão abaixo para uma entrada personalizada.</p>
+          }
+
+          @for (rede of redesSociais(); track $index) {
+            <div class="cfg-rede-row">
+
+              @if (chipParaRede(rede.rotulo); as chip) {
+                <span class="cfg-rede-badge" [style.background]="chip.cor" [attr.title]="chip.rotulo">{{ chip.inicial }}</span>
+              } @else {
+                <span class="cfg-rede-badge cfg-rede-badge--custom" title="Personalizado">#</span>
+              }
+
+              @if (chipParaRede(rede.rotulo)) {
+                <span class="cfg-rede-label">{{ rede.rotulo }}</span>
+              } @else {
+                <input
+                  class="mcat-field__input cfg-rede-rotulo"
+                  [value]="rede.rotulo"
+                  (input)="updateRedeRotulo($index, $event)"
+                  placeholder="Nome da rede"
+                />
+              }
+
+              <input
+                class="mcat-field__input cfg-rede-url"
+                [value]="rede.url"
+                (input)="updateRedeUrl($index, $event)"
+                [placeholder]="chipParaRede(rede.rotulo)?.placeholder ?? 'https://...'"
+              />
+
+              <button type="button" class="cfg-rede-remove" (click)="removeRede($index)" aria-label="Remover rede">
+                <app-icon name="close" [size]="14" [strokeWidth]="2.5"></app-icon>
+              </button>
+            </div>
+          }
+
+          <button type="button" class="cfg-rede-custom-btn" (click)="addRede()">+ Personalizado</button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Botão salvar inferior -->
+    <div class="cfg-footer">
+      @if (error()) { <p class="cfg-error">{{ error() }}</p> }
+      @if (submitted() && !formValid()) {
+        <p class="cfg-error" role="alert">
+          Campos obrigatórios não preenchidos: <strong>{{ invalidFields().join(', ') }}</strong>
+        </p>
+      }
+      <app-button type="button" [inline]="true" [disabled]="saving()" [loading]="saving()" (click)="save()">
+        {{ saving() ? 'Salvando…' : 'Salvar alterações' }}
+      </app-button>
+    </div>
+
+  }
+
+</main>

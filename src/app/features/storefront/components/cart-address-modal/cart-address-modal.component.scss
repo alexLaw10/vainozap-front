@@ -146,6 +146,31 @@
   &:hover { background: var(--color-neutral-100); }
 }
 
+// ── CEP autocomplete ───────────────────────────────────────────────────────────
+.cart-endereco__cep-spinner {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--cart-endereco-primary, #7c3aed);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: cep-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.cart-endereco__cep-erro {
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin: 0.25rem 0 0;
+}
+
+@keyframes cep-spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
 // ── Animações ──────────────────────────────────────────────────────────────────
 @keyframes addr-fade-in {
   from { opacity: 0; }

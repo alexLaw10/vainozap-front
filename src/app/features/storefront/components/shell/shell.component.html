@@ -1,5 +1,23 @@
 <a href="#storefront-main" class="storefront-shell__skip-link">Pular para o conteúdo principal</a>
 
+@if (tenant().mensagemTopo && !barDismissed()) {
+  <div
+    class="announcement-bar"
+    role="banner"
+    [style.background]="tenant().corFundoTopo || tenant().corPrimaria"
+  >
+    <p class="announcement-bar__text">{{ tenant().mensagemTopo }}</p>
+    <button
+      type="button"
+      class="announcement-bar__close"
+      aria-label="Fechar aviso"
+      (click)="dismissBar()"
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+}
+
 <app-vitrine-header />
 
 <router-outlet />
@@ -9,3 +27,5 @@
 <app-floating-store-actions />
 
 <app-storefront-filters-modal />
+
+<ui-toast />

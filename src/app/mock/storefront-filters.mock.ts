@@ -1,4 +1,4 @@
-import type { StorefrontFilterPanelConfig } from '../shared/models/storefront-filters.model';
+import type { StorefrontFilterPanelConfig } from '../core/models/storefront-filters.model';
 
 /** Configuração inicial do painel de filtros (substituir por API). */
 export const STOREFRONT_FILTERS_PANEL_MOCK: StorefrontFilterPanelConfig = {

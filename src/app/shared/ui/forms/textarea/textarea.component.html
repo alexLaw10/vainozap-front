@@ -1,0 +1,18 @@
+@if (label()) {
+  <label class="label" [for]="resolvedId">{{ label() }}</label>
+}
+<textarea
+  class="control"
+  [class.is-error]="error()"
+  [id]="resolvedId"
+  [placeholder]="placeholder()"
+  [rows]="rows()"
+  [attr.maxlength]="maxlength() ?? null"
+  [disabled]="disabled()"
+  (input)="onInput($event)"
+>{{ value() }}</textarea>
+@if (error()) {
+  <span class="msg msg--error" role="alert">{{ error() }}</span>
+} @else if (hint()) {
+  <span class="msg">{{ hint() }}</span>
+}

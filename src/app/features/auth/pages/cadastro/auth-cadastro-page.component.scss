@@ -3,7 +3,7 @@
 // ── Wide card (step 2 — planos) ───────────────────────────────────────────────
 
 .auth-page__card--wide {
-  max-width: 34rem;
+  max-width: 38rem;
 }
 
 // ── Step indicator ────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@
   }
 }
 
-// ── Heading block (título + subtítulo juntos) ─────────────────────────────────
+// ── Heading block ─────────────────────────────────────────────────────────────
 
 .cad-heading {
   display: flex;
@@ -144,7 +144,7 @@
   &:hover { color: var(--color-text-secondary); }
 }
 
-// ── Input com erro ─────────────────────────────────────────────────────────────
+// ── Input com erro ────────────────────────────────────────────────────────────
 
 .auth-form__input--error {
   border-color: var(--color-danger) !important;
@@ -153,7 +153,7 @@
   }
 }
 
-// ── Erros inline por campo ─────────────────────────────────────────────────────
+// ── Erros inline por campo ────────────────────────────────────────────────────
 
 .auth-form__field-erro {
   margin: var(--space-1) 0 0;
@@ -169,7 +169,7 @@
   font-weight: 500;
 }
 
-// ── Erro box global (com ícone) ────────────────────────────────────────────────
+// ── Erro box global (com ícone) ───────────────────────────────────────────────
 
 .auth-form__erro-box {
   display: flex;
@@ -183,7 +183,7 @@
   border-radius: 0.5rem;
 }
 
-// ── Força da senha ─────────────────────────────────────────────────────────────
+// ── Força da senha ────────────────────────────────────────────────────────────
 
 .senha-forca {
   display: flex;
@@ -220,163 +220,246 @@
   }
 }
 
-// ── Ghost btn variant ─────────────────────────────────────────────────────────
-
-.auth-form__btn--ghost {
-  background: var(--color-surface-subtle);
-  color: var(--color-text-secondary);
-  border: 1.5px solid var(--color-border-subtle);
-  flex: 0 0 auto;
-  width: auto;
-  padding-inline: var(--space-4);
-
-  &:hover:not(:disabled) {
-    background: var(--color-neutral-100);
-  }
-}
-
-// ── Plans layout ──────────────────────────────────────────────────────────────
+// ── Step 2 — Lista de planos ──────────────────────────────────────────────────
 
 .cad-plans {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
-// ── Beta card ─────────────────────────────────────────────────────────────────
+// ── Radio button visual ───────────────────────────────────────────────────────
 
-.cad-plan-card {
-  --plan-color: var(--color-success);
+.cad-radio {
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-border-subtle);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 
+  &--on {
+    border-color: var(--color-auth-accent);
+    background: var(--color-auth-accent);
+    box-shadow: inset 0 0 0 3px var(--color-surface);
+  }
+}
+
+// ── Card trial (destaque, padrão selecionado) ─────────────────────────────────
+
+.cad-plan-trial {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-5);
-  background: color-mix(in srgb, var(--plan-color) 5%, white);
-  border: 2px solid var(--plan-color);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: color-mix(in srgb, var(--color-success) 6%, var(--color-surface-subtle));
+  border: 2px solid var(--color-success);
   border-radius: 1rem;
   text-align: left;
-  cursor: default;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--plan-color) 10%, transparent);
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 15%, transparent);
+  }
+
+  &--selected {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 20%, transparent);
+  }
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
 
   &__header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: var(--space-2);
   }
 
   &__badge {
     display: inline-flex;
     align-items: center;
     gap: 0.3em;
-    padding: 0.2rem 0.65rem;
+    padding: 0.18rem 0.6rem;
     font-size: var(--font-size-xs);
     font-weight: 700;
     border-radius: 2rem;
-    background: var(--plan-color);
-    color: var(--color-on-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  &__check {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 50%;
-    background: var(--plan-color);
-    color: var(--color-on-primary);
+    background: var(--color-success);
+    color: #fff;
   }
 
   &__nome {
     margin: 0;
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     font-weight: 700;
     color: var(--color-text-primary);
-  }
-
-  &__preco {
-    margin: 0;
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-2);
-  }
-
-  &__preco-valor {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--plan-color);
-    line-height: 1;
-  }
-
-  &__preco-per {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
   }
 
   &__desc {
     margin: 0;
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-  }
-}
-
-// ── Locked plans row ──────────────────────────────────────────────────────────
-
-.cad-plans-locked {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-
-  &__label {
-    margin: 0;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
     color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
   }
 
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  &__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
     gap: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  &__preco {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--color-success);
+    line-height: 1;
+    white-space: nowrap;
   }
 }
 
-.cad-plan-locked {
+// ── Divider "ou escolha um plano pago" ───────────────────────────────────────
+
+.cad-plans-divider {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3);
+  gap: var(--space-3);
+  margin-block: var(--space-1);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-border-subtle);
+  }
+
+  span {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+}
+
+// ── Cards de planos pagos (compacto, radio-style) ─────────────────────────────
+
+.cad-plan-paid {
+  width: 100%;
+  padding: var(--space-4);
   background: var(--color-surface-subtle);
   border: 1.5px solid var(--color-border-subtle);
-  border-radius: 0.625rem;
-  opacity: 0.55;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 
-  &__icon {
-    flex-shrink: 0;
-    color: var(--color-text-muted);
+  &:hover:not(.cad-plan-paid--selected) {
+    border-color: var(--color-auth-accent);
+    background: color-mix(in srgb, var(--color-auth-accent) 3%, var(--color-surface-subtle));
+  }
+
+  &--selected {
+    border: 2px solid var(--color-auth-accent);
+    background: color-mix(in srgb, var(--color-auth-accent) 5%, var(--color-surface-subtle));
+  }
+
+  &--destaque {
+    border-color: var(--color-auth-accent);
+  }
+
+  &--skeleton {
+    height: 4rem;
+    opacity: 0.4;
+    animation: pulse 1.4s ease-in-out infinite;
+    cursor: default;
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 0.2; }
+    }
+  }
+
+  &__destaque-label {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    color: var(--color-auth-accent);
+    margin-bottom: var(--space-1);
+    display: block;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
   }
 
   &__nome {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    color: var(--color-text-secondary);
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  &__bullets {
+    margin: 0.2rem 0 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__right {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+  }
+
+  &__preco {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+
+    span {
+      font-size: var(--font-size-xs);
+      font-weight: 400;
+      color: var(--color-text-muted);
+    }
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
   }
 }
 
-// ── Plan footer actions ───────────────────────────────────────────────────────
+// ── Botões de ação do step 2 ──────────────────────────────────────────────────
 
 .cad-plan-actions {
   display: flex;
   gap: var(--space-3);
 
-  .auth-form__btn:last-child {
+  app-button:last-child {
     flex: 1;
   }
 }

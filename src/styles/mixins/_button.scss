@@ -1,0 +1,105 @@
+// ─── Mixin compartilhado por todos os botões da aplicação ────────────────────
+//
+// Uso:
+//   @use '../../../styles/mixins/button' as btn;
+//
+//   .minha-classe { @include btn.base($size: 'sm', $primary-color: var(--color-primary)); }
+//
+// Parâmetros de @base:
+//   $size           'md' (padrão) | 'sm'  — controla padding, font-size e font-weight
+//   $primary-color  token de cor para a variante primary (default: --color-primary)
+//   $full-width     true | false (padrão false)  — width: 100%
+
+@mixin base(
+  $size:          'md',
+  $primary-color: var(--color-primary),
+  $full-width:    false,
+) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  font-family: inherit;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+
+  @if $full-width {
+    width: 100%;
+  }
+
+  // ── Tamanhos ──────────────────────────────────────────────────────────────
+  @if $size == 'sm' {
+    padding:        var(--space-1) var(--space-3);
+    font-size:      var(--font-size-xs);
+    font-weight:    500;
+    letter-spacing: 0.02em;
+    border-radius:  var(--radius-md);
+  } @else {
+    padding:        0.55rem 1.25rem;
+    font-size:      var(--font-size-sm);
+    font-weight:    500;
+    letter-spacing: 0.025em;
+    border-radius:  var(--radius-lg);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  // ── Variantes ─────────────────────────────────────────────────────────────
+  &--primary {
+    background: #{$primary-color};
+    color: var(--color-on-primary);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, #{$primary-color} 85%, black);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border-color: var(--color-border-strong);
+
+    &:hover:not(:disabled) {
+      background: var(--color-neutral-100);
+      color: var(--color-text-primary);
+    }
+  }
+
+  &--danger {
+    background: var(--color-danger);
+    color: var(--color-on-primary);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--color-danger) 85%, black);
+    }
+  }
+
+  &--danger-ghost {
+    background: transparent;
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+
+    &:hover:not(:disabled) {
+      background: var(--color-danger-muted);
+    }
+  }
+}
+
+// ── Spinner de loading (incluso opcionalmente) ────────────────────────────────
+@mixin spinner($size: 1rem, $border-width: 2px) {
+  display: inline-block;
+  width: #{$size};
+  height: #{$size};
+  border: #{$border-width} solid color-mix(in srgb, currentColor 35%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin { to { transform: rotate(360deg); } }

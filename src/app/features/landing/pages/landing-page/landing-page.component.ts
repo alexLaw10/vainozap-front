@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { CartIconComponent } from '../../../../shared/ui/cart-icon/cart-icon.component';
+import { CartIconComponent } from '@app/shared/ui';
 
 @Component({
   selector: 'app-landing-page',

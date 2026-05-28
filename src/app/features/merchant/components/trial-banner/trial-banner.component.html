@@ -1,0 +1,39 @@
+@if (visible()) {
+  <div
+    class="trial-banner"
+    [class.trial-banner--urgente]="urgente()"
+    [class.trial-banner--expirado]="expirado()"
+    role="alert"
+  >
+    <div class="trial-banner__inner container">
+
+      <span class="trial-banner__icon" aria-hidden="true">
+        @if (expirado()) { ⛔ }
+        @else if (urgente()) { ⚠️ }
+        @else { 🕐 }
+      </span>
+
+      <p class="trial-banner__msg">{{ mensagem() }}</p>
+
+      <div class="trial-banner__actions">
+        <button
+          class="trial-banner__cta"
+          type="button"
+          (click)="verPlanos()"
+        >
+          Escolher plano
+        </button>
+
+        @if (!expirado()) {
+          <button
+            class="trial-banner__dismiss"
+            type="button"
+            aria-label="Dispensar aviso"
+            (click)="dismiss()"
+          >✕</button>
+        }
+      </div>
+
+    </div>
+  </div>
+}

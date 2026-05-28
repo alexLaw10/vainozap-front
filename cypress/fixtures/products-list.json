@@ -1,0 +1,20 @@
+{
+  "content": [
+    {
+      "id": "p-stock-1",
+      "nome": "Produto estoque E2E",
+      "preco": 99.90,
+      "estoque": 5,
+      "ativo": true,
+      "categoriaId": null,
+      "descricao": null,
+      "imagens": [],
+      "variacoes": []
+    }
+  ],
+  "page": 0,
+  "size": 20,
+  "totalElements": 1,
+  "totalPages": 1,
+  "last": true
+}

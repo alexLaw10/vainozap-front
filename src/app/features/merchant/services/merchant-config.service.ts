@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import type { TenantApi } from '../../../shared/models/tenant-api.model';
+import type { TenantApi } from '../../../core/models/tenant-api.model';
 
 @Injectable()
 export class MerchantConfigService {
@@ -14,7 +14,7 @@ export class MerchantConfigService {
   }
 
   update(
-    settings: Omit<TenantApi, 'id' | 'planoTipo' | 'ativo' | 'trialEndsAt'>,
+    settings: Omit<TenantApi, 'id' | 'planoTipo' | 'assinaturaStatus' | 'ativo' | 'trialEndsAt'>,
     files?: { logo?: File; favicon?: File; banner?: File },
   ): Observable<TenantApi> {
     const fd = new FormData();

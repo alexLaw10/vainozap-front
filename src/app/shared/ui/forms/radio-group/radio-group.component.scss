@@ -1,0 +1,120 @@
+@use '../../../../../styles/mixins/ui-field' as f;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.group-label { @include f.label; }
+
+/* ── Native radio: acessível mas invisível ───────────────────────────────── */
+.native {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ══ Variante: cards (pills em grid) ════════════════════════════════════════ */
+
+.options--cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-2);
+}
+
+.options--cards .option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-2);
+  border: 2px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background 0.15s;
+
+  &.option--active {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 6%, white);
+  }
+
+  &:hover:not(.option--disabled) {
+    border-color: var(--color-border-strong);
+  }
+
+  &.option--active:hover {
+    border-color: var(--color-primary);
+  }
+
+  &.option--disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* Focus via :has() para cobrir navegação por teclado */
+  &:has(.native:focus-visible) {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* ══ Variante: list (lista vertical com dot) ════════════════════════════════ */
+
+.options--list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.options--list .option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+
+  &.option--disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+/* Dot (substitui o radio nativo visualmente) */
+.dot {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: var(--color-surface-base);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.native:checked + .dot {
+  border-color: var(--color-primary);
+  box-shadow:
+    inset 0 0 0 3px var(--color-surface-base),
+    inset 0 0 0 5px var(--color-primary);
+}
+
+.native:focus-visible + .dot {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

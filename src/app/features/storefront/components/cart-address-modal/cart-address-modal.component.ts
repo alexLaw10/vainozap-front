@@ -1,18 +1,29 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { UFS_BR, isUfBrasil } from '../../../../shared/constants/ufs-brasil';
-import type { StorefrontEnderecoEntrega } from '../../../../shared/models/storefront-entrega.model';
-import { IconComponent } from '../../../../shared/ui/icon/icon.component';
+import type { StorefrontEnderecoEntrega } from '../../models/storefront-entrega.model';
+import { IconComponent, SelectComponent } from '@app/shared/ui';
 import { formatCepMask as formatCepParaExibir, normalizeCepDigits } from '../../../../shared/utils/cep.util';
+
+interface ViaCepResponse {
+  erro?: boolean;
+  logradouro?: string;
+  bairro?: string;
+  localidade?: string;
+  uf?: string;
+}
 
 @Component({
   selector: 'app-cart-address-modal',
   standalone: true,
-  imports: [IconComponent],
+  imports: [IconComponent, SelectComponent],
   templateUrl: './cart-address-modal.component.html',
   styleUrl: './cart-address-modal.component.scss',
 })
 export class CartAddressModalComponent {
+  private readonly http = inject(HttpClient);
+
   open = input(false);
   corPrimaria = input.required<string>();
   initialAddress = input<StorefrontEnderecoEntrega | null>(null);
@@ -21,21 +32,24 @@ export class CartAddressModalComponent {
   back = output<void>();
 
   protected readonly enderecoSalvarErro = signal('');
-  protected readonly addrCepDigits = signal('');
-  protected readonly addrLogradouro = signal('');
-  protected readonly addrNumero = signal('');
-  protected readonly addrBairro = signal('');
-  protected readonly addrUf = signal('');
-  protected readonly addrCidade = signal('');
-  protected readonly addrComplemento = signal('');
+  protected readonly addrCepDigits    = signal('');
+  protected readonly addrLogradouro   = signal('');
+  protected readonly addrNumero       = signal('');
+  protected readonly addrBairro       = signal('');
+  protected readonly addrUf           = signal('');
+  protected readonly addrCidade       = signal('');
+  protected readonly addrComplemento  = signal('');
+  protected readonly cepLoading       = signal(false);
+  protected readonly cepErro          = signal('');
 
-  protected readonly ufsBr = [...UFS_BR];
+  protected readonly ufOptions    = UFS_BR.map(uf => ({ value: uf, label: uf }));
   protected readonly formatCepMask = formatCepParaExibir;
 
   constructor() {
     effect(() => {
       if (!this.open()) return;
       this.enderecoSalvarErro.set('');
+      this.cepErro.set('');
       const s = this.initialAddress();
       if (s) {
         this.addrCepDigits.set(s.cep);
@@ -68,7 +82,36 @@ export class CartAddressModalComponent {
   }
 
   protected onAddrCep(ev: Event): void {
-    this.addrCepDigits.set(normalizeCepDigits((ev.target as HTMLInputElement).value));
+    const digits = normalizeCepDigits((ev.target as HTMLInputElement).value);
+    this.addrCepDigits.set(digits);
+    this.cepErro.set('');
+
+    // Busca automática ao completar 8 dígitos
+    if (digits.length === 8) {
+      this.buscarCep(digits);
+    }
+  }
+
+  private buscarCep(cep: string): void {
+    this.cepLoading.set(true);
+    this.http.get<ViaCepResponse>(`https://viacep.com.br/ws/${cep}/json/`).subscribe({
+      next: (res) => {
+        this.cepLoading.set(false);
+        if (res.erro) {
+          this.cepErro.set('CEP não encontrado.');
+          return;
+        }
+        // Preenche os campos automaticamente, sem sobrescrever o que o usuário já digitou
+        if (res.logradouro) this.addrLogradouro.set(res.logradouro);
+        if (res.bairro)     this.addrBairro.set(res.bairro);
+        if (res.localidade) this.addrCidade.set(res.localidade);
+        if (res.uf)         this.addrUf.set(res.uf);
+      },
+      error: () => {
+        this.cepLoading.set(false);
+        // Falha silenciosa — o cliente preenche manualmente
+      },
+    });
   }
 
   protected onAddrLogradouro(ev: Event): void {
@@ -83,8 +126,8 @@ export class CartAddressModalComponent {
     this.addrBairro.set((ev.target as HTMLInputElement).value.slice(0, 30));
   }
 
-  protected onAddrUf(ev: Event): void {
-    this.addrUf.set((ev.target as HTMLSelectElement).value.slice(0, 2).toUpperCase());
+  protected onAddrUf(val: string): void {
+    this.addrUf.set(val.slice(0, 2).toUpperCase());
   }
 
   protected onAddrCidade(ev: Event): void {
@@ -97,12 +140,12 @@ export class CartAddressModalComponent {
 
   private montarEnderecoDoDraft(): StorefrontEnderecoEntrega {
     return {
-      cep: this.addrCepDigits(),
-      logradouro: this.addrLogradouro().trim(),
-      numero: this.addrNumero().trim(),
-      bairro: this.addrBairro().trim(),
-      uf: this.addrUf().trim().toUpperCase(),
-      cidade: this.addrCidade().trim(),
+      cep:         this.addrCepDigits(),
+      logradouro:  this.addrLogradouro().trim(),
+      numero:      this.addrNumero().trim(),
+      bairro:      this.addrBairro().trim(),
+      uf:          this.addrUf().trim().toUpperCase(),
+      cidade:      this.addrCidade().trim(),
       complemento: this.addrComplemento().trim(),
     };
   }

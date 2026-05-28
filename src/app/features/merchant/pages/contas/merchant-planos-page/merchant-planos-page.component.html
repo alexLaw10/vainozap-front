@@ -1,0 +1,114 @@
+<main class="mplanos">
+
+  <header class="mplanos__header">
+    <h1 class="mplanos__title">Planos e preços</h1>
+    <p class="mplanos__subtitle">
+      @if (billingEnabled) {
+        Escolha o plano ideal para o seu negócio. Cancele quando quiser.
+      } @else {
+        Planos pagos temporariamente bloqueados. Sua conta permanece em trial.
+      }
+    </p>
+
+  </header>
+
+  @if (erro()) {
+    <p class="mplanos__erro">{{ erro() }}</p>
+  }
+
+  <!-- Skeletons -->
+  @if (loading()) {
+    <div class="mplanos__grid">
+      @for (_ of [1,2,3]; track $index) {
+        <div class="mplanos__card mplanos__card--skeleton">
+          <ui-skeleton height="320px" />
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Cards de plano -->
+  @if (!loading() && planos().length) {
+    <div class="mplanos__grid">
+      @for (p of planos(); track p.tipo) {
+        <div
+          class="mplanos__card"
+          [class.mplanos__card--destaque]="p.destaque"
+          [class.mplanos__card--atual]="isAtual(p.tipo)"
+        >
+
+          @if (p.destaque) {
+            <div class="mplanos__badge-popular">⭐ Mais popular</div>
+          }
+
+          @if (isAtual(p.tipo)) {
+            <div class="mplanos__badge-atual">Seu plano atual</div>
+          }
+
+          <h2 class="mplanos__card-nome">{{ p.nome }}</h2>
+          <p class="mplanos__card-desc">{{ p.descricao }}</p>
+
+          <div class="mplanos__preco">
+            <span class="mplanos__preco-valor">
+              {{ preco(p) | currency:'BRL':'symbol':'1.2-2' }}
+            </span>
+            <span class="mplanos__preco-periodo">/mês</span>
+          </div>
+
+          <!-- CTA -->
+          <button
+            class="mplanos__cta"
+            [class.mplanos__cta--atual]="isAtual(p.tipo)"
+            [class.mplanos__cta--upgrade]="isUpgrade(p.tipo)"
+            [class.mplanos__cta--downgrade]="isDowngrade(p.tipo)"
+            [disabled]="!billingEnabled || isAtual(p.tipo)"
+            type="button"
+            (click)="onCta(p)"
+          >
+            {{ billingEnabled ? ctaLabel(p.tipo) : 'Bloqueado no trial' }}
+          </button>
+
+          <!-- Bullets de destaque -->
+          <ul class="mplanos__bullets">
+            @for (bullet of p.destaquesBullets; track $index) {
+              <li class="mplanos__bullet">
+                <span class="mplanos__bullet-icon">✓</span>
+                {{ bullet }}
+              </li>
+            }
+          </ul>
+
+          <!-- Limites -->
+          <div class="mplanos__limites">
+            <div class="mplanos__limite-item">
+              <span class="mplanos__limite-label">Fotos por produto</span>
+              <span class="mplanos__limite-valor">{{ limiteLabel(p.limites.maxFotos) }}</span>
+            </div>
+            <div class="mplanos__limite-item">
+              <span class="mplanos__limite-label">Lojas</span>
+              <span class="mplanos__limite-valor">{{ limiteLabel(p.limites.maxLojas) }}</span>
+            </div>
+            <div class="mplanos__limite-item">
+              <span class="mplanos__limite-label">Operadores</span>
+              <span class="mplanos__limite-valor">{{ limiteLabel(p.limites.maxOperadores) }}</span>
+            </div>
+            <div class="mplanos__limite-item">
+              <span class="mplanos__limite-label">Relatórios</span>
+              <span class="mplanos__limite-valor">
+                {{ p.limites.janelaRelatoriosDias === -1 ? 'Histórico completo' : p.limites.janelaRelatoriosDias + ' dias' }}
+              </span>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+  <p class="mplanos__rodape">
+    Todos os planos incluem pedidos ilimitados via WhatsApp, sem taxas por transação.
+    <br>
+    Dúvidas? Fale com nosso suporte.
+  </p>
+
+</main>

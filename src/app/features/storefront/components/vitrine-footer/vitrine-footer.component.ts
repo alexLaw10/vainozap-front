@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 
-import type { TenantRodape } from '../../../../shared/models/tenant.model';
-import { IconComponent } from '../../../../shared/ui/icon/icon.component';
+import type { TenantRodape } from '../../../../core/models/tenant.model';
+import { IconComponent } from '@app/shared/ui';
 import { StorefrontContextService } from '../../services/storefront-context.service';
 import { StorefrontFiltersService } from '../../services/storefront-filters.service';
 

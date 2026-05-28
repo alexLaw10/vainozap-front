@@ -25,133 +25,79 @@
         <p class="auth-page__sub">Preencha as informações abaixo para começar</p>
       </div>
 
-      <form class="auth-form" (ngSubmit)="avancar()" novalidate>
+      <form class="auth-form" (submit)="$event.preventDefault()" novalidate>
 
         <!-- Nome + WhatsApp -->
         <div class="auth-form__row">
-          <div class="auth-form__field">
-            <label class="auth-form__label" for="cad-nome">Nome completo</label>
-            <input
-              id="cad-nome"
-              type="text"
-              class="auth-form__input"
-              [(ngModel)]="form.nomeProprietario"
-              name="nomeProprietario"
-              autocomplete="name"
-              placeholder="Seu nome"
-              required
-            />
-          </div>
-          <div class="auth-form__field">
-            <label class="auth-form__label" for="cad-whatsapp">WhatsApp</label>
-            <input
-              id="cad-whatsapp"
-              type="tel"
-              class="auth-form__input"
-              [(ngModel)]="form.whatsapp"
-              name="whatsapp"
-              autocomplete="tel"
-              placeholder="(11) 99999-9999"
-              required
-            />
-          </div>
+          <app-input
+            label="Nome completo"
+            placeholder="Seu nome"
+            autocomplete="name"
+            inputId="cad-nome"
+            [required]="true"
+            [(value)]="nomeProprietario"
+          />
+          <app-input-phone
+            label="WhatsApp"
+            inputId="cad-whatsapp"
+            [(value)]="whatsapp"
+          />
         </div>
 
         <!-- E-mail -->
-        <div class="auth-form__field">
-          <label class="auth-form__label" for="cad-email">E-mail</label>
-          <input
-            id="cad-email"
-            type="email"
-            class="auth-form__input"
-            [class.auth-form__input--error]="erroEmail()"
-            [(ngModel)]="form.email"
-            name="email"
-            autocomplete="email"
-            placeholder="seu@email.com"
-            (ngModelChange)="erroEmail.set(null)"
-            required
-          />
-          @if (erroEmail()) {
-            <p class="auth-form__field-erro" role="alert">⚠ {{ erroEmail() }}</p>
-          }
-        </div>
+        <app-input
+          label="E-mail"
+          type="email"
+          placeholder="seu@email.com"
+          autocomplete="email"
+          inputId="cad-email"
+          [required]="true"
+          [(value)]="email"
+          [error]="erroEmail() ?? ''"
+        />
 
         <!-- Senha + Confirmar senha -->
         <div class="auth-form__row">
-          <!-- Senha -->
-          <div class="auth-form__field">
-            <label class="auth-form__label" for="cad-senha">Senha</label>
-            <div class="auth-form__input-wrap">
-              <input
-                id="cad-senha"
-                [type]="mostrarSenha ? 'text' : 'password'"
-                class="auth-form__input auth-form__input--with-action"
-                [(ngModel)]="form.senha"
-                name="senha"
-                autocomplete="new-password"
-                placeholder="Mínimo 6 caracteres"
-                required
-              />
-              <button
-                type="button"
-                class="auth-form__input-action"
-                (click)="mostrarSenha = !mostrarSenha"
-                [attr.aria-label]="mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'"
-              >
-                <app-icon [name]="mostrarSenha ? 'eye-off' : 'eye'" [size]="16"></app-icon>
-              </button>
-            </div>
-            <!-- Barra de força da senha -->
-            @if (form.senha.length > 0) {
+          <!-- Senha com barra de força -->
+          <div class="auth-form__field-group">
+            <app-input-password
+              label="Senha"
+              placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password"
+              inputId="cad-senha"
+              [(value)]="senha"
+            />
+            @if (senha().length > 0) {
               <div class="senha-forca">
                 <div class="senha-forca__barra">
                   <div
                     class="senha-forca__preenchimento"
-                    [class.senha-forca__preenchimento--fraca]="senhaForca === 'fraca'"
-                    [class.senha-forca__preenchimento--media]="senhaForca === 'media'"
-                    [class.senha-forca__preenchimento--forte]="senhaForca === 'forte'"
+                    [class.senha-forca__preenchimento--fraca]="senhaForca() === 'fraca'"
+                    [class.senha-forca__preenchimento--media]="senhaForca() === 'media'"
+                    [class.senha-forca__preenchimento--forte]="senhaForca() === 'forte'"
                   ></div>
                 </div>
                 <span
                   class="senha-forca__label"
-                  [class.senha-forca__label--fraca]="senhaForca === 'fraca'"
-                  [class.senha-forca__label--media]="senhaForca === 'media'"
-                  [class.senha-forca__label--forte]="senhaForca === 'forte'"
-                >{{ senhaForcaLabel }}</span>
+                  [class.senha-forca__label--fraca]="senhaForca() === 'fraca'"
+                  [class.senha-forca__label--media]="senhaForca() === 'media'"
+                  [class.senha-forca__label--forte]="senhaForca() === 'forte'"
+                >{{ senhaForcaLabel() }}</span>
               </div>
             }
           </div>
 
           <!-- Confirmar senha -->
-          <div class="auth-form__field">
-            <label class="auth-form__label" for="cad-confirmar">Confirmar senha</label>
-            <div class="auth-form__input-wrap">
-              <input
-                id="cad-confirmar"
-                [type]="mostrarConfirmarSenha ? 'text' : 'password'"
-                class="auth-form__input auth-form__input--with-action"
-                [class.auth-form__input--error]="mostrarErrMismatch"
-                [(ngModel)]="form.confirmarSenha"
-                name="confirmarSenha"
-                autocomplete="new-password"
-                placeholder="Repita a senha"
-                (blur)="confirmarTocado = true"
-                required
-              />
-              <button
-                type="button"
-                class="auth-form__input-action"
-                (click)="mostrarConfirmarSenha = !mostrarConfirmarSenha"
-                [attr.aria-label]="mostrarConfirmarSenha ? 'Ocultar senha' : 'Mostrar senha'"
-              >
-                <app-icon [name]="mostrarConfirmarSenha ? 'eye-off' : 'eye'" [size]="16"></app-icon>
-              </button>
-            </div>
-            @if (mostrarErrMismatch) {
-              <p class="auth-form__field-erro" role="alert">⚠ As senhas não coincidem</p>
-            }
-            @if (confirmarTocado && senhasIguais && form.confirmarSenha.length > 0) {
+          <div class="auth-form__field-group">
+            <app-input-password
+              label="Confirmar senha"
+              placeholder="Repita a senha"
+              autocomplete="new-password"
+              inputId="cad-confirmar"
+              [(value)]="confirmarSenha"
+              [error]="mostrarErrMismatch() ? 'As senhas não coincidem' : ''"
+            />
+            @if (!mostrarErrMismatch() && confirmarSenha().length > 0 && senhasIguais()) {
               <p class="auth-form__field-ok">✓ Senhas coincidem</p>
             }
           </div>
@@ -160,19 +106,14 @@
         <div class="auth-form__separator"></div>
 
         <!-- Nome da loja -->
-        <div class="auth-form__field">
-          <label class="auth-form__label" for="cad-loja">Nome da loja</label>
-          <input
-            id="cad-loja"
-            type="text"
-            class="auth-form__input"
-            [(ngModel)]="form.nomeLoja"
-            name="nomeLoja"
-            placeholder="Ex.: Minha Loja"
-            (ngModelChange)="onNomeLojaChange()"
-            required
-          />
-        </div>
+        <app-input
+          label="Nome da loja"
+          placeholder="Ex.: Minha Loja"
+          inputId="cad-loja"
+          [required]="true"
+          [value]="nomeLoja()"
+          (valueChange)="onNomeLojaChange($event)"
+        />
 
         <!-- Slug / endereço -->
         <div class="auth-form__field">
@@ -182,11 +123,10 @@
               id="cad-slug"
               type="text"
               class="auth-form__input auth-form__input--slug"
-              [(ngModel)]="form.slug"
-              name="slug"
+              [value]="slug()"
+              (input)="slug.set($any($event.target).value); erroSlug.set(null)"
               placeholder="minha-loja"
               pattern="^[a-z0-9\-]+$"
-              (ngModelChange)="erroSlug.set(null)"
               required
             />
             <span class="auth-form__slug-suffix" aria-hidden="true">.vainozap.com.br</span>
@@ -206,7 +146,7 @@
           </div>
         }
 
-        <app-button type="submit" [disabled]="!step1Valido">
+        <app-button type="button" [disabled]="!step1Valido()" (click)="avancar()">
           Continuar
           <app-icon name="arrow-right" [size]="16" [strokeWidth]="2.5"></app-icon>
         </app-button>
@@ -222,41 +162,84 @@
     @if (step() === 2) {
       <div class="cad-heading">
         <h1 class="auth-page__title">Escolha seu plano</h1>
-        <p class="auth-page__sub">Estamos em beta — acesso gratuito e completo por tempo limitado</p>
+        <p class="auth-page__sub">Comece grátis no trial. Os planos pagos estão temporariamente bloqueados.</p>
       </div>
 
       <div class="cad-plans">
+
+        <!-- ── Card trial ──────────────────────────────────────────────── -->
         <button
           type="button"
-          class="cad-plan-card cad-plan-card--beta cad-plan-card--selected"
+          class="cad-plan-trial"
+          [class.cad-plan-trial--selected]="planoSelecionado() === 'trial'"
+          (click)="planoSelecionado.set('trial')"
         >
-          <div class="cad-plan-card__header">
-            <span class="cad-plan-card__badge">● Acesso beta</span>
-            <span class="cad-plan-card__check" aria-hidden="true">
-              <app-icon name="check" [size]="16" [strokeWidth]="2.5"></app-icon>
-            </span>
+          <div class="cad-plan-trial__left">
+            <div class="cad-plan-trial__header">
+              <span class="cad-plan-trial__badge">🎁 7 dias grátis</span>
+            </div>
+            <p class="cad-plan-trial__nome">Experimentar grátis</p>
+            <p class="cad-plan-trial__desc">
+              Acesso completo ao plano Básico. Nenhum cartão necessário.
+            </p>
           </div>
-          <p class="cad-plan-card__nome">Acesso Beta</p>
-          <p class="cad-plan-card__preco">
-            <span class="cad-plan-card__preco-valor">Grátis</span>
-            <span class="cad-plan-card__preco-per">durante o período beta</span>
-          </p>
-          <p class="cad-plan-card__desc">
-            Acesso antecipado exclusivo com todos os recursos disponíveis sem custo durante o período de testes.
-          </p>
+          <div class="cad-plan-trial__right">
+            <span class="cad-plan-trial__preco">R$&nbsp;0</span>
+            <div
+              class="cad-radio"
+              [class.cad-radio--on]="planoSelecionado() === 'trial'"
+              aria-hidden="true"
+            ></div>
+          </div>
         </button>
 
-        <div class="cad-plans-locked">
-          <p class="cad-plans-locked__label">Em breve</p>
-          <div class="cad-plans-locked__grid">
-            @for (plano of planosLocked; track plano.tipo) {
-              <div class="cad-plan-locked">
-                <app-icon class="cad-plan-locked__icon" name="lock" [size]="14"></app-icon>
-                <span class="cad-plan-locked__nome">{{ plano.labelCurto }}</span>
-              </div>
-            }
-          </div>
+        <!-- ── Divider ─────────────────────────────────────────────────── -->
+        <div class="cad-plans-divider">
+          <span>planos pagos temporariamente indisponíveis</span>
         </div>
+
+        <!-- ── Skeleton enquanto carrega ──────────────────────────────── -->
+        @if (planosLoading()) {
+          @for (_ of [1,2,3]; track $index) {
+            <div class="cad-plan-paid cad-plan-paid--skeleton"></div>
+          }
+        }
+
+        <!-- ── Cards de planos pagos ───────────────────────────────────── -->
+        @for (p of planos(); track p.tipo) {
+          <button
+            type="button"
+            class="cad-plan-paid"
+            [class.cad-plan-paid--selected]="planoSelecionado() === p.tipo"
+            [class.cad-plan-paid--destaque]="p.destaque"
+            [disabled]="!billingEnabled"
+            (click)="billingEnabled && planoSelecionado.set(p.tipo)"
+          >
+            @if (p.destaque) {
+              <span class="cad-plan-paid__destaque-label">⭐ Mais escolhido</span>
+            }
+            <div class="cad-plan-paid__row">
+              <div class="cad-plan-paid__info">
+                <p class="cad-plan-paid__nome">{{ p.nome }}</p>
+                <p class="cad-plan-paid__bullets">
+                  @for (b of p.destaquesBullets.slice(0, 3); track b; let last = $last) {
+                    {{ b }}@if (!last) { &nbsp;·&nbsp; }
+                  }
+                </p>
+              </div>
+              <div class="cad-plan-paid__right">
+                <p class="cad-plan-paid__preco">
+                  {{ preco(p) | currency:'BRL':'symbol':'1.2-2' }}<span>/mês</span>
+                </p>
+                <div
+                  class="cad-radio"
+                  [class.cad-radio--on]="planoSelecionado() === p.tipo"
+                  aria-hidden="true"
+                ></div>
+              </div>
+            </div>
+          </button>
+        }
       </div>
 
       <!-- Erro no step 2 -->
@@ -278,7 +261,12 @@
           [loading]="loading()"
           (click)="finalizar()"
         >
-          Criar conta grátis
+          @if (billingEnabled && planoPago()) {
+            Continuar para pagamento
+            <app-icon name="arrow-right" [size]="16" [strokeWidth]="2.5"></app-icon>
+          } @else {
+            Criar conta grátis
+          }
         </app-button>
       </div>
     }
