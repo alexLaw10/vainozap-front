@@ -1,31 +1,49 @@
 <a href="#storefront-main" class="storefront-shell__skip-link">Pular para o conteúdo principal</a>
 
-@if (tenant().mensagemTopo && !barDismissed()) {
-  <div
-    class="announcement-bar"
-    role="banner"
-    [style.background]="tenant().corFundoTopo || tenant().corPrimaria"
-  >
-    <p class="announcement-bar__text">{{ tenant().mensagemTopo }}</p>
-    <button
-      type="button"
-      class="announcement-bar__close"
-      aria-label="Fechar aviso"
-      (click)="dismissBar()"
+@if (notFound()) {
+  <main class="store-not-found" id="storefront-main">
+    <div class="store-not-found__inner">
+      <p class="store-not-found__emoji" aria-hidden="true">🔍</p>
+      <h1 class="store-not-found__title">Loja não encontrada</h1>
+      <p class="store-not-found__sub">
+        O endereço que você acessou não corresponde a nenhuma loja cadastrada.
+        Verifique o link e tente novamente.
+      </p>
+      <a href="https://vainozap.com.br" class="store-not-found__cta">
+        Conhecer o VainoZap
+      </a>
+    </div>
+  </main>
+} @else {
+  @if (tenant().mensagemTopo && !barDismissed()) {
+    <div
+      class="announcement-bar"
+      role="banner"
+      [style.background]="tenant().corFundoTopo || tenant().corPrimaria"
     >
-      <span aria-hidden="true">×</span>
-    </button>
-  </div>
+      <p class="announcement-bar__text">{{ tenant().mensagemTopo }}</p>
+      <button
+        type="button"
+        class="announcement-bar__close"
+        aria-label="Fechar aviso"
+        (click)="dismissBar()"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+  }
+
+  <app-vitrine-header />
+
+  <router-outlet />
+
+  <app-vitrine-footer />
+
+  <app-floating-store-actions />
+
+  <app-storefront-filters-modal />
+
+  <app-cookie-consent-banner />
 }
-
-<app-vitrine-header />
-
-<router-outlet />
-
-<app-vitrine-footer />
-
-<app-floating-store-actions />
-
-<app-storefront-filters-modal />
 
 <ui-toast />

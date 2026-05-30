@@ -10,7 +10,6 @@ import { MerchantDashboardService } from '../../services/merchant-dashboard.serv
 import { PanelThemeService } from '../../services/panel-theme.service';
 import { TrialBannerComponent } from '../trial-banner/trial-banner.component';
 import { UpgradeModalComponent } from '../upgrade-modal/upgrade-modal.component';
-import { AuthService } from '../../../auth/services/auth.service';
 import { IconComponent, ToastComponent } from '@app/shared/ui';
 import { MerchantNotificationBellComponent } from '../notification-bell/notification-bell.component';
 import { environment } from '../../../../../environments/environment';
@@ -27,16 +26,16 @@ import type { MerchantSubNavItem } from '../../models/nav.model';
 export class MerchantShellComponent implements OnInit {
   protected readonly ctx = inject(MerchantContextService);
   protected readonly panelTheme = inject(PanelThemeService);
-  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly dashService = inject(MerchantDashboardService);
 
   /** Pedidos pendentes para o badge da sidebar. */
   protected readonly pedidosPendentes = signal(0);
 
-  /** URL da vitrine pública do lojista — abre em nova aba. */
+  /** URL da vitrine pública do lojista — abre em nova aba.
+   *  Lê do tenant (atualizado após salvar slug), não do JWT. */
   protected readonly vitrineUrl = computed(() => {
-    const slug = this.auth.slug();
+    const slug = this.ctx.slug();
     if (!slug) return null;
     return `${window.location.protocol}//${slug}${environment.domainSuffix}`;
   });

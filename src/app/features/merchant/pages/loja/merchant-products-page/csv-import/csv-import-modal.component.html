@@ -1,0 +1,280 @@
+@if (open()) {
+  <div class="csv-backdrop" (click)="fechar()"></div>
+
+  <div class="csv-modal" role="dialog" aria-modal="true" aria-labelledby="csv-modal-title">
+
+    <!-- ── Header ──────────────────────────────────────────────────────────── -->
+    <div class="csv-modal__header">
+      <div class="csv-modal__header-icon" aria-hidden="true">
+        <app-icon name="upload" [size]="20"></app-icon>
+      </div>
+      <div class="csv-modal__header-text">
+        <h2 id="csv-modal-title" class="csv-modal__title">Importar produtos via CSV</h2>
+        <p class="csv-modal__subtitle">Adicione múltiplos produtos de uma vez a partir de uma planilha</p>
+      </div>
+      <button type="button" class="csv-modal__close" aria-label="Fechar" (click)="fechar()">
+        <app-icon name="close" [size]="16"></app-icon>
+      </button>
+    </div>
+
+    <!-- ── Body ────────────────────────────────────────────────────────────── -->
+    <div class="csv-modal__body">
+
+      <!-- ══ IDLE: Upload ════════════════════════════════════════════════════ -->
+      @if (state() === 'idle') {
+
+        <!-- Colunas + download -->
+        <div class="csv-columns-card">
+          <div class="csv-columns-card__top">
+            <p class="csv-columns-card__heading">Colunas da planilha</p>
+            <button type="button" class="csv-download-btn" (click)="downloadTemplate()">
+              <app-icon name="download" [size]="14"></app-icon>
+              Baixar modelo .csv
+            </button>
+          </div>
+
+          <div class="csv-columns-grid">
+            <div class="csv-col-chip csv-col-chip--required">
+              <span class="csv-col-chip__name">nome</span>
+              <span class="csv-col-chip__badge">obrigatório</span>
+            </div>
+            <div class="csv-col-chip csv-col-chip--required">
+              <span class="csv-col-chip__name">preco</span>
+              <span class="csv-col-chip__badge">obrigatório</span>
+            </div>
+            <div class="csv-col-chip">
+              <span class="csv-col-chip__name">descricao</span>
+            </div>
+            <div class="csv-col-chip">
+              <span class="csv-col-chip__name">categoria</span>
+            </div>
+            <div class="csv-col-chip">
+              <span class="csv-col-chip__name">estoque</span>
+            </div>
+            <div class="csv-col-chip">
+              <span class="csv-col-chip__name">ativo</span>
+              <span class="csv-col-chip__hint">true/false</span>
+            </div>
+            <div class="csv-col-chip">
+              <span class="csv-col-chip__name">destaque</span>
+              <span class="csv-col-chip__hint">true/false</span>
+            </div>
+            <div class="csv-col-chip">
+              <span class="csv-col-chip__name">novo</span>
+              <span class="csv-col-chip__hint">true/false</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drop zone -->
+        <label
+          class="csv-dropzone"
+          [class.csv-dropzone--over]="dragOver()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event)"
+        >
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            class="csv-dropzone__input"
+            (change)="onFileInput($event)"
+          />
+          <div class="csv-dropzone__icon-wrap" aria-hidden="true">
+            <app-icon name="upload" [size]="28" [strokeWidth]="1.5"></app-icon>
+          </div>
+          <p class="csv-dropzone__primary">Arraste o arquivo CSV aqui</p>
+          <p class="csv-dropzone__secondary">
+            ou <span class="csv-dropzone__cta">clique para selecionar</span>
+          </p>
+          <p class="csv-dropzone__hint">Apenas arquivos .csv</p>
+        </label>
+
+      }
+
+      <!-- ══ PREVIEW ══════════════════════════════════════════════════════════ -->
+      @if (state() === 'preview') {
+
+        <!-- Barra de resumo -->
+        <div class="csv-summary-bar">
+          <div class="csv-summary-bar__file">
+            <app-icon name="file-text" [size]="15"></app-icon>
+            <span>{{ fileName() }}</span>
+          </div>
+          <div class="csv-summary-bar__counts">
+            <span class="csv-badge csv-badge--ok">✓ {{ validRows().length }} válido{{ validRows().length !== 1 ? 's' : '' }}</span>
+            @if (warnRows().length > 0) {
+              <span class="csv-badge csv-badge--warn">⚠ {{ warnRows().length }} aviso{{ warnRows().length !== 1 ? 's' : '' }}</span>
+            }
+            @if (invalidRows().length > 0) {
+              <span class="csv-badge csv-badge--err">✗ {{ invalidRows().length }} com erro</span>
+            }
+          </div>
+          <button type="button" class="csv-summary-bar__change" (click)="reset()">
+            Trocar arquivo
+          </button>
+        </div>
+
+        <!-- Erros colapsáveis -->
+        @if (invalidRows().length > 0) {
+          <details class="csv-errors">
+            <summary class="csv-errors__summary">
+              <app-icon name="alert" [size]="14"></app-icon>
+              {{ invalidRows().length }} linha{{ invalidRows().length !== 1 ? 's' : '' }} com erro — serão ignoradas na importação
+              <app-icon name="chevron-down" [size]="14" class="csv-errors__chevron"></app-icon>
+            </summary>
+            <ul class="csv-errors__list">
+              @for (row of invalidRows(); track row.line) {
+                <li class="csv-errors__item">
+                  <span class="csv-errors__line">#{{ row.line }}</span>
+                  <div>
+                    <p class="csv-errors__name">{{ row.raw['nome'] || '—' }}</p>
+                    <ul class="csv-errors__msgs">
+                      @for (e of row.errors; track $index) {
+                        <li>{{ e }}</li>
+                      }
+                    </ul>
+                  </div>
+                </li>
+              }
+            </ul>
+          </details>
+        }
+
+        <!-- Avisos (categorias ignoradas) -->
+        @if (warnRows().length > 0) {
+          <details class="csv-warnings">
+            <summary class="csv-warnings__summary">
+              <app-icon name="info" [size]="14"></app-icon>
+              {{ warnRows().length }} produto{{ warnRows().length !== 1 ? 's' : '' }} com aviso — ser{{ warnRows().length !== 1 ? 'ão' : 'á' }} importado{{ warnRows().length !== 1 ? 's' : '' }} sem categoria
+              <app-icon name="chevron-down" [size]="14" class="csv-warnings__chevron"></app-icon>
+            </summary>
+            <ul class="csv-warnings__list">
+              @for (row of warnRows(); track row.line) {
+                <li class="csv-warnings__item">
+                  <span class="csv-warnings__line">#{{ row.line }}</span>
+                  <div>
+                    <p class="csv-warnings__name">{{ row.raw['nome'] || '—' }}</p>
+                    <ul class="csv-warnings__msgs">
+                      @for (w of row.warnings; track $index) {
+                        <li>{{ w }}</li>
+                      }
+                    </ul>
+                  </div>
+                </li>
+              }
+            </ul>
+          </details>
+        }
+
+        <!-- Tabela de preview -->
+        @if (validRows().length > 0) {
+          <div class="csv-table-wrap">
+            <table class="csv-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nome</th>
+                  <th>Preço</th>
+                  <th>Categoria</th>
+                  <th>Estoque</th>
+                  <th>Ativo</th>
+                  <th>Destaque</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of validRows(); track row.line) {
+                  <tr>
+                    <td class="csv-table__line">{{ row.line }}</td>
+                    <td class="csv-table__nome">{{ row.raw['nome'] }}</td>
+                    <td class="csv-table__preco">R$ {{ row.raw['preco'] }}</td>
+                    <td>
+                      @if (row.raw['categoria']) {
+                        {{ row.raw['categoria'] }}
+                      } @else {
+                        <span class="csv-table__empty">—</span>
+                      }
+                    </td>
+                    <td>{{ row.raw['estoque'] || '0' }}</td>
+                    <td>
+                      <span class="csv-bool" [class.csv-bool--yes]="row.raw['ativo'] !== 'false'">
+                        {{ row.raw['ativo'] === 'false' ? 'Não' : 'Sim' }}
+                      </span>
+                    </td>
+                    <td>{{ row.raw['destaque'] === 'true' ? '⭐' : '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="csv-empty-valid">
+            <app-icon name="alert" [size]="24" [strokeWidth]="1.5"></app-icon>
+            <p>Nenhum produto válido para importar.</p>
+            <p>Corrija os erros acima e tente novamente.</p>
+          </div>
+        }
+
+      }
+
+      <!-- ══ IMPORTING ════════════════════════════════════════════════════════ -->
+      @if (state() === 'importing') {
+        <div class="csv-progress">
+          <div class="csv-progress__icon" aria-hidden="true">
+            <app-icon name="upload" [size]="32" [strokeWidth]="1.5"></app-icon>
+          </div>
+          <p class="csv-progress__label">Importando produtos…</p>
+          <p class="csv-progress__sub">{{ importDone() }} de {{ importTotal() }}</p>
+          <div class="csv-progress__track">
+            <div class="csv-progress__fill" [style.width.%]="progressPercent"></div>
+          </div>
+          <p class="csv-progress__pct">{{ progressPercent }}%</p>
+        </div>
+      }
+
+      <!-- ══ DONE ══════════════════════════════════════════════════════════════ -->
+      @if (state() === 'done') {
+        <div class="csv-done">
+          <div class="csv-done__icon-wrap" aria-hidden="true">🎉</div>
+          <p class="csv-done__title">Importação concluída!</p>
+          <p class="csv-done__msg">
+            <strong>{{ importDone() - importErrors() }}</strong>
+            produto{{ (importDone() - importErrors()) !== 1 ? 's' : '' }} importado{{ (importDone() - importErrors()) !== 1 ? 's' : '' }} com sucesso.
+            @if (importErrors() > 0) {
+              <span class="csv-done__err">&nbsp;{{ importErrors() }} falha{{ importErrors() !== 1 ? 's' : '' }}.</span>
+            }
+          </p>
+          @if (importMessages().length > 0) {
+            <ul class="csv-done__errs">
+              @for (m of importMessages(); track $index) { <li>{{ m }}</li> }
+            </ul>
+          }
+        </div>
+      }
+
+    </div>
+
+    <!-- ── Footer ──────────────────────────────────────────────────────────── -->
+    <div class="csv-modal__footer">
+      @if (state() === 'idle' || state() === 'done') {
+        <app-button variant="ghost" size="sm" (click)="fechar()">Fechar</app-button>
+      }
+      @if (state() === 'preview') {
+        <app-button variant="ghost" size="sm" (click)="fechar()">Cancelar</app-button>
+        <app-button
+          variant="primary"
+          size="sm"
+          [disabled]="validRows().length === 0"
+          (click)="startImport()"
+        >
+          <app-icon name="upload" [size]="14" />
+          Importar {{ validRows().length }} produto{{ validRows().length !== 1 ? 's' : '' }}
+        </app-button>
+      }
+      @if (state() === 'importing') {
+        <app-button variant="ghost" size="sm" [loading]="true">Aguarde…</app-button>
+      }
+    </div>
+
+  </div>
+}

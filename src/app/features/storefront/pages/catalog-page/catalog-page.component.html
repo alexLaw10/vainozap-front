@@ -3,6 +3,22 @@
 
   <app-vitrine-banner />
 
+  @if (destaqueProducts().length > 0) {
+    <section class="vitrine-section vitrine-section--destaques" aria-labelledby="destaques-heading">
+      <h2 id="destaques-heading" class="vitrine-section__title vitrine-section__title--destaques">
+        <span class="vitrine-section__title-icon" aria-hidden="true">⭐</span>
+        Destaques
+      </h2>
+      <div class="destaques-strip" role="list" aria-label="Produtos em destaque">
+        @for (p of destaqueProducts(); track p.id) {
+          <div class="destaques-strip__item" role="listitem">
+            <app-product-card [product]="p" />
+          </div>
+        }
+      </div>
+    </section>
+  }
+
   <section id="categorias" class="vitrine-section" aria-labelledby="categorias-heading">
     <h2 id="categorias-heading" class="vitrine-section__title">Categorias</h2>
     <div class="category-strip" role="group" aria-label="Filtrar por categoria">

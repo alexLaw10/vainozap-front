@@ -5,12 +5,24 @@
       <h1 class="vnd-page__title">Vendas</h1>
       <p class="vnd-page__sub">Resumo de vendas concluídas (status Entregue)</p>
     </div>
-    <div class="vnd-periodos">
-      @for (p of PERIODOS; track p.value) {
-        <button type="button" class="vnd-periodo-btn" [class.vnd-periodo-btn--active]="periodo() === p.value" (click)="setPeriodo(p.value)">
-          {{ p.label }}
-        </button>
-      }
+    <div class="vnd-head-right">
+      <div class="vnd-periodos">
+        @for (p of PERIODOS; track p.value) {
+          <button type="button" class="vnd-periodo-btn" [class.vnd-periodo-btn--active]="periodo() === p.value" (click)="setPeriodo(p.value)">
+            {{ p.label }}
+          </button>
+        }
+      </div>
+      <app-button
+        variant="ghost"
+        size="sm"
+        [disabled]="!resumo() || loading()"
+        title="Exportar relatório do período selecionado"
+        (click)="exportarRelatorio()"
+      >
+        <app-icon name="file-text" [size]="15" [strokeWidth]="2" />
+        Exportar relatório
+      </app-button>
     </div>
   </div>
 

@@ -26,6 +26,8 @@ describe('MerchantProductsPageComponent', () => {
     fixture = TestBed.createComponent(MerchantProductsPageComponent);
     fixture.detectChanges();
 
+    // CsvImportModalComponent é sempre montado e chama listCategories() no ngOnInit
+    http.expectOne((r) => r.url.includes('/merchant/categories')).flush([]);
     http.expectOne((r) => r.url.includes('/merchant/products')).flush(stubEmptyPage());
     fixture.detectChanges();
   });

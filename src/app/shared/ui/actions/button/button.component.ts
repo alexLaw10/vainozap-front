@@ -12,6 +12,7 @@ import { ButtonBase } from './button-base';
       class="ui-button"
       [ngClass]="[
         'ui-button--' + variant(),
+        size() === 'sm' ? 'ui-button--sm' : '',
         inline() ? 'ui-button--inline' : ''
       ]"
       [attr.type]="type()"

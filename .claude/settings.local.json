@@ -409,7 +409,16 @@
       "Bash(mvn dependency:tree -Dincludes=com.github.docker-java)",
       "Bash(Read /private/tmp/claude-501/-Users-alexjunior-Documents-projetos-Sass-saas/05c83d5a-9b8d-407c-a09a-b813ed378b5d/tasks/ba5zamigf.output)",
       "WebFetch(domain:www.meucatalogodigital.com)",
-      "Bash(python3 -c \"from PIL import Image; print\\('Pillow OK'\\)\")"
+      "Bash(python3 -c \"from PIL import Image; print\\('Pillow OK'\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(perl -i '' -pe 's/false, List\\\\.of\\\\\\(\\\\\\), List\\\\.of\\\\\\(\\\\\\), List\\\\.of\\\\\\(\\\\\\)\\\\\\)/false, List.of\\(\\), List.of\\(\\), List.of\\(\\), false, false\\)/g' /Users/alexjunior/Documents/projetos/Sass/saas-api/src/test/java/com/saas/catalog/application/service/MerchantProductServiceTest.java /Users/alexjunior/Documents/projetos/Sass/saas-api/src/test/java/com/saas/catalog/application/service/StorefrontCatalogServiceTest.java /Users/alexjunior/Documents/projetos/Sass/saas-api/src/test/java/com/saas/catalog/application/port/out/ProductRepositoryTest.java)",
+      "Bash(./mvnw test-compile *)",
+      "Bash(sed -i '' 's/import com\\\\.saas\\\\.identity\\\\.domain\\\\.model\\\\.PlanoLimites;/import com.saas.shared.domain.PlanoLimites;/' /Users/alexjunior/Documents/projetos/Sass/saas-api/src/test/java/com/saas/identity/domain/model/PlanoLimitesTest.java)",
+      "Bash(sed -i '' 's/verify\\(emailPort\\)\\\\.enviarEmailResetSenha\\(eq\\(EMAIL\\), anyString\\(\\), anyString\\(\\)\\);/verify\\(emailPort\\).enviarEmailResetSenha\\(eq\\(EMAIL\\), any\\(\\), anyString\\(\\)\\);/' /Users/alexjunior/Documents/projetos/Sass/saas-api/src/test/java/com/saas/identity/application/service/PasswordResetServiceTest.java)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('jest',{}\\), indent=2\\)\\)\")",
+      "Bash(./mvnw clean *)",
+      "Bash(echo \"Backend PID: $!\")",
+      "Bash(echo \"Frontend PID: $!\")"
     ]
   }
 }

@@ -93,6 +93,8 @@ export class StorefrontCatalogService {
       ativo: p.ativo,
       semEstoque: p.semEstoque ?? false,
       variacoes: (p.variacoes ?? []).map((v) => this.toVariacao(v)),
+      destaque: p.destaque ?? false,
+      novo: p.novo ?? false,
     };
   }
 

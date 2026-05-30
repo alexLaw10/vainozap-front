@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, HostListener, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
@@ -40,6 +41,8 @@ export class CatalogPageComponent {
   private   readonly toast          = inject(ToastService);
   private   readonly route          = inject(ActivatedRoute);
   private   readonly isBrowser      = isPlatformBrowser(inject(PLATFORM_ID));
+  private   readonly metaService    = inject(Meta);
+  private   readonly titleService   = inject(Title);
 
   protected readonly sortMode        = signal<CatalogSortMode>('category');
   protected readonly sortPanelOpen   = signal(false);
@@ -57,6 +60,11 @@ export class CatalogPageComponent {
     { value: 'price-asc',  label: 'Menor preço',  icon: '↑$' },
     { value: 'newest',     label: 'Novidades',    icon: '✦' },
   ];
+
+  /** Produtos marcados como destaque, ativos e não esgotados. */
+  protected readonly destaqueProducts = computed(() =>
+    this.catalog.listProducts().filter((p) => p.ativo && p.destaque),
+  );
 
   /** Produtos vistos recentemente (na ordem de visita, excluindo inativos). */
   protected readonly recentProducts = computed(() => {
@@ -114,6 +122,32 @@ export class CatalogPageComponent {
   );
 
   constructor() {
+    // ── SEO meta tags dinâmicas da vitrine ────────────────────────────────
+    effect(() => {
+      const t = this.context.tenant();
+      if (!t?.nomeLoja) return;
+      untracked(() => {
+        const title = t.slogan ? `${t.nomeLoja} — ${t.slogan}` : t.nomeLoja;
+        const desc  = t.slogan ?? `Confira os produtos de ${t.nomeLoja} e faça seu pedido pelo WhatsApp.`;
+        const image = t.bannerUrl ?? t.logoUrl ?? '';
+        const url   = typeof location !== 'undefined' ? location.href : '';
+
+        this.titleService.setTitle(title);
+        this.metaService.updateTag({ name: 'description',          content: desc });
+        this.metaService.updateTag({ property: 'og:type',          content: 'website' });
+        this.metaService.updateTag({ property: 'og:title',         content: t.nomeLoja });
+        this.metaService.updateTag({ property: 'og:description',   content: desc });
+        this.metaService.updateTag({ property: 'og:site_name',     content: t.nomeLoja });
+        if (image) this.metaService.updateTag({ property: 'og:image', content: image });
+        if (url)   this.metaService.updateTag({ property: 'og:url',   content: url });
+        // Twitter/X card
+        this.metaService.updateTag({ name: 'twitter:card',         content: 'summary_large_image' });
+        this.metaService.updateTag({ name: 'twitter:title',        content: t.nomeLoja });
+        this.metaService.updateTag({ name: 'twitter:description',  content: desc });
+        if (image) this.metaService.updateTag({ name: 'twitter:image', content: image });
+      });
+    });
+
     // ── Link pré-montado: /?produto=uuid ──────────────────────────────────
     // Quando o catálogo terminar de carregar, adiciona o produto ao carrinho.
     effect(() => {

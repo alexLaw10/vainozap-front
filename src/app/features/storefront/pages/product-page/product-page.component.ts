@@ -7,6 +7,7 @@ import { startWith, switchMap } from 'rxjs/operators';
 
 import type { Produto, Variacao, VariacaoTipoUi } from '../../../../core/models/produto.model';
 import { IconComponent, ToastService } from '@app/shared/ui';
+import { DescricaoPipe } from '../../../../shared/pipes/descricao.pipe';
 import { StorefrontCartService } from '../../services/storefront-cart.service';
 import { StorefrontCatalogService } from '../../services/storefront-catalog.service';
 import { StorefrontContextService } from '../../services/storefront-context.service';
@@ -19,7 +20,7 @@ type ProductState = { status: 'loading' } | { status: 'found'; product: Produto 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, IconComponent, ProductCardComponent],
+  imports: [RouterLink, CurrencyPipe, IconComponent, ProductCardComponent, DescricaoPipe],
   templateUrl: './product-page.component.html',
   styleUrl: './product-page.component.scss',
 })

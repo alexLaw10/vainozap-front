@@ -30,3 +30,17 @@ body {
   outline: var(--focus-ring-width) solid var(--color-focus-ring);
   outline-offset: var(--focus-ring-offset);
 }
+
+// Todos os botões e elementos clicáveis mostram cursor de ponteiro
+button,
+[role='button'],
+label[for],
+summary {
+  cursor: pointer;
+}
+
+// Botões desabilitados voltam ao cursor padrão
+button:disabled,
+[role='button'][aria-disabled='true'] {
+  cursor: not-allowed;
+}

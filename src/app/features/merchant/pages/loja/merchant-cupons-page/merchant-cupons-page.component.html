@@ -47,8 +47,10 @@
           }
 
           @case ('acoes') {
-            <app-button type="button" variant="ghost" [inline]="true" (click)="openEdit(row)">Editar</app-button>
-            <app-button type="button" variant="danger-ghost" [inline]="true" (click)="askDelete(row.id)">Remover</app-button>
+            <div class="mcupons-acoes">
+              <app-button type="button" variant="ghost" [inline]="true" (click)="openEdit(row)">Editar</app-button>
+              <app-button type="button" variant="danger-ghost" [inline]="true" (click)="askDelete(row.id)">Remover</app-button>
+            </div>
           }
 
         }
@@ -66,7 +68,7 @@
     [title]="editingId() ? 'Editar cupom' : 'Novo cupom'"
     (closed)="closeModal()"
   >
-    <form class="mcat-modal__form" (ngSubmit)="save()">
+    <form class="mcat-modal__form" (submit)="$event.preventDefault()" novalidate>
 
       <app-input
         label="Código *"
@@ -119,7 +121,7 @@
 
       <div class="mcat-modal__footer">
         <app-button type="button" variant="ghost" [inline]="true" (click)="closeModal()">Cancelar</app-button>
-        <app-button type="submit" [inline]="true" [disabled]="saving()" [loading]="saving()">
+        <app-button type="button" [inline]="true" [disabled]="saving()" [loading]="saving()" (click)="save()">
           {{ saving() ? 'Salvando…' : (editingId() ? 'Salvar' : 'Criar') }}
         </app-button>
       </div>

@@ -2,7 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import type { OpcaoVariacaoApi, ProdutoApi, VariacaoApi, VariacaoTemplateApi } from '../../../../../core/models/catalog-api.model';
-import { IconComponent, InputComponent, type MediaSlot, MediaSlotsComponent, SelectComponent, type SelectOption, TextareaComponent, ToastService, ToggleComponent } from '@app/shared/ui';
+import { ButtonComponent, IconComponent, InputComponent, type MediaSlot, MediaSlotsComponent, SelectComponent, type SelectOption, TextareaComponent, ToastService, ToggleComponent } from '@app/shared/ui';
 import { MerchantCatalogService } from '../../../services/merchant-catalog.service';
 import type { OpcaoForm, VariacaoForm } from '../../../models/form-types';
 
@@ -15,7 +15,7 @@ type VariacaoFormExt = Omit<VariacaoForm, 'opcoes'> & { opcoes: OpcaoForm[] };
 @Component({
   selector: 'app-merchant-product-form-page',
   standalone: true,
-  imports: [IconComponent, InputComponent, MediaSlotsComponent, RouterLink, SelectComponent, TextareaComponent, ToggleComponent],
+  imports: [ButtonComponent, IconComponent, InputComponent, MediaSlotsComponent, RouterLink, SelectComponent, TextareaComponent, ToggleComponent],
   templateUrl: './merchant-product-form-page.component.html',
   styleUrl: './merchant-product-form-page.component.scss',
 })
@@ -46,6 +46,8 @@ export class MerchantProductFormPageComponent implements OnInit {
   protected readonly ativo      = signal(true);
   protected readonly semEstoque = signal(false);
   protected readonly estoque    = signal('0');
+  protected readonly destaque   = signal(false);
+  protected readonly novo       = signal(false);
   protected readonly variacoes  = signal<VariacaoFormExt[]>([]);
 
   // ── Validação ──────────────────────────────────────────────────────────────
@@ -115,6 +117,8 @@ export class MerchantProductFormPageComponent implements OnInit {
         this.ativo.set(p.ativo);
         this.semEstoque.set(p.semEstoque ?? false);
         this.estoque.set(String(p.estoque ?? 0));
+        this.destaque.set(p.destaque ?? false);
+        this.novo.set(p.novo ?? false);
         this.photos.set((p.fotos  ?? []).map((url) => ({ url, file: null, preview: url })));
         this.videos.set((p.videos ?? []).map((url) => ({ url, file: null, preview: url })));
         this.variacoes.set((p.variacoes ?? []).map((v) => ({
@@ -237,6 +241,8 @@ export class MerchantProductFormPageComponent implements OnInit {
       ativo:      this.ativo(),
       semEstoque: this.semEstoque(),
       estoque:    (this.semEstoque() || temVariacoes) ? null : parseInt(this.estoque(), 10) || 0,
+      destaque:   this.destaque(),
+      novo:       this.novo(),
       fotos:      existingUrls,
       videos:     existingVideoUrls,
       variacoes: vars.map((vr, idx) => ({

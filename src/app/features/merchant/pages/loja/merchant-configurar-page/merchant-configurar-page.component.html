@@ -318,7 +318,7 @@
               [disabled]="redeChipJaAdicionada(chip.rotulo)"
               (click)="addRedeByChip(chip)"
             >
-              <span class="cfg-rede-chip__dot" [style.background]="chip.cor"></span>
+              <app-icon class="cfg-rede-chip__icon" [name]="chip.icon" [size]="15" [strokeWidth]="1.75" [style.color]="chip.cor"></app-icon>
               {{ chip.rotulo }}
               @if (redeChipJaAdicionada(chip.rotulo)) { <span class="cfg-rede-chip__check">✓</span> }
             </button>
@@ -334,7 +334,9 @@
             <div class="cfg-rede-row">
 
               @if (chipParaRede(rede.rotulo); as chip) {
-                <span class="cfg-rede-badge" [style.background]="chip.cor" [attr.title]="chip.rotulo">{{ chip.inicial }}</span>
+                <span class="cfg-rede-badge" [style.background]="chip.cor" [attr.title]="chip.rotulo">
+                  <app-icon [name]="chip.icon" [size]="14" [strokeWidth]="2" style="color:#fff"></app-icon>
+                </span>
               } @else {
                 <span class="cfg-rede-badge cfg-rede-badge--custom" title="Personalizado">#</span>
               }

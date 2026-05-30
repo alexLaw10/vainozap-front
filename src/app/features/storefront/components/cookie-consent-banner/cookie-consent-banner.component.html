@@ -1,0 +1,34 @@
+@if (consent.showBanner()) {
+  <div
+    class="cookie-banner"
+    role="region"
+    aria-label="Aviso de privacidade e cookies"
+    aria-live="polite"
+  >
+    <div class="cookie-banner__inner">
+      <div class="cookie-banner__text">
+        <p class="cookie-banner__title">🍪 Privacidade e cookies</p>
+        <p class="cookie-banner__desc">
+          Usamos cookies essenciais para o funcionamento da loja (carrinho, preferências)
+          e cookies analíticos para melhorar sua experiência. Nenhum dado é vendido a terceiros.
+        </p>
+      </div>
+      <div class="cookie-banner__actions">
+        <button
+          type="button"
+          class="cookie-banner__btn cookie-banner__btn--decline"
+          (click)="consent.decline()"
+        >
+          Apenas essenciais
+        </button>
+        <button
+          type="button"
+          class="cookie-banner__btn cookie-banner__btn--accept"
+          (click)="consent.accept()"
+        >
+          Aceitar todos
+        </button>
+      </div>
+    </div>
+  </div>
+}

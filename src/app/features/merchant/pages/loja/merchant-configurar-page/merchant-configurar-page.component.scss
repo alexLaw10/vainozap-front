@@ -418,11 +418,9 @@
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s;
 
-  &__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+  &__icon {
     flex-shrink: 0;
+    display: flex;
   }
 
   &__check {

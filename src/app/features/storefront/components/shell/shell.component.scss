@@ -51,6 +51,62 @@
   }
 }
 
+.store-not-found {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10) var(--space-5);
+  text-align: center;
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    max-width: 26rem;
+  }
+
+  &__emoji {
+    margin: 0;
+    font-size: 3.5rem;
+    line-height: 1;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.375rem, 4vw, 1.875rem);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__sub {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: #fff;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+
+    &:hover {
+      background: color-mix(in srgb, var(--color-primary) 88%, black);
+    }
+  }
+}
+
 .storefront-shell {
   &__skip-link {
     position: absolute;

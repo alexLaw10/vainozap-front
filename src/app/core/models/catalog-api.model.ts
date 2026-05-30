@@ -60,6 +60,8 @@ export interface ProdutoApi {
   fotos: string[];
   videos: string[];          // URLs de vídeos (MP4/WebM/MOV)
   variacoes: VariacaoApi[];
+  destaque?: boolean;        // Exibe badge "Destaque" e aparece na seção de destaques
+  novo?: boolean;            // Exibe badge "Novo" no card
 }
 
 export interface AjusteEstoqueApi {

@@ -4,6 +4,7 @@ import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 
 import { ToastComponent } from '@app/shared/ui';
+import { CookieConsentBannerComponent } from '../cookie-consent-banner/cookie-consent-banner.component';
 import { FloatingStoreActionsComponent } from '../floating-store-actions/floating-store-actions.component';
 import { StorefrontFiltersModalComponent } from '../storefront-filters-modal/storefront-filters-modal.component';
 import { VitrineFooterComponent } from '../vitrine-footer/vitrine-footer.component';
@@ -22,6 +23,7 @@ import { StorefrontFiltersService } from '../../services/storefront-filters.serv
     VitrineFooterComponent,
     FloatingStoreActionsComponent,
     StorefrontFiltersModalComponent,
+    CookieConsentBannerComponent,
     ToastComponent,
   ],
   templateUrl: './shell.component.html',
@@ -38,7 +40,8 @@ export class ShellComponent {
   private readonly context = inject(StorefrontContextService);
   private readonly catalog = inject(StorefrontCatalogService);
 
-  protected readonly tenant = this.context.tenant;
+  protected readonly tenant    = this.context.tenant;
+  protected readonly notFound  = this.context.notFound;
   protected readonly barDismissed = signal(false);
 
   protected dismissBar(): void { this.barDismissed.set(true); }

@@ -30,6 +30,13 @@
 
 // ── Seletor de período ────────────────────────────────────────────────────────
 
+.vnd-head-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
 .vnd-periodos {
   display: flex;
   gap: var(--space-1);

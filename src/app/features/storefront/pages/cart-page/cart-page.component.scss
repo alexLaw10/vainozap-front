@@ -57,6 +57,7 @@
 
 .cart-modal__form-card {
   position: relative;
+  isolation: isolate;   /* cria stacking context próprio */
   display: flex;
   flex-direction: column;
   padding: var(--space-6);
@@ -75,10 +76,60 @@
   }
 }
 
+// ── Barra mobile (sticky) ─────────────────────────────────────────────────────
+.cart-modal__mobile-bar {
+  display: none; // visível só no mobile (abaixo)
+
+  @media (max-width: 51.99rem) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: var(--space-3) var(--space-4);
+    background: #fff;
+    border-bottom: 1px solid var(--color-border-subtle);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+  }
+}
+
+.cart-modal__mobile-bar-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.cart-modal__mobile-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-100);
+  color: var(--color-text-primary);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: var(--color-neutral-200); }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+// ── Botão fechar desktop ──────────────────────────────────────────────────────
 .cart-modal__close {
   position: absolute;
   top: var(--space-4);
   right: var(--space-4);
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,6 +144,10 @@
   line-height: 1;
   cursor: pointer;
   transition: background 0.15s;
+
+  @media (max-width: 51.99rem) {
+    display: none; // substituído pela barra mobile
+  }
 
   &:hover {
     background: var(--color-neutral-200);

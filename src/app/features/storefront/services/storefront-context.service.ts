@@ -52,8 +52,10 @@ export class StorefrontContextService {
   private readonly http = inject(HttpClient);
   private readonly doc  = inject(DOCUMENT);
 
-  readonly tenant = signal<Tenant>(TENANT_EMPTY);
-  readonly loaded = signal(false);
+  readonly tenant   = signal<Tenant>(TENANT_EMPTY);
+  readonly loaded   = signal(false);
+  /** true apenas quando a API retornou 404 — slug não cadastrado. */
+  readonly notFound = signal(false);
 
   constructor() {
     // Aplica as CSS vars de cor sempre que o tenant mudar —
@@ -87,8 +89,12 @@ export class StorefrontContextService {
 
     return this.http.get<TenantApi>(`${environment.apiUrl}/api/v1/stores/slug/${slug}`).pipe(
       tap((t) => this.setTenantFromApi(t)),   // setTenantFromApi já faz loaded.set(true)
-      catchError((err) => {
-        console.warn('[StorefrontContext] Backend indisponível, usando dados básicos.', err);
+      catchError((err: { status?: number }) => {
+        if (err.status === 404) {
+          this.notFound.set(true);
+        } else {
+          console.warn('[StorefrontContext] Backend indisponível, usando dados básicos.', err);
+        }
         this.loaded.set(true);
         return of(null);
       }),

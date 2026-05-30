@@ -12,6 +12,8 @@ import type { UiButtonVariant } from './button.types';
 @Directive()
 export abstract class ButtonBase {
   readonly variant  = input<UiButtonVariant>('primary');
+  /** Tamanho do botão. 'md' = padrão (formulários); 'sm' = compacto (ações inline, painel merchant). */
+  readonly size     = input<'sm' | 'md'>('md');
   readonly type     = input<'button' | 'submit' | 'reset'>('button');
   readonly disabled = input(false);
   readonly loading  = input(false);

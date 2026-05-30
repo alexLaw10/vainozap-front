@@ -4,6 +4,9 @@ import { NotificationModel } from '../models/notification.model';
 import { AuthService } from '../../auth/services/auth.service';
 import { environment } from '../../../../environments/environment';
 
+/** Tempo mínimo que a conexão precisa ficar estável antes de resetar o backoff (30s). */
+const STABLE_CONNECTION_MS = 30_000;
+
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private readonly http = inject(HttpClient);
@@ -15,6 +18,7 @@ export class NotificationService {
 
   private eventSource: EventSource | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private stableTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectDelay = 3_000;
   private readonly MAX_RECONNECT_DELAY = 60_000;
   private destroyed = false;
@@ -27,14 +31,11 @@ export class NotificationService {
   private connectedWithToken: string | null = null;
 
   constructor() {
-    // Reage a mudanças no token de acesso:
-    // - Token → null  : usuário deslogado, para o SSE imediatamente
-    // - Token mudou   : refresh bem-sucedido, reconecta com novo token para parar o loop de 401
+    // Reage a mudanças no token de acesso
     effect(() => {
       const token = this.auth.token();
 
       if (!token) {
-        // Logout ou token limpo — para tudo
         this.clearReconnectTimer();
         this.eventSource?.close();
         this.eventSource = null;
@@ -42,9 +43,24 @@ export class NotificationService {
         return;
       }
 
-      // Token mudou e o SSE estava falhando (sem conexão ativa) → reconecta agora
       if (token !== this.connectedWithToken && !this.eventSource) {
         this.clearReconnectTimer();
+        this.connectSse();
+      }
+    });
+
+    // Visibility API — pausa SSE quando aba está oculta, retoma quando visível.
+    // Reduz requisições desnecessárias quando o lojista não está olhando o painel.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // Aba ficou em background — fecha conexão e cancela timers
+        this.clearReconnectTimer();
+        this.clearStableTimer();
+        this.eventSource?.close();
+        this.eventSource = null;
+        this.connectedWithToken = null;
+      } else if (!this.destroyed && this.auth.token()) {
+        // Aba voltou ao foco — reconecta imediatamente
         this.connectSse();
       }
     });
@@ -57,7 +73,7 @@ export class NotificationService {
   }
 
   connectSse(): void {
-    if (this.eventSource || this.destroyed) return;
+    if (this.eventSource || this.destroyed || document.hidden) return;
     const token = this.auth.token();
     if (!token) return;
 
@@ -72,12 +88,16 @@ export class NotificationService {
     });
 
     es.addEventListener('connected', () => {
-      // Conexão estabelecida — reseta o delay de reconexão
-      this.reconnectDelay = 3_000;
+      // Só reseta o backoff após 30s de conexão estável — evita o loop de 3s
+      this.clearStableTimer();
+      this.stableTimer = setTimeout(() => {
+        this.reconnectDelay = 3_000;
+        this.stableTimer = null;
+      }, STABLE_CONNECTION_MS);
     });
 
     es.onerror = () => {
-      // Fecha o EventSource com erro e agenda reconexão com backoff exponencial
+      this.clearStableTimer();
       es.close();
       if (this.eventSource === es) {
         this.eventSource = null;
@@ -90,6 +110,7 @@ export class NotificationService {
   disconnectSse(): void {
     this.destroyed = true;
     this.clearReconnectTimer();
+    this.clearStableTimer();
     this.eventSource?.close();
     this.eventSource = null;
     this.connectedWithToken = null;
@@ -99,6 +120,7 @@ export class NotificationService {
   resetSse(): void {
     this.destroyed = false;
     this.clearReconnectTimer();
+    this.clearStableTimer();
     this.eventSource?.close();
     this.eventSource = null;
     this.connectedWithToken = null;
@@ -107,9 +129,8 @@ export class NotificationService {
   }
 
   private scheduleReconnect(): void {
-    if (this.destroyed || this.reconnectTimer) return;
+    if (this.destroyed || this.reconnectTimer || document.hidden) return;
     const token = this.auth.token();
-    // Se não há token (usuário deslogado), não agenda reconexão
     if (!token) return;
 
     this.reconnectTimer = setTimeout(() => {
@@ -123,6 +144,13 @@ export class NotificationService {
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
+    }
+  }
+
+  private clearStableTimer(): void {
+    if (this.stableTimer) {
+      clearTimeout(this.stableTimer);
+      this.stableTimer = null;
     }
   }
 

@@ -1,0 +1,728 @@
+@use 'objects/merchant-crud' as *;
+
+// ── Overlay ───────────────────────────────────────────────────────────────────
+
+.csv-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 990;
+  background: rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(3px);
+  animation: csv-fade 0.2s ease;
+}
+
+// ── Modal shell ───────────────────────────────────────────────────────────────
+
+.csv-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 991;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  max-width: 52rem;
+  max-height: 90vh;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.25);
+  animation: csv-slide 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  @media (max-width: 55rem) {
+    inset: auto 0 0;
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.csv-modal__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+}
+
+.csv-modal__header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.csv-modal__header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.csv-modal__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.csv-modal__subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.csv-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--color-surface-subtle);
+    color: var(--color-text-primary);
+  }
+}
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+
+.csv-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+// ── Colunas card ─────────────────────────────────────────────────────────────
+
+.csv-columns-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  &__heading {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+  }
+}
+
+// ── Download button ───────────────────────────────────────────────────────────
+
+.csv-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5, 0.375rem);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  }
+}
+
+// ── Column chips grid ─────────────────────────────────────────────────────────
+
+.csv-columns-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.csv-col-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5, 0.375rem);
+  padding: var(--space-1) var(--space-2-5, 0.625rem);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-surface-base);
+
+  &--required {
+    border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+
+    .csv-col-chip__name { color: var(--color-primary); font-weight: 700; }
+  }
+
+  &__name {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  &__badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__hint {
+    font-size: 10px;
+    color: var(--color-text-muted);
+  }
+}
+
+// ── Drop zone ─────────────────────────────────────────────────────────────────
+
+.csv-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-10) var(--space-6);
+  border: 2px dashed var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+
+  &:hover,
+  &--over {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  }
+
+  &__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  &__icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-subtle);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-1);
+  }
+
+  &__primary {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  &__secondary {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  &__cta {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+}
+
+// ── Summary bar (preview) ─────────────────────────────────────────────────────
+
+.csv-summary-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+
+  &__file {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    min-width: 0;
+
+    span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  }
+
+  &__counts {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  &__change {
+    margin-left: auto;
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: transparent;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+  }
+}
+
+// ── Badges (ok / err) ─────────────────────────────────────────────────────────
+
+.csv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--ok  {
+    background: color-mix(in srgb, var(--color-success, #16a34a) 12%, transparent);
+    color: var(--color-success, #16a34a);
+  }
+
+  &--err {
+    background: color-mix(in srgb, var(--color-danger, #dc2626) 12%, transparent);
+    color: var(--color-danger, #dc2626);
+  }
+
+  &--warn {
+    background: color-mix(in srgb, var(--color-warning, #d97706) 12%, transparent);
+    color: var(--color-warning, #d97706);
+  }
+}
+
+// ── Errors (collapsible) ──────────────────────────────────────────────────────
+
+.csv-errors {
+  border: 1px solid color-mix(in srgb, var(--color-danger, #dc2626) 30%, transparent);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: color-mix(in srgb, var(--color-danger, #dc2626) 8%, transparent);
+    color: var(--color-danger, #dc2626);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+
+    &::-webkit-details-marker { display: none; }
+  }
+
+  &__chevron {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+
+    details[open] & { transform: rotate(180deg); }
+  }
+
+  &__list {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    list-style: none;
+    max-height: 14rem;
+    overflow-y: auto;
+    background: var(--color-surface-base);
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: var(--space-1) var(--space-3);
+    font-size: var(--font-size-xs);
+    align-items: start;
+  }
+
+  &__line {
+    font-weight: 700;
+    color: var(--color-danger, #dc2626);
+    font-family: var(--font-mono, monospace);
+  }
+
+  &__name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 2px;
+  }
+
+  &__msgs {
+    margin: 0;
+    padding-left: var(--space-4);
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    list-style: disc;
+  }
+}
+
+// ── Avisos (amber) ────────────────────────────────────────────────────────────
+
+.csv-warnings {
+  border: 1px solid color-mix(in srgb, var(--color-warning, #d97706) 30%, transparent);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: color-mix(in srgb, var(--color-warning, #d97706) 10%, transparent);
+    color: var(--color-warning, #d97706);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+
+    &::-webkit-details-marker { display: none; }
+  }
+
+  &__chevron {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+
+    details[open] & { transform: rotate(180deg); }
+  }
+
+  &__list {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    list-style: none;
+    max-height: 12rem;
+    overflow-y: auto;
+    background: var(--color-surface-base);
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: var(--space-1) var(--space-3);
+    font-size: var(--font-size-xs);
+    align-items: start;
+  }
+
+  &__line {
+    font-weight: 700;
+    color: var(--color-warning, #d97706);
+    font-family: var(--font-mono, monospace);
+  }
+
+  &__name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 2px;
+  }
+
+  &__msgs {
+    margin: 0;
+    padding-left: var(--space-4);
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    list-style: disc;
+  }
+}
+
+// ── Table (preview) ───────────────────────────────────────────────────────────
+
+.csv-table-wrap {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: auto;
+  max-height: 20rem;
+}
+
+.csv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+
+  th {
+    position: sticky;
+    top: 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface-subtle);
+    font-weight: 700;
+    text-align: left;
+    color: var(--color-text-muted);
+    border-bottom: 1px solid var(--color-border-subtle);
+    white-space: nowrap;
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+    color: var(--color-text-primary);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: var(--color-surface-subtle); }
+
+  &__line {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-family: var(--font-mono, monospace);
+  }
+
+  &__nome {
+    font-weight: 600;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__preco { white-space: nowrap; }
+
+  &__empty { color: var(--color-text-muted); }
+}
+
+// ── Boolean badge ─────────────────────────────────────────────────────────────
+
+.csv-bool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--color-danger, #dc2626) 10%, transparent);
+  color: var(--color-danger, #dc2626);
+
+  &--yes {
+    background: color-mix(in srgb, var(--color-success, #16a34a) 10%, transparent);
+    color: var(--color-success, #16a34a);
+  }
+}
+
+// ── Empty valid state ─────────────────────────────────────────────────────────
+
+.csv-empty-valid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-4);
+  color: var(--color-text-muted);
+  text-align: center;
+
+  p { margin: 0; font-size: var(--font-size-sm); }
+}
+
+// ── Progress ──────────────────────────────────────────────────────────────────
+
+.csv-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-10) 0;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+    animation: csv-pulse 1.5s ease-in-out infinite;
+  }
+
+  &__label {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  &__sub {
+    margin: -var(--space-2) 0 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  &__track {
+    width: min(100%, 22rem);
+    height: 0.5rem;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-subtle);
+    border: 1px solid var(--color-border-subtle);
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+  }
+
+  &__pct {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    font-weight: 700;
+  }
+}
+
+// ── Done ──────────────────────────────────────────────────────────────────────
+
+.csv-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-10) 0;
+  text-align: center;
+
+  &__icon-wrap {
+    font-size: 3rem;
+    line-height: 1;
+    animation: csv-bounce 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__msg {
+    margin: 0;
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  &__err { color: var(--color-danger, #dc2626); }
+
+  &__errs {
+    margin: 0;
+    padding-left: var(--space-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-danger, #dc2626);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
+
+.csv-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-surface-subtle);
+  flex-shrink: 0;
+}
+
+// ── Animations ────────────────────────────────────────────────────────────────
+
+@keyframes csv-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes csv-slide {
+  from { transform: translateY(1.5rem); opacity: 0; }
+  to   { transform: translateY(0);      opacity: 1; }
+}
+
+@keyframes csv-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(0.95); }
+}
+
+@keyframes csv-bounce {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.15); }
+  80%  { transform: scale(0.92); }
+  100% { transform: scale(1); opacity: 1; }
+}

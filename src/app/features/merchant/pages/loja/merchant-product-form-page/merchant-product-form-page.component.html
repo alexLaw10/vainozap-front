@@ -15,7 +15,7 @@
     </div>
   } @else {
 
-  <form (ngSubmit)="save()" novalidate>
+  <form (submit)="$event.preventDefault()" novalidate>
     <div class="pf-layout">
 
       <!-- ── Col 1: Informações ──────────────────────────────────────────── -->
@@ -81,6 +81,18 @@
           label="Produto ativo na loja"
           [(value)]="ativo"
         />
+
+        <app-toggle
+          label="Produto em destaque"
+          hint="Aparece na seção ⭐ Destaques no topo da vitrine"
+          [(value)]="destaque"
+        />
+
+        <app-toggle
+          label='Badge "Novo"'
+          hint="Exibe o selo verde de novidade no card do produto"
+          [(value)]="novo"
+        />
       </section>
 
       <!-- ── Col 2: Fotos ──────────────────────────────────────────── -->
@@ -110,11 +122,11 @@
           <div class="pf-var-actions">
             @if (templates().length > 0) {
               <div class="pf-template-wrap">
-                <button type="button" class="mcat-btn mcat-btn--ghost pf-card__add-btn"
+                <app-button variant="ghost" size="sm" class="pf-card__add-btn"
                         (click)="toggleTemplateDropdown()">
-                  <app-icon name="file-text" [size]="13"></app-icon>
+                  <app-icon name="file-text" [size]="13" />
                   Usar modelo
-                </button>
+                </app-button>
                 @if (templateDropdown()) {
                   <div class="pf-template-dropdown">
                     @for (t of templates(); track t.id) {
@@ -129,10 +141,10 @@
                 }
               </div>
             }
-            <button type="button" class="mcat-btn mcat-btn--ghost pf-card__add-btn" (click)="addVariacao()">
-              <app-icon name="plus" [size]="14" [strokeWidth]="2.5"></app-icon>
+            <app-button variant="ghost" size="sm" class="pf-card__add-btn" (click)="addVariacao()">
+              <app-icon name="plus" [size]="14" [strokeWidth]="2.5" />
               Adicionar
-            </button>
+            </app-button>
           </div>
         </div>
 
@@ -206,14 +218,9 @@
             </p>
           }
 
-          <button type="submit" class="mcat-btn mcat-btn--primary pf-actions__primary" [disabled]="saving()">
-            @if (saving()) {
-              <span class="pf-spinner" aria-hidden="true"></span>
-              Salvando…
-            } @else {
-              Salvar produto
-            }
-          </button>
+          <app-button variant="primary" class="pf-actions__primary" [loading]="saving()" (click)="save()">
+            Salvar produto
+          </app-button>
 
           <a routerLink="/merchant/loja/gerenciar/produtos"
              class="mcat-btn mcat-btn--ghost pf-actions__secondary">

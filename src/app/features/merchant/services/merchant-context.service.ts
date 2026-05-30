@@ -21,4 +21,15 @@ export class MerchantContextService {
     || this.sfContext.tenant()?.nomeLoja
     || '…'
   );
+
+  /**
+   * Slug atual da loja — lido do tenant (fonte de verdade após salvar),
+   * com fallback para o JWT. Garante que o botão "Ver vitrine" reflita
+   * imediatamente qualquer alteração de slug feita pelo lojista.
+   */
+  readonly slug = computed(() =>
+    this.sfContext.tenant()?.slug
+    || this.auth.slug()
+    || ''
+  );
 }

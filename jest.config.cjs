@@ -17,6 +17,9 @@ module.exports = {
   },
   collectCoverageFrom: [
     'src/app/**/*.component.ts',
+    'src/app/**/*.service.ts',
+    'src/app/**/*.pipe.ts',
+    'src/app/**/utils/*.util.ts',
     'src/app/app.ts',
   ],
   coverageDirectory: 'coverage',

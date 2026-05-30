@@ -55,7 +55,7 @@
     [title]="editingId() ? 'Editar categoria' : 'Nova categoria'"
     (closed)="closeModal()"
   >
-    <form class="mcat-modal__form" (ngSubmit)="save()">
+    <form class="mcat-modal__form" (submit)="$event.preventDefault()" novalidate>
       <app-input
         label="Nome *"
         placeholder="ex.: Camisetas"
@@ -97,7 +97,7 @@
       />
       <div class="mcat-modal__footer">
         <app-button type="button" variant="ghost" [inline]="true" (click)="closeModal()">Cancelar</app-button>
-        <app-button type="submit" [inline]="true" [disabled]="saving()" [loading]="saving()">
+        <app-button type="button" [inline]="true" [disabled]="saving()" [loading]="saving()" (click)="save()">
           {{ saving() ? 'Salvando…' : (editingId() ? 'Salvar' : 'Criar') }}
         </app-button>
       </div>

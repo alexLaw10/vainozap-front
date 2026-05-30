@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 
 import type { TenantApi } from '../../../../../core/models/tenant-api.model';
 import { ButtonComponent, InputComponent, InputCnpjComponent, InputColorComponent, InputPhoneComponent, TextareaComponent, TooltipComponent, UploadImageComponent, IconComponent } from '@app/shared/ui';
+import type { UiIconName } from '../../../../../shared/ui/primitives/icon/icon.types';
 import { environment } from '../../../../../../environments/environment';
 import { MerchantConfigService } from '../../../services/merchant-config.service';
 import type { RedeForm } from '../../../models/form-types';
@@ -138,16 +139,16 @@ export class MerchantConfigurarPageComponent implements OnInit {
     { label: '24 horas',           texto: 'Atendimento 24 horas, 7 dias por semana, incluindo feriados.' },
   ];
 
-  protected readonly REDES_CHIPS: { rotulo: string; placeholder: string; cor: string; inicial: string }[] = [
-    { rotulo: 'Instagram',  placeholder: 'https://instagram.com/sua-loja',   cor: '#e1306c', inicial: 'In' },
-    { rotulo: 'Facebook',   placeholder: 'https://facebook.com/sua-loja',    cor: '#1877f2', inicial: 'Fb' },
-    { rotulo: 'WhatsApp',   placeholder: 'https://wa.me/5511999998888',       cor: '#25d366', inicial: 'Wa' },
-    { rotulo: 'TikTok',     placeholder: 'https://tiktok.com/@sua-loja',     cor: '#010101', inicial: 'Tk' },
-    { rotulo: 'YouTube',    placeholder: 'https://youtube.com/@sua-loja',    cor: '#ff0000', inicial: 'Yt' },
-    { rotulo: 'Twitter/X',  placeholder: 'https://x.com/sua-loja',           cor: '#000000', inicial: 'X'  },
-    { rotulo: 'LinkedIn',   placeholder: 'https://linkedin.com/company/...',  cor: '#0a66c2', inicial: 'Li' },
-    { rotulo: 'Pinterest',  placeholder: 'https://pinterest.com/sua-loja',   cor: '#e60023', inicial: 'Pi' },
-    { rotulo: 'Telegram',   placeholder: 'https://t.me/sua-loja',            cor: '#2aabee', inicial: 'Tg' },
+  protected readonly REDES_CHIPS: { rotulo: string; placeholder: string; cor: string; inicial: string; icon: UiIconName }[] = [
+    { rotulo: 'Instagram',  placeholder: 'https://instagram.com/sua-loja',   cor: '#e1306c', inicial: 'In', icon: 'brand-instagram'  },
+    { rotulo: 'Facebook',   placeholder: 'https://facebook.com/sua-loja',    cor: '#1877f2', inicial: 'Fb', icon: 'brand-facebook'    },
+    { rotulo: 'WhatsApp',   placeholder: 'https://wa.me/5511999998888',       cor: '#25d366', inicial: 'Wa', icon: 'brand-whatsapp'    },
+    { rotulo: 'TikTok',     placeholder: 'https://tiktok.com/@sua-loja',     cor: '#010101', inicial: 'Tk', icon: 'brand-tiktok'      },
+    { rotulo: 'YouTube',    placeholder: 'https://youtube.com/@sua-loja',    cor: '#ff0000', inicial: 'Yt', icon: 'brand-youtube'     },
+    { rotulo: 'Twitter/X',  placeholder: 'https://x.com/sua-loja',           cor: '#000000', inicial: 'X',  icon: 'brand-x'           },
+    { rotulo: 'LinkedIn',   placeholder: 'https://linkedin.com/company/...',  cor: '#0a66c2', inicial: 'Li', icon: 'brand-linkedin'    },
+    { rotulo: 'Pinterest',  placeholder: 'https://pinterest.com/sua-loja',   cor: '#e60023', inicial: 'Pi', icon: 'brand-pinterest'   },
+    { rotulo: 'Telegram',   placeholder: 'https://t.me/sua-loja',            cor: '#2aabee', inicial: 'Tg', icon: 'brand-telegram'    },
   ];
 
   ngOnInit(): void { this.load(); }
@@ -252,7 +253,7 @@ export class MerchantConfigurarPageComponent implements OnInit {
     this.redesSociais.update((arr) => arr.map((r, idx) => idx === i ? { ...r, url: val } : r));
   }
 
-  protected chipParaRede(rotulo: string): { rotulo: string; placeholder: string; cor: string; inicial: string } | undefined {
+  protected chipParaRede(rotulo: string): { rotulo: string; placeholder: string; cor: string; inicial: string; icon: UiIconName } | undefined {
     return this.REDES_CHIPS.find((c) => c.rotulo === rotulo);
   }
 

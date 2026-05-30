@@ -220,7 +220,7 @@
             Nova loja
           </app-button>
         } @else {
-          <button type="button" class="merchant-contas__btn-upgrade-lojas" (click)="abrirAlterarPlano()">
+          <button type="button" class="merchant-contas__btn-upgrade-lojas" [disabled]="!billingEnabled" (click)="billingEnabled && abrirAlterarPlano()">
             <app-icon name="plus" [size]="14" [strokeWidth]="2.5"></app-icon>
             Nova loja
             <span class="merchant-contas__btn-upgrade-lojas__badge">Business</span>
@@ -239,7 +239,7 @@
 <!-- ── Modal: nova loja ──────────────────────────────────────────────────── -->
 @if (showNovaLoja()) {
   <app-modal [open]="showNovaLoja()" title="Nova loja" (closed)="fecharModalNovaLoja()">
-    <form class="contas-modal__form" (ngSubmit)="confirmarNovaLoja()">
+    <form class="contas-modal__form" (submit)="$event.preventDefault()" novalidate>
 
       <app-input
         label="Nome da loja"
@@ -269,7 +269,7 @@
 
       <div class="contas-modal__footer">
         <app-button type="button" variant="ghost" [inline]="true" (click)="fecharModalNovaLoja()">Cancelar</app-button>
-        <app-button type="submit" [inline]="true" [disabled]="criando()" [loading]="criando()">
+        <app-button type="button" [inline]="true" [disabled]="criando()" [loading]="criando()" (click)="confirmarNovaLoja()">
           {{ criando() ? 'Criando…' : 'Criar loja' }}
         </app-button>
       </div>

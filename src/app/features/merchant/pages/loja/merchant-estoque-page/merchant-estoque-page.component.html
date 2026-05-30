@@ -5,6 +5,18 @@
       <h1 class="est-page__title">Controle de Estoque</h1>
       <p class="est-page__sub">Gerencie entradas, saídas e ajustes de saldo</p>
     </div>
+    <div class="est-head-actions">
+      <app-button
+        variant="ghost"
+        size="sm"
+        [loading]="exporting()"
+        [disabled]="loading()"
+        (click)="exportarCsv()"
+      >
+        <app-icon name="download" [size]="15" [strokeWidth]="2.5" />
+        Exportar CSV
+      </app-button>
+    </div>
     <div class="est-filters">
       <app-button type="button" [inline]="true" class="est-filter-btn" [class.est-filter-btn--active]="filtro() === 'todos'"   (click)="filtro.set('todos')">Todos</app-button>
       <app-button type="button" [inline]="true" class="est-filter-btn" [class.est-filter-btn--active]="filtro() === 'baixo'"   (click)="filtro.set('baixo')">Baixo (≤10)</app-button>
@@ -107,44 +119,77 @@
 @if (modal(); as m) {
   <app-modal [open]="true" title="Ajustar estoque" (closed)="closeModal()">
 
-    <div class="est-modal-info">
-      <span class="est-modal-produto">{{ m.produto.nome }}</span>
-      @if (m.opcao) {
-        <span class="est-modal-opcao">{{ m.opcao.variacaoNome }}: {{ m.opcao.valor }}</span>
-      }
-      <span class="est-modal-saldo">
-        Saldo atual:
-        <strong [ngClass]="badgeClass(estoqueAtualModal())">{{ estoqueAtualModal() }} un.</strong>
-      </span>
+    <!-- Info do produto -->
+    <div class="est-info-card">
+      <div class="est-info-card__text">
+        <p class="est-info-card__nome">{{ m.produto.nome }}</p>
+        @if (m.opcao) {
+          <p class="est-info-card__variacao">
+            {{ m.opcao.variacaoNome }}: <strong>{{ m.opcao.valor }}</strong>
+          </p>
+        }
+        <p class="est-info-card__label">Saldo atual</p>
+      </div>
+      <div class="est-info-card__saldo" [class.est-info-card__saldo--zero]="estoqueAtualModal() === 0"
+                                         [class.est-info-card__saldo--baixo]="estoqueAtualModal() > 0 && estoqueAtualModal() <= 10">
+        <span class="est-info-card__num">{{ estoqueAtualModal() }}</span>
+        <span class="est-info-card__unit">un.</span>
+      </div>
     </div>
 
-    <div class="est-modal-form">
-      <app-radio-group
-        variant="cards"
-        [options]="OPERACAO_OPTIONS"
-        [(value)]="modalOperacao"
-      />
+    <!-- Seletor de operação -->
+    <div class="est-ops">
+      <button type="button" class="est-op est-op--entrada" [class.est-op--active]="modalOperacao() === 'ENTRADA'" (click)="modalOperacao.set('ENTRADA')">
+        <span class="est-op__icon"><app-icon name="plus" [size]="16" [strokeWidth]="2.5"></app-icon></span>
+        <span class="est-op__label">Entrada</span>
+      </button>
+      <button type="button" class="est-op est-op--saida" [class.est-op--active]="modalOperacao() === 'SAIDA'" (click)="modalOperacao.set('SAIDA')">
+        <span class="est-op__icon"><app-icon name="minus" [size]="16" [strokeWidth]="2.5"></app-icon></span>
+        <span class="est-op__label">Saída</span>
+      </button>
+      <button type="button" class="est-op est-op--ajuste" [class.est-op--active]="modalOperacao() === 'AJUSTE'" (click)="modalOperacao.set('AJUSTE')">
+        <span class="est-op__icon"><app-icon name="edit" [size]="16" [strokeWidth]="2"></app-icon></span>
+        <span class="est-op__label">Ajuste</span>
+      </button>
+    </div>
 
-      <app-input
-        label="Quantidade"
+    <!-- Stepper de quantidade -->
+    <div class="est-stepper">
+      <button type="button" class="est-stepper__btn" aria-label="Diminuir" (click)="decrementQty()">−</button>
+      <input
         type="number"
-        placeholder="0"
-        [(value)]="modalQty"
+        class="est-stepper__input"
+        [value]="modalQty()"
+        min="0"
+        aria-label="Quantidade"
+        (input)="onQtyInput($event)"
       />
-
-      @if (modalOperacao() !== 'AJUSTE') {
-        <p class="est-preview">
-          Resultado: {{ modalResultado() }} un.
-          @if (modalResultado() < 0) {
-            <span class="est-preview--warn"> ⚠ insuficiente</span>
-          }
-        </p>
-      }
-
-      @if (error()) {
-        <p class="mcat-page__error" role="alert">{{ error() }}</p>
-      }
+      <button type="button" class="est-stepper__btn" aria-label="Aumentar" (click)="incrementQty()">+</button>
     </div>
+
+    <!-- Preview do resultado -->
+    @if (modalOperacao() === 'AJUSTE') {
+      <div class="est-result est-result--ajuste">
+        <span class="est-result__sentence">Estoque será definido para</span>
+        <span class="est-result__fixed">{{ modalQty() }} <small>un.</small></span>
+      </div>
+    } @else {
+      <div class="est-result" [class.est-result--warn]="modalResultado() < 0">
+        <span class="est-result__num est-result__num--before">{{ estoqueAtualModal() }}</span>
+        <span class="est-result__op">{{ modalOperacao() === 'ENTRADA' ? '+' : '−' }}</span>
+        <span class="est-result__num est-result__num--qty">{{ modalQty() }}</span>
+        <span class="est-result__eq">=</span>
+        <span class="est-result__num est-result__num--after">{{ modalResultado() }}</span>
+        <span class="est-result__unit">un.</span>
+        @if (modalResultado() < 0) {
+          <span class="est-result__warn-badge">⚠ insuficiente</span>
+        }
+      </div>
+    }
+
+    @if (error()) {
+      <p class="est-error" role="alert">{{ error() }}</p>
+    }
 
     <div class="mcat-modal__footer">
       <app-button type="button" variant="ghost" [inline]="true" (click)="closeModal()">Cancelar</app-button>

@@ -44,7 +44,7 @@
     [title]="editingId() ? 'Editar modelo' : 'Novo modelo de variação'"
     (closed)="closeModal()"
   >
-    <form class="mcat-modal__form" (ngSubmit)="save()">
+    <form class="mcat-modal__form" (submit)="$event.preventDefault()" novalidate>
 
       <app-input
         label="Nome do modelo *"
@@ -130,7 +130,7 @@
 
       <div class="mcat-modal__footer">
         <app-button type="button" variant="ghost" [inline]="true" (click)="closeModal()">Cancelar</app-button>
-        <app-button type="submit" [inline]="true" [disabled]="saving()" [loading]="saving()">
+        <app-button type="button" [inline]="true" [disabled]="saving()" [loading]="saving()" (click)="save()">
           {{ saving() ? 'Salvando…' : (editingId() ? 'Salvar' : 'Criar modelo') }}
         </app-button>
       </div>

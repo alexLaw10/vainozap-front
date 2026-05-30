@@ -405,27 +405,6 @@
   }
 }
 
-// ── Spinner ───────────────────────────────────────────────────────────────────
-
-.pf-spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgb(255 255 255 / 0.35);
-  border-top-color: var(--color-surface-base);
-  border-radius: 50%;
-  animation: pf-spin 0.65s linear infinite;
-  flex-shrink: 0;
-
-  &--lg {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-color: var(--color-border-subtle);
-    border-top-color: var(--color-primary);
-  }
-}
-
-@keyframes pf-spin { to { transform: rotate(360deg); } }
 
 // ── Ações de salvar ───────────────────────────────────────────────────────────
 
@@ -452,10 +431,8 @@
   }
 
   &__primary {
+    display: block; // garante que o host app-button se expanda
     width: 100%;
-    justify-content: center;
-    min-height: 2.75rem;
-    gap: var(--space-2);
   }
 
   &__secondary {

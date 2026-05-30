@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080',
-  domainSuffix: '.minhaapp.com.br',
+  domainSuffix: '.vainozap.com.br',
   /**
    * Controle temporário de billing:
    * false -> desabilita fluxos de checkout/Asaas no frontend.

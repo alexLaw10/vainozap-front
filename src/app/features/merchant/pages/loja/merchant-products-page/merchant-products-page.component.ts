@@ -1,10 +1,14 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 import type { ProdutoApi } from '../../../../../core/models/catalog-api.model';
 import type { PageResult } from '../../../models/page-result.model';
 import { ButtonComponent, ConfirmDialogComponent, IconComponent, InputSearchComponent, PageHeaderComponent, StatusBadgeComponent, UiStatusBadgeVariant, TableComponent, type TableColumn } from '@app/shared/ui';
+import { ToastService } from '@app/shared/ui/feedback/toast/toast.service';
 import { MerchantCatalogService } from '../../../services/merchant-catalog.service';
+import { CsvImportModalComponent } from './csv-import/csv-import-modal.component';
+import { downloadCsvTemplate, exportProductsToCsv } from '../../../utils/csv-product-parser.util';
 
 @Component({
   selector: 'app-merchant-products-page',
@@ -12,6 +16,7 @@ import { MerchantCatalogService } from '../../../services/merchant-catalog.servi
   imports: [TableComponent, RouterLink,
     ButtonComponent,
     ConfirmDialogComponent,
+    CsvImportModalComponent,
     IconComponent,
     InputSearchComponent,
     PageHeaderComponent,
@@ -21,6 +26,7 @@ import { MerchantCatalogService } from '../../../services/merchant-catalog.servi
 })
 export class MerchantProductsPageComponent implements OnInit {
   private readonly catalog = inject(MerchantCatalogService);
+  private readonly toast   = inject(ToastService);
 
   protected readonly columns: TableColumn[] = [
     { key: 'foto',    header: '',         width: 'img',     custom: true },
@@ -35,7 +41,9 @@ export class MerchantProductsPageComponent implements OnInit {
   protected readonly pageResult  = signal<PageResult<ProdutoApi> | null>(null);
   protected readonly loading     = signal(false);
   protected readonly error       = signal<string | null>(null);
-  protected readonly confirmDeleteId = signal<string | null>(null);
+  protected readonly confirmDeleteId  = signal<string | null>(null);
+  protected readonly csvModalOpen     = signal(false);
+  protected readonly exporting        = signal(false);
 
   protected readonly searchQ  = signal('');
   protected readonly curPage  = signal(0);
@@ -115,6 +123,39 @@ export class MerchantProductsPageComponent implements OnInit {
 
   protected cancelDelete(): void {
     this.confirmDeleteId.set(null);
+  }
+
+  protected openCsvModal(): void     { this.csvModalOpen.set(true); }
+  protected closeCsvModal(): void    { this.csvModalOpen.set(false); }
+  protected onCsvImported(): void    { this.csvModalOpen.set(false); this.load(); }
+  protected downloadCsvTemplate = downloadCsvTemplate;
+
+  protected exportarCsv(): void {
+    if (this.exporting()) return;
+    this.exporting.set(true);
+
+    forkJoin({
+      products:   this.catalog.listAllProducts(),
+      categories: this.catalog.listCategories(),
+    }).subscribe({
+      next: ({ products, categories }) => {
+        const catMap = new Map<string, string>(
+          categories
+            .filter(c => c.id != null)
+            .map(c => [c.id as string, c.nome]),
+        );
+        exportProductsToCsv(products, catMap);
+        this.toast.show({
+          message: `${products.length} produto${products.length !== 1 ? 's' : ''} exportado${products.length !== 1 ? 's' : ''} com sucesso.`,
+          duration: 4000,
+        });
+        this.exporting.set(false);
+      },
+      error: () => {
+        this.toast.show({ message: 'Erro ao exportar produtos. Tente novamente.', duration: 4000 });
+        this.exporting.set(false);
+      },
+    });
   }
 
   protected confirmDelete(): void {

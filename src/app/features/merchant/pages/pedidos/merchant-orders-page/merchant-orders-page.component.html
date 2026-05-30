@@ -5,6 +5,19 @@
       <h1 class="ord-page__title">Pedidos</h1>
       <p class="ord-page__sub">Acompanhe e gerencie os pedidos da sua loja</p>
     </div>
+    <div class="ord-head-actions">
+      <app-button
+        variant="ghost"
+        size="sm"
+        [loading]="exportingRaw()"
+        [disabled]="loading()"
+        title="Exportar todos os pedidos em formato de tabela"
+        (click)="exportarPedidos()"
+      >
+        <app-icon name="download" [size]="15" [strokeWidth]="2.5" />
+        Exportar pedidos
+      </app-button>
+    </div>
   </div>
 
   <!-- Filtros de status -->

@@ -2,17 +2,21 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 
 import type { Periodo, TopProdutoApi, VendasResumoApi } from '../../../models/vendas-api.model';
 import { MerchantVendasService } from '../../../services/merchant-vendas.service';
+import { ToastService } from '@app/shared/ui/feedback/toast/toast.service';
+import { ButtonComponent, IconComponent } from '@app/shared/ui';
+import { exportVendasReportToCsv } from '../../../utils/vendas-csv.util';
 
 @Component({
   selector: 'app-merchant-vendas-page',
   standalone: true,
-  imports: [],
+  imports: [IconComponent, ButtonComponent],
   providers: [MerchantVendasService],
   templateUrl: './merchant-vendas-page.component.html',
   styleUrl: './merchant-vendas-page.component.scss',
 })
 export class MerchantVendasPageComponent implements OnInit {
   private readonly vendasService = inject(MerchantVendasService);
+  private readonly toast         = inject(ToastService);
 
   protected readonly PERIODOS: { value: Periodo; label: string }[] = [
     { value: '7d',  label: '7 dias'  },
@@ -50,6 +54,13 @@ export class MerchantVendasPageComponent implements OnInit {
       next:  (r) => { this.resumo.set(r); this.loading.set(false); },
       error: ()  => { this.loading.set(false); this.error.set('Erro ao carregar dados.'); },
     });
+  }
+
+  protected exportarRelatorio(): void {
+    const r = this.resumo();
+    if (!r) return;
+    exportVendasReportToCsv(r, this.periodo());
+    this.toast.show({ message: 'Relatório de vendas exportado.', duration: 4000 });
   }
 
   protected currency(v: number): string {

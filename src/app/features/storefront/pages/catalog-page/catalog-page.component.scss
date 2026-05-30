@@ -427,6 +427,40 @@
 }
 
 
+// ─── Destaques ────────────────────────────────────────────────────────────────
+
+.vitrine-section--destaques {
+  margin-bottom: var(--space-8);
+}
+
+.vitrine-section__title--destaques {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.vitrine-section__title-icon {
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.destaques-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--space-4);
+
+  @media (max-width: 30rem) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+.destaques-strip__item {
+  // Garante que o card ocupe toda a célula
+  display: flex;
+  flex-direction: column;
+}
+
 // ─── Vistos recentemente ──────────────────────────────────────────────────────
 
 .vitrine-section--recentes {

@@ -3,8 +3,10 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import type { AjusteEstoqueApi, OpcaoVariacaoApi, ProdutoApi, VariacaoApi } from '../../../../../core/models/catalog-api.model';
-import { ButtonComponent, IconComponent, InputComponent, ModalComponent, RadioGroupComponent, type RadioOption, SkeletonComponent, TableComponent } from '@app/shared/ui';
+import { ButtonComponent, IconComponent, ModalComponent, SkeletonComponent, TableComponent } from '@app/shared/ui';
+import { ToastService } from '@app/shared/ui/feedback/toast/toast.service';
 import { MerchantCatalogService } from '../../../services/merchant-catalog.service';
+import { exportCurrentStockToCsv } from '../../../utils/stock-csv.util';
 
 type Filtro = 'todos' | 'baixo' | 'zero';
 
@@ -19,12 +21,13 @@ interface AjusteModal {
 @Component({
   selector: 'app-merchant-estoque-page',
   standalone: true,
-  imports: [TableComponent, NgClass, ButtonComponent, IconComponent, InputComponent, ModalComponent, RadioGroupComponent, SkeletonComponent, RouterLink],
+  imports: [TableComponent, NgClass, ButtonComponent, IconComponent, ModalComponent, SkeletonComponent, RouterLink],
   templateUrl: './merchant-estoque-page.component.html',
   styleUrl:    './merchant-estoque-page.component.scss',
 })
 export class MerchantEstoquePageComponent implements OnInit {
-  private readonly catalog = inject(MerchantCatalogService);
+  private readonly catalog  = inject(MerchantCatalogService);
+  private readonly toast    = inject(ToastService);
 
   protected readonly products = signal<ProdutoApi[]>([]);
   protected readonly loading  = signal(false);
@@ -32,16 +35,12 @@ export class MerchantEstoquePageComponent implements OnInit {
   protected readonly error    = signal<string | null>(null);
   protected readonly filtro   = signal<Filtro>('todos');
   protected readonly modal    = signal<AjusteModal | null>(null);
+  protected readonly exporting = signal(false);
 
   // Campos do modal como signals independentes
   protected readonly modalOperacao = signal<string>('ENTRADA');
   protected readonly modalQty      = signal('0');
 
-  protected readonly OPERACAO_OPTIONS: RadioOption[] = [
-    { value: 'ENTRADA', label: 'Entrada',         icon: 'plus'  },
-    { value: 'SAIDA',   label: 'Saída',            icon: 'minus' },
-    { value: 'AJUSTE',  label: 'Ajuste absoluto',  icon: 'edit'  },
-  ];
 
   protected readonly filtered = computed(() => {
     const f = this.filtro();
@@ -54,6 +53,23 @@ export class MerchantEstoquePageComponent implements OnInit {
   });
 
   ngOnInit(): void { this.load(); }
+
+  protected exportarCsv(): void {
+    const prods = this.products();
+    if (!prods.length) {
+      this.toast.show({ message: 'Nenhum produto para exportar.', duration: 3000 });
+      return;
+    }
+    exportCurrentStockToCsv(prods);
+    const total = prods.reduce((acc, p) =>
+      acc + (p.variacoes?.length
+        ? p.variacoes.reduce((a, v) => a + v.opcoes.length, 0)
+        : 1), 0);
+    this.toast.show({
+      message: `${total} linha${total !== 1 ? 's' : ''} exportada${total !== 1 ? 's' : ''} com sucesso.`,
+      duration: 4000,
+    });
+  }
 
   private load(): void {
     this.loading.set(true);
@@ -95,6 +111,20 @@ export class MerchantEstoquePageComponent implements OnInit {
   }
 
   protected closeModal(): void { this.modal.set(null); }
+
+  protected incrementQty(): void {
+    this.modalQty.set(String((parseInt(this.modalQty(), 10) || 0) + 1));
+  }
+
+  protected decrementQty(): void {
+    const v = (parseInt(this.modalQty(), 10) || 0) - 1;
+    this.modalQty.set(String(Math.max(0, v)));
+  }
+
+  protected onQtyInput(e: Event): void {
+    const v = (e.target as HTMLInputElement).value;
+    this.modalQty.set(v === '' ? '0' : String(Math.max(0, parseInt(v, 10) || 0)));
+  }
 
   protected confirmarAjuste(): void {
     const m = this.modal();

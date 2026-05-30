@@ -11,6 +11,19 @@
     <div class="cart-modal__backdrop" tabindex="-1" (click)="fechar()"></div>
 
     <div class="cart-modal__panel" (click)="$event.stopPropagation()">
+      <!-- Barra mobile: sempre visível no topo do painel -->
+      <div class="cart-modal__mobile-bar">
+        <span class="cart-modal__mobile-bar-title">Meu pedido</span>
+        <button
+          type="button"
+          class="cart-modal__mobile-close"
+          aria-label="Fechar carrinho"
+          (click)="fechar()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
       <div class="cart-modal__grid">
         <section class="cart-modal__form-card" aria-labelledby="cart-dialog-title">
           <button type="button" class="cart-modal__close" aria-label="Fechar carrinho" (click)="fechar()">

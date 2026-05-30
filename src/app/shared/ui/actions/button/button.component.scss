@@ -10,6 +10,17 @@
   margin-top: var(--space-1);
 
   &--inline { width: auto; }
+
+  // Variante compacta — usada nas ações do painel merchant
+  &--sm {
+    padding:        var(--space-1) var(--space-3);
+    font-size:      var(--font-size-xs);
+    font-weight:    500;
+    letter-spacing: 0.02em;
+    border-radius:  var(--radius-md);
+    width:          auto;   // sm buttons são sempre inline
+    margin-top:     0;      // sem margem de formulário
+  }
 }
 
 .ui-button__spinner {

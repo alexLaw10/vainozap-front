@@ -113,7 +113,7 @@
           }
 
           @if (!p.informacoesFicha?.length) {
-            <p class="product__description">{{ p.descricao }}</p>
+            <div class="product__description" [innerHTML]="p.descricao | descricao"></div>
           }
 
           @if (p.informacoesFicha?.length) {
@@ -140,6 +140,33 @@
             <section class="product__ficha" aria-labelledby="product-wash-heading">
               <h2 id="product-wash-heading" class="product__ficha-title">Recomendação de lavagem</h2>
               <p class="product__ficha-lavagem">{{ p.recomendacaoLavagem }}</p>
+            </section>
+          }
+
+          @if (p.videos?.length) {
+            <section class="product-videos product-videos--aside" aria-labelledby="product-videos-heading">
+              <h2 id="product-videos-heading" class="product-videos__title">Descubra cada detalhe em vídeo</h2>
+              <div class="product-videos__list">
+                @for (url of p.videos; track $index) {
+                  <div class="product-videos__item" (click)="openVideo($index)">
+                    <video
+                      #thumbVideo
+                      class="product-videos__thumb"
+                      [src]="url"
+                      [muted]="true"
+                      loop
+                      playsinline
+                      preload="auto"
+                      [attr.aria-label]="'Vídeo ' + ($index + 1) + ' de ' + p.nome"
+                      (loadedmetadata)="thumbVideo.play()"
+                      (canplay)="thumbVideo.play()"
+                    ></video>
+                    <div class="product-videos__play" aria-hidden="true">
+                      <app-icon name="play" [size]="22" [strokeWidth]="2"></app-icon>
+                    </div>
+                  </div>
+                }
+              </div>
             </section>
           }
 
@@ -325,43 +352,20 @@
     }
 
     @if (product(); as p) {
-      @if (p.videos?.length) {
-        <section class="product-videos" aria-labelledby="product-videos-heading">
-          <h2 id="product-videos-heading" class="product-videos__title">Descubra cada detalhe em vídeo</h2>
-          <div class="product-videos__list">
-            @for (url of p.videos; track $index) {
-              <div class="product-videos__item" (click)="openVideo($index)">
-                <video
-                  class="product-videos__thumb"
-                  [src]="url"
-                  muted
-                  playsinline
-                  preload="metadata"
-                  [attr.aria-label]="'Vídeo ' + ($index + 1) + ' de ' + p.nome"
-                ></video>
-                <div class="product-videos__play" aria-hidden="true">
-                  <app-icon name="play" [size]="22" [strokeWidth]="2"></app-icon>
-                </div>
-              </div>
-            }
-          </div>
-        </section>
-
-        @if (lightboxIndex() !== null) {
-          <div class="pv-lightbox" role="dialog" aria-modal="true" [attr.aria-label]="'Reprodutor de vídeo'" (click)="closeLightbox()">
-            <button type="button" class="pv-lightbox__close" (click)="closeLightbox()" aria-label="Fechar vídeo">
-              <app-icon name="close" [size]="22" [strokeWidth]="2.5"></app-icon>
-            </button>
-            <video
-              class="pv-lightbox__video"
-              [src]="p.videos![lightboxIndex()!]"
-              controls
-              autoplay
-              playsinline
-              (click)="$event.stopPropagation()"
-            ></video>
-          </div>
-        }
+      @if (p.videos?.length && lightboxIndex() !== null) {
+        <div class="pv-lightbox" role="dialog" aria-modal="true" [attr.aria-label]="'Reprodutor de vídeo'" (click)="closeLightbox()">
+          <button type="button" class="pv-lightbox__close" (click)="closeLightbox()" aria-label="Fechar vídeo">
+            <app-icon name="close" [size]="22" [strokeWidth]="2.5"></app-icon>
+          </button>
+          <video
+            class="pv-lightbox__video"
+            [src]="p.videos![lightboxIndex()!]"
+            controls
+            autoplay
+            playsinline
+            (click)="$event.stopPropagation()"
+          ></video>
+        </div>
       }
     }
 

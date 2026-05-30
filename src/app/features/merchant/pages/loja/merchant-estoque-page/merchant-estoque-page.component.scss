@@ -26,6 +26,15 @@
   }
 }
 
+// ── Ações do header ───────────────────────────────────────────────────────────
+
+.est-head-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
 // ── Filtros ───────────────────────────────────────────────────────────────────
 
 .est-filters {
@@ -175,82 +184,296 @@
   &--zero  { background: var(--color-danger-muted); color: var(--color-on-danger-muted); }
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
+// ── Modal: Info card ──────────────────────────────────────────────────────────
 
-.est-modal { max-width: 420px; width: 100%; }
-
-.est-modal-info {
+.est-info-card {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-neutral-50);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  margin-bottom: var(--space-5);
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__nome {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__variacao {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  &__label {
+    margin: var(--space-1) 0 0;
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  &__saldo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--color-success, #16a34a) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-success, #16a34a) 25%, transparent);
+
+    &--baixo {
+      background: color-mix(in srgb, var(--color-warning, #d97706) 10%, transparent);
+      border-color: color-mix(in srgb, var(--color-warning, #d97706) 25%, transparent);
+
+      .est-info-card__num { color: var(--color-warning, #d97706); }
+    }
+
+    &--zero {
+      background: color-mix(in srgb, var(--color-danger, #dc2626) 10%, transparent);
+      border-color: color-mix(in srgb, var(--color-danger, #dc2626) 25%, transparent);
+
+      .est-info-card__num { color: var(--color-danger, #dc2626); }
+    }
+  }
+
+  &__num {
+    font-size: var(--font-size-2xl);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-success, #16a34a);
+  }
+
+  &__unit {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
 }
 
-.est-modal-produto { font-weight: 600; font-size: var(--font-size-sm); }
-.est-modal-opcao   { font-size: var(--font-size-xs); color: var(--color-text-muted); }
-.est-modal-saldo   { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
-
-.est-modal-form { display: flex; flex-direction: column; gap: var(--space-4); }
-
-// ── Seletor de operação ───────────────────────────────────────────────────────
+// ── Modal: Seletor de operação ────────────────────────────────────────────────
 
 .est-ops {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-2);
+  margin-bottom: var(--space-5);
 }
 
 .est-op {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1-5, 6px);
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border-subtle);
+  background: transparent;
   cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
 
-  input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-subtle);
+    transition: background 0.15s;
   }
 
-  span {
+  &__label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    transition: color 0.15s;
+  }
+
+  // ── Variantes por operação (inativo) ───────────────────────────────────────
+
+  &--entrada:hover { border-color: var(--color-success, #16a34a); }
+  &--saida:hover   { border-color: var(--color-danger, #dc2626);  }
+  &--ajuste:hover  { border-color: var(--color-primary);          }
+
+  // ── Ativo ──────────────────────────────────────────────────────────────────
+
+  &--entrada.est-op--active {
+    border-color: var(--color-success, #16a34a);
+    background: color-mix(in srgb, var(--color-success, #16a34a) 8%, transparent);
+
+    .est-op__icon  { background: color-mix(in srgb, var(--color-success, #16a34a) 15%, transparent); color: var(--color-success, #16a34a); }
+    .est-op__label { color: var(--color-success, #16a34a); }
+  }
+
+  &--saida.est-op--active {
+    border-color: var(--color-danger, #dc2626);
+    background: color-mix(in srgb, var(--color-danger, #dc2626) 8%, transparent);
+
+    .est-op__icon  { background: color-mix(in srgb, var(--color-danger, #dc2626) 15%, transparent); color: var(--color-danger, #dc2626); }
+    .est-op__label { color: var(--color-danger, #dc2626); }
+  }
+
+  &--ajuste.est-op--active {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+
+    .est-op__icon  { background: color-mix(in srgb, var(--color-primary) 15%, transparent); color: var(--color-primary); }
+    .est-op__label { color: var(--color-primary); }
+  }
+}
+
+// ── Modal: Stepper de quantidade ──────────────────────────────────────────────
+
+.est-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+
+  &__btn {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3.25rem;
+    flex-shrink: 0;
+    border: none;
+    background: var(--color-surface-subtle);
+    color: var(--color-text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover { background: var(--color-surface-raised, var(--color-neutral-100)); }
+    &:first-child { border-right: 1.5px solid var(--color-border-subtle); }
+    &:last-child  { border-left:  1.5px solid var(--color-border-subtle); }
+  }
+
+  &__input {
+    flex: 1;
+    height: 3.25rem;
+    border: none;
+    outline: none;
+    background: var(--color-surface-base);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: 800;
+    text-align: center;
+    font-family: inherit;
+
+    /* Remove setas nativas do input number */
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    -moz-appearance: textfield;
+  }
+}
+
+// ── Modal: Preview do resultado ───────────────────────────────────────────────
+
+.est-result {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-success, #16a34a) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-success, #16a34a) 20%, transparent);
+  margin-bottom: var(--space-1);
+  flex-wrap: wrap;
+
+  &--warn {
+    background: color-mix(in srgb, var(--color-danger, #dc2626) 8%, transparent);
+    border-color: color-mix(in srgb, var(--color-danger, #dc2626) 20%, transparent);
+
+    .est-result__num--after { color: var(--color-danger, #dc2626); }
+  }
+
+  &--ajuste {
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
     flex-direction: column;
     align-items: center;
     gap: var(--space-1);
-    padding: var(--space-3) var(--space-2);
-    border: 2px solid var(--color-border-subtle);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    transition: border-color .15s, color .15s;
-    text-align: center;
   }
 
-  &--active span {
-    border-color: var(--color-primary);
+  &__num {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+
+    &--before { color: var(--color-text-muted); font-size: var(--font-size-base); }
+    &--qty    { color: var(--color-text-secondary); }
+    &--after  { color: var(--color-success, #16a34a); font-size: var(--font-size-xl); }
+  }
+
+  &__op,
+  &__eq {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-text-muted);
+  }
+
+  &__unit {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  &__sentence {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  &__fixed {
+    font-size: var(--font-size-xl);
+    font-weight: 800;
     color: var(--color-primary);
-    background: color-mix(in srgb, var(--color-primary) 6%, white);
+
+    small { font-size: var(--font-size-sm); font-weight: 400; color: var(--color-text-muted); }
+  }
+
+  &__warn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-danger, #dc2626);
+    background: color-mix(in srgb, var(--color-danger, #dc2626) 12%, transparent);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-full);
   }
 }
 
-.est-qty-input { font-size: 1.25rem; text-align: center; font-weight: 600; }
+// ── Modal: Erro ───────────────────────────────────────────────────────────────
 
-.est-preview {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  text-align: center;
-
-  strong { font-weight: 600; }
-  &--warn { color: var(--color-danger); }
-}
-
-.mcat-page__error {
-  padding: var(--space-3);
-  background: var(--color-danger-muted);
-  color: var(--color-danger);
+.est-error {
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--color-danger, #dc2626) 10%, transparent);
+  color: var(--color-danger, #dc2626);
+  border: 1px solid color-mix(in srgb, var(--color-danger, #dc2626) 25%, transparent);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   margin: 0;

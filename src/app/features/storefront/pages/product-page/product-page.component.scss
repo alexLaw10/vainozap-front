@@ -136,7 +136,7 @@
   &__hero-img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     display: block;
   }
 
@@ -275,6 +275,26 @@
     font-size: var(--font-size-sm);
     line-height: var(--line-height-relaxed);
     color: var(--color-text-secondary);
+
+    // Elementos gerados pelo DescricaoPipe
+    p {
+      margin: 0 0 var(--space-3);
+      &:last-child { margin-bottom: 0; }
+    }
+
+    strong { font-weight: 700; color: var(--color-text-primary); }
+
+    .product__desc-list {
+      margin: 0 0 var(--space-3);
+      padding-left: var(--space-5);
+
+      li {
+        margin-bottom: var(--space-1);
+        &:last-child { margin-bottom: 0; }
+      }
+
+      &:last-child { margin-bottom: 0; }
+    }
   }
 
   &__ficha {
@@ -762,8 +782,8 @@
 
   &__item {
     position: relative;
-    width: clamp(100px, 18vw, 148px);
-    height: clamp(100px, 18vw, 148px);
+    width: clamp(72px, 13vw, 96px);
+    height: clamp(72px, 13vw, 96px);
     border-radius: 50%;
     overflow: hidden;
     cursor: pointer;
@@ -778,8 +798,8 @@
     }
 
     @media (max-width: 35.99rem) {
-      width: clamp(80px, 22vw, 110px);
-      height: clamp(80px, 22vw, 110px);
+      width: clamp(60px, 18vw, 80px);
+      height: clamp(60px, 18vw, 80px);
     }
   }
 
@@ -790,6 +810,25 @@
     display: block;
     opacity: 0.82;
     pointer-events: none;
+  }
+
+  // Variante dentro do aside (abaixo da descrição)
+  &--aside {
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border-subtle);
+    margin-bottom: var(--space-2);
+
+    .product-videos__title {
+      text-align: left;
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      margin-bottom: var(--space-3);
+    }
+
+    .product-videos__list {
+      justify-content: flex-start;
+    }
   }
 
   &__play {

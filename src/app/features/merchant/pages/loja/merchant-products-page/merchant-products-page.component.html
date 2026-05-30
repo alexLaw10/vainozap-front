@@ -1,9 +1,19 @@
 <main class="mp-page container">
   <app-page-header title="Produtos" subtitle="Gerencie os produtos da sua loja">
-    <a routerLink="/merchant/loja/cadastrar/produtos" class="mcat-btn mcat-btn--primary">
-      <app-icon name="plus" [size]="16" [strokeWidth]="2.5"></app-icon>
-      Novo produto
-    </a>
+    <div class="mp-header-actions">
+      <app-button variant="ghost" size="sm" [loading]="exporting()" (click)="exportarCsv()">
+        <app-icon name="download" [size]="15" [strokeWidth]="2.5" />
+        Exportar CSV
+      </app-button>
+      <app-button variant="ghost" size="sm" (click)="openCsvModal()">
+        <app-icon name="upload" [size]="15" [strokeWidth]="2.5" />
+        Importar CSV
+      </app-button>
+      <a routerLink="/merchant/loja/cadastrar/produtos" class="mcat-btn mcat-btn--primary">
+        <app-icon name="plus" [size]="16" [strokeWidth]="2.5"></app-icon>
+        Novo produto
+      </a>
+    </div>
   </app-page-header>
 
   <div class="mcat-filters">
@@ -80,10 +90,12 @@
         }
 
         @case ('acoes') {
-          <a [routerLink]="['/merchant/loja/gerenciar/produtos', row.id, 'editar']"
-             class="mcat-btn mcat-btn--ghost">Editar</a>
-          <app-button type="button" variant="danger-ghost" [inline]="true"
-             (click)="askDelete(row.id)">Excluir</app-button>
+          <div class="mp-acoes">
+            <a [routerLink]="['/merchant/loja/gerenciar/produtos', row.id, 'editar']"
+               class="mcat-btn mcat-btn--ghost">Editar</a>
+            <app-button type="button" variant="danger-ghost" [inline]="true"
+               (click)="askDelete(row.id)">Excluir</app-button>
+          </div>
         }
 
       }
@@ -94,6 +106,12 @@
   } <!-- /@else -->
 
 </main>
+
+<app-csv-import-modal
+  [open]="csvModalOpen()"
+  (close)="closeCsvModal()"
+  (imported)="onCsvImported()"
+/>
 
 @if (confirmDeleteId()) {
   <app-confirm-dialog

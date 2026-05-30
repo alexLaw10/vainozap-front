@@ -9,21 +9,24 @@ import {
 } from '../../../models/order-api.model';
 import type { PageResult } from '../../../models/page-result.model';
 import { MerchantOrdersService } from '../../../services/merchant-orders.service';
-import { InputSearchComponent, TableComponent, type TableColumn, StatusMenuComponent } from '@app/shared/ui';
+import { ButtonComponent, IconComponent, InputSearchComponent, TableComponent, type TableColumn, StatusMenuComponent } from '@app/shared/ui';
+import { ToastService } from '@app/shared/ui/feedback/toast/toast.service';
 import { PhoneMaskPipe } from '../../../../../shared/pipes/phone-mask.pipe';
+import { exportOrdersToCsv } from '../../../utils/orders-csv.util';
 
 type Filtro = 'todos' | StatusPedido;
 
 @Component({
   selector: 'app-merchant-orders-page',
   standalone: true,
-  imports: [TableComponent, RouterLink, InputSearchComponent, PhoneMaskPipe, StatusMenuComponent],
+  imports: [TableComponent, RouterLink, InputSearchComponent, PhoneMaskPipe, StatusMenuComponent, IconComponent, ButtonComponent],
   providers: [MerchantOrdersService],
   templateUrl: './merchant-orders-page.component.html',
   styleUrl: './merchant-orders-page.component.scss',
 })
 export class MerchantOrdersPageComponent implements OnInit {
   private readonly orders = inject(MerchantOrdersService);
+  private readonly toast  = inject(ToastService);
 
   protected readonly STATUS_CONFIG = STATUS_CONFIG;
   protected readonly ALL_STATUSES  = ALL_STATUSES;
@@ -40,8 +43,9 @@ export class MerchantOrdersPageComponent implements OnInit {
     this.savingId() === row.id ? 'ord-row--saving' : '';
 
   protected readonly pageResult = signal<PageResult<PedidoApi> | null>(null);
-  protected readonly loading    = signal(false);
-  protected readonly busca      = signal('');
+  protected readonly loading          = signal(false);
+  protected readonly exportingRaw     = signal(false);
+  protected readonly busca            = signal('');
   protected readonly filtro     = signal<Filtro>('todos');
   protected readonly curPage    = signal(0);
   protected readonly pageSize   = 20;
@@ -72,6 +76,26 @@ export class MerchantOrdersPageComponent implements OnInit {
   });
 
   ngOnInit(): void { this.load(); }
+
+  protected exportarPedidos(): void {
+    if (this.exportingRaw()) return;
+    this.exportingRaw.set(true);
+    this.orders.listAll().subscribe({
+      next: (all) => {
+        exportOrdersToCsv(all);
+        this.toast.show({
+          message: `${all.length} pedido${all.length !== 1 ? 's' : ''} exportado${all.length !== 1 ? 's' : ''}.`,
+          duration: 4000,
+        });
+        this.exportingRaw.set(false);
+      },
+      error: () => {
+        this.toast.show({ message: 'Erro ao exportar pedidos.', duration: 4000 });
+        this.exportingRaw.set(false);
+      },
+    });
+  }
+
 
   private load(): void {
     this.loading.set(true);

@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
 import type { AjusteEstoqueApi, CategoriaApi, ProdutoApi, VariacaoTemplateApi } from '../../../core/models/catalog-api.model';
@@ -49,6 +50,14 @@ export class MerchantCatalogService {
       .set('size', size)
       .set('search', search);
     return this.http.get<PageResult<ProdutoApi>>(`${this.base}/products`, { params });
+  }
+
+  /** Busca todos os produtos sem paginação — usar apenas para exportação. */
+  listAllProducts(): Observable<ProdutoApi[]> {
+    return this.http.get<PageResult<ProdutoApi>>(
+      `${this.base}/products`,
+      { params: new HttpParams().set('page', 0).set('size', 10000) },
+    ).pipe(map(page => page.content));
   }
 
   createProduct(p: Omit<ProdutoApi, 'id' | 'tenantId'>, files: File[] = [], videoFiles: File[] = []): Observable<ProdutoApi> {
