@@ -1012,6 +1012,7 @@
   &__img {
     display: block;
     max-width: min(90vw, 900px);
+    max-height: 85vh;   /* fallback Safari < 15.4 */
     max-height: 85dvh;
     object-fit: contain;
     border-radius: var(--radius-md);

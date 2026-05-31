@@ -1,5 +1,6 @@
 :host {
   display: block;
+  min-height: 100vh;    /* fallback Safari < 15.4 */
   min-height: 100dvh;
 }
 

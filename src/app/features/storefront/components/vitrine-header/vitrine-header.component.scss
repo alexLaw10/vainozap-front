@@ -458,6 +458,7 @@
   .vitrine-cat-menu__panel {
     width: 100%;
     max-width: none;
+    max-height: min(92vh, 100%);   /* fallback Safari < 15.4 */
     max-height: min(92dvh, 100%);
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }

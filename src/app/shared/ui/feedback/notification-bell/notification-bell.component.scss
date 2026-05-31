@@ -98,6 +98,7 @@ $header-h: 3.5rem;
       left: var(--space-3, 0.75rem);
       right: var(--space-3, 0.75rem);
       width: auto;
+      max-height: calc(100vh - #{$header-h} - 1rem);   /* fallback Safari < 15.4 */
       max-height: calc(100dvh - #{$header-h} - 1rem);
       border-radius: var(--radius-xl);
       z-index: 999;
